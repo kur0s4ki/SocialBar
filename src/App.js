@@ -42,7 +42,7 @@ function App() {
         <h1>Team Registration</h1>
         
         <div className="status">
-          Status: {isConnected ? '🟢 Connected' : '🔴 Disconnected'}
+          Status: {isConnected ? '✔️ Connected' : '🔴 Disconnected'}
         </div>
 
         <form className="team-form">
