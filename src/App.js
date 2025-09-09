@@ -5,36 +5,49 @@ function App() {
   const [teamName, setTeamName] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes in seconds
   const [timeString, setTimeString] = useState('15:00');
   const ws = useRef(null);
+  const countdownInterval = useRef(null);
+  const isConnecting = useRef(false);
 
   useEffect(() => {
     const connect = () => {
+      // Prevent duplicate connections
+      if (isConnecting.current || (ws.current && ws.current.readyState === WebSocket.OPEN)) {
+        return;
+      }
+      
+      isConnecting.current = true;
+      
+      // Close existing connection if any
+      if (ws.current) {
+        ws.current.close();
+      }
+      
       ws.current = new WebSocket('ws://localhost:8080');
 
       ws.current.onopen = () => {
         console.log('Connected to WebSocket server');
         setIsConnected(true);
+        isConnecting.current = false;
       };
 
       ws.current.onmessage = (event) => {
         const data = JSON.parse(event.data);
         console.log('Received:', data);
         
-        if (data.type === 'countdownUpdate') {
-          setTimeLeft(data.timeLeft);
-          setTimeString(data.timeString);
+        if (data.type === 'gameStarted') {
+          startCountdown();
         } else if (data.type === 'reset') {
-          setIsStarted(false);
-          setTimeLeft(0);
-          setTimeString('15:00');
+          resetGame();
         }
       };
 
       ws.current.onclose = () => {
         console.log('Disconnected from WebSocket server');
         setIsConnected(false);
+        isConnecting.current = false;
         // Retry connection after 3 seconds
         setTimeout(connect, 3000);
       };
@@ -42,6 +55,7 @@ function App() {
       ws.current.onerror = () => {
         console.log('WebSocket connection error');
         setIsConnected(false);
+        isConnecting.current = false;
       };
     };
 
@@ -51,13 +65,45 @@ function App() {
       if (ws.current) {
         ws.current.close();
       }
+      if (countdownInterval.current) {
+        clearInterval(countdownInterval.current);
+      }
     };
   }, []);
+
+  const startCountdown = () => {
+    setIsStarted(true);
+    setTimeLeft(15 * 60);
+    setTimeString('15:00');
+    
+    countdownInterval.current = setInterval(() => {
+      setTimeLeft(prevTime => {
+        const newTime = prevTime - 1;
+        const minutes = Math.floor(newTime / 60);
+        const seconds = newTime % 60;
+        setTimeString(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+        
+        if (newTime <= 0) {
+          clearInterval(countdownInterval.current);
+          return 0;
+        }
+        return newTime;
+      });
+    }, 1000);
+  };
+
+  const resetGame = () => {
+    setIsStarted(false);
+    setTimeLeft(15 * 60);
+    setTimeString('15:00');
+    if (countdownInterval.current) {
+      clearInterval(countdownInterval.current);
+    }
+  };
 
   const handleStart = () => {
     if (teamName.trim()) {
       console.log('Starting with team:', teamName);
-      setIsStarted(true);
       
       // Send start message to server
       if (ws.current && ws.current.readyState === WebSocket.OPEN) {
