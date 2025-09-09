@@ -7,21 +7,32 @@ function App() {
   const ws = useRef(null);
 
   useEffect(() => {
-    ws.current = new WebSocket('ws://localhost:8080');
+    const connect = () => {
+      ws.current = new WebSocket('ws://localhost:8080');
 
-    ws.current.onopen = () => {
-      console.log('Connected to WebSocket server');
-      setIsConnected(true);
+      ws.current.onopen = () => {
+        console.log('Connected to WebSocket server');
+        setIsConnected(true);
+      };
+
+      ws.current.onmessage = (event) => {
+        console.log('Received:', event.data);
+      };
+
+      ws.current.onclose = () => {
+        console.log('Disconnected from WebSocket server');
+        setIsConnected(false);
+        // Retry connection after 3 seconds
+        setTimeout(connect, 3000);
+      };
+
+      ws.current.onerror = () => {
+        console.log('WebSocket connection error');
+        setIsConnected(false);
+      };
     };
 
-    ws.current.onmessage = (event) => {
-      console.log('Received:', event.data);
-    };
-
-    ws.current.onclose = () => {
-      console.log('Disconnected from WebSocket server');
-      setIsConnected(false);
-    };
+    connect();
 
     return () => {
       if (ws.current) {
