@@ -4,6 +4,9 @@ import './App.css';
 function App() {
   const [teamName, setTeamName] = useState('');
   const [isConnected, setIsConnected] = useState(false);
+  const [isStarted, setIsStarted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [timeString, setTimeString] = useState('15:00');
   const ws = useRef(null);
 
   useEffect(() => {
@@ -16,7 +19,17 @@ function App() {
       };
 
       ws.current.onmessage = (event) => {
-        console.log('Received:', event.data);
+        const data = JSON.parse(event.data);
+        console.log('Received:', data);
+        
+        if (data.type === 'countdownUpdate') {
+          setTimeLeft(data.timeLeft);
+          setTimeString(data.timeString);
+        } else if (data.type === 'reset') {
+          setIsStarted(false);
+          setTimeLeft(0);
+          setTimeString('15:00');
+        }
       };
 
       ws.current.onclose = () => {
@@ -44,38 +57,68 @@ function App() {
   const handleStart = () => {
     if (teamName.trim()) {
       console.log('Starting with team:', teamName);
+      setIsStarted(true);
+      
+      // Send start message to server
+      if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+        ws.current.send(JSON.stringify({
+          type: 'start',
+          teamName: teamName
+        }));
+      }
     }
   };
 
   return (
     <div className="App">
       <div className="container">
-        <h1>Team Registration</h1>
-        
-        <div className="status">
-          Status: {isConnected ? '✔️ Connected' : '🔴 Disconnected'}
-        </div>
+        {!isStarted ? (
+          <>
+            <h1>Team Registration</h1>
+            
+            <div className="status">
+              Status: {isConnected ? '✔️ Connected' : '🔴 Disconnected'}
+            </div>
 
-        <form className="team-form">
-          <div className="form-group">
-            <label htmlFor="teamName">Team Name:</label>
-            <input
-              type="text"
-              id="teamName"
-              value={teamName}
-              onChange={(e) => setTeamName(e.target.value)}
-              placeholder="Enter your team name"
-            />
-          </div>
-          
-          <button 
-            type="button" 
-            onClick={handleStart}
-            className="start-button"
-          >
-            Start
-          </button>
-        </form>
+            <form className="team-form">
+              <div className="form-group">
+                <label htmlFor="teamName">Team Name:</label>
+                <input
+                  type="text"
+                  id="teamName"
+                  value={teamName}
+                  onChange={(e) => setTeamName(e.target.value)}
+                  placeholder="Enter your team name"
+                />
+              </div>
+              
+              <button 
+                type="button" 
+                onClick={handleStart}
+                className="start-button"
+              >
+                Start
+              </button>
+            </form>
+          </>
+        ) : (
+          <>
+            <h1>Team: {teamName}</h1>
+            
+            <div className="status">
+              Status: {isConnected ? '✔️ Connected' : '🔴 Disconnected'}
+            </div>
+
+            <div className="countdown-container">
+              <div className="countdown-timer">
+                {timeString}
+              </div>
+              <div className="countdown-label">
+                Time Remaining
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
