@@ -28,24 +28,26 @@ function App() {
       ws.current = new WebSocket('ws://localhost:8080');
 
       ws.current.onopen = () => {
-        console.log('Connected to WebSocket server');
+        console.log('[FRONTEND] Connected to WebSocket server');
         setIsConnected(true);
         isConnecting.current = false;
       };
 
       ws.current.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        console.log('Received:', data);
+        console.log('[FRONTEND] Received from server:', data);
         
         if (data.type === 'gameStarted') {
+          console.log('[FRONTEND] Game started - starting countdown');
           startCountdown();
         } else if (data.type === 'reset') {
+          console.log('[FRONTEND] Game reset received');
           resetGame();
         }
       };
 
       ws.current.onclose = () => {
-        console.log('Disconnected from WebSocket server');
+        console.log('[FRONTEND] Disconnected from WebSocket server');
         setIsConnected(false);
         isConnecting.current = false;
         // Retry connection after 3 seconds
@@ -53,7 +55,7 @@ function App() {
       };
 
       ws.current.onerror = () => {
-        console.log('WebSocket connection error');
+        console.log('[FRONTEND] WebSocket connection error');
         setIsConnected(false);
         isConnecting.current = false;
       };
@@ -103,7 +105,7 @@ function App() {
 
   const handleStart = () => {
     if (teamName.trim()) {
-      console.log('Starting with team:', teamName);
+      console.log('[FRONTEND] Starting game for team:', teamName);
       
       // Send start message to server
       if (ws.current && ws.current.readyState === WebSocket.OPEN) {
@@ -111,6 +113,7 @@ function App() {
           type: 'start',
           teamName: teamName
         }));
+        console.log('[FRONTEND] Start message sent to server');
       }
     }
   };
