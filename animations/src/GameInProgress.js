@@ -12,7 +12,7 @@ function GameInProgress() {
         <div className="flex gap-8">
           {/* Left Panel - Round and Score */}
           <div className="flex-1 bg-slate-900 border-8 border-cyan-400 rounded-2xl p-10">
-            <h1 className="text-yellow-400 text-6xl font-bold text-center">MANCHE 2-NIVEAU</h1>
+            <h2 className="text-yellow-400 text-6xl font-bold text-center">MANCHE 2-NIVEAU</h2>
             <h2 className="text-yellow-400 text-5xl font-bold text-center mt-2">SCORE</h2>
           </div>
 
@@ -32,14 +32,14 @@ function GameInProgress() {
           </div>
 
           {/* Mission Number Circle */}
-          <div className="absolute -top-16 right-12">
+          <div className="absolute top-1/2 right-12 transform -translate-y-1/2">
             <div className="w-64 h-64 bg-slate-900 border-8 border-red-500 rounded-full flex items-center justify-center">
               <span className="text-white text-9xl font-bold">28</span>
             </div>
           </div>
 
           {/* Mission Text */}
-          <div className="text-center">
+          <div className="text-center pr-80">
             <p className="text-white text-7xl font-medium">
               Touchez uniquement les trous <span className="text-cyan-400 font-bold">BLEUS</span>
               {"! "}
