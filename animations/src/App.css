@@ -596,29 +596,70 @@ input::placeholder {
   transform: translateY(0);
 }
 
-/* Game In Progress (gip-) styles */
-.gip-root {
+/* Game Interface (gi-) styles aligned to requested structure */
+.gi-root {
   width: 100%;
-  max-width: 100%;
-  padding: 40px;
-  box-sizing: border-box;
-  color: #e6f2ff;
-  font-weight: 700;
-  font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
   min-height: 100vh;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.gi-container {
+  max-width: 1100px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 24px;
+  font-weight: 700;
+  color: #e6f2ff;
 }
 
-.gip-top {
+.gi-row {
   display: grid;
-  grid-template-columns: 1fr 340px;
   gap: 24px;
-  align-items: stretch;
 }
 
-.gip-right { display: grid; grid-template-rows: 1fr 1fr; gap: 16px; align-items: stretch; }
+.gi-row--top {
+  grid-template-columns: 2fr 1fr;
+}
+
+.gi-row--bottom {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.gi-card {
+  background: #0f172a; /* slate-800-ish */
+  border: 4px solid #14c6ff;
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.gi-card--title { text-align: center; }
+.gi-title-1 { color: #ffc21a; font-size: 32px; font-weight: 800; }
+.gi-title-2 { color: #ffc21a; font-size: 24px; font-weight: 800; margin-top: 8px; }
+
+.gi-card--score { display: flex; align-items: center; justify-content: center; min-width: 200px; }
+.gi-score-text { color: #ffc21a; font-size: 64px; font-weight: 800; }
+
+.gi-card--mission { position: relative; text-align: center; padding-top: 40px; }
+.gi-badge { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); background: #00112A; border: 4px solid #ffc21a; color: #ffc21a; border-radius: 12px; padding: 8px 20px; font-size: 22px; font-weight: 800; }
+.gi-mission-timer { position: absolute; top: -28px; right: 32px; width: 84px; height: 84px; border: 8px solid #e54b2a; background: #00112A; border-radius: 9999px; display: flex; align-items: center; justify-content: center; }
+.gi-mission-timer span { color: #ffffff; font-size: 36px; font-weight: 800; }
+.gi-mission-text { font-size: 28px; font-weight: 700; }
+.gi-blue { color: #14c6ff; }
+.gi-red { color: #e54b2a; }
+.gi-sep { display: inline-block; width: 48px; }
+
+.gi-card--center { display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 10px; }
+.gi-card--large { padding: 32px; }
+.gi-multiplier { color: #ffc21a; font-size: 56px; font-weight: 800; }
+
+.gi-bonus-circle { width: 64px; height: 64px; border-radius: 9999px; border: 6px solid #ffffff; display: flex; align-items: center; justify-content: center; }
+.gi-bonus-dot { width: 10px; height: 10px; background: #ffffff; border-radius: 9999px; }
+.gi-box-label { color: #14c6ff; font-size: 18px; font-weight: 800; }
+
+.gi-dots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.gi-dots span { width: 24px; height: 24px; background: #ffc21a; border-radius: 9999px; display: inline-block; }
 
 .gip-box {
   border: 4px solid #14c6ff;
@@ -655,23 +696,34 @@ input::placeholder {
   background: rgba(3, 22, 36, 0.6); font-size: 32px; font-weight: 800; letter-spacing: 1px;
 }
 
+.gip-mission-container {
+  position: relative;
+  margin-top: 16px;
+}
+
 .gip-mission {
   position: relative;
+  text-align: center; 
+  padding: 26px; 
+  min-height: 220px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
 }
+
 .gip-mission-badge--inset {
   position: absolute;
   top: -10px;
   left: 50%;
   transform: translateX(-50%);
+  z-index: 10;
 }
-
-.gip-mission { text-align: center; padding: 26px; min-height: 220px; display: flex; align-items: center; justify-content: center; margin-top: 16px; }
 .gip-mission-text { font-size: 40px; font-weight: 800; color: #e6f2ff; margin: 0; }
 .gip-blue { color: #14c6ff; }
 .gip-red { color: #e54b2a; }
 .gip-sep { display: inline-block; width: 56px; }
 
-.gip-bottom { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; align-items: stretch; }
+.gip-bottom-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; align-items: stretch; }
 .gip-bonus { color: #ffc21a; font-size: 72px; display: flex; align-items: center; justify-content: center; }
 .gip-bonus-central, .gip-buttons { text-align: center; }
 .gip-box-label { margin-top: 8px; color: #14c6ff; font-weight: 800; font-size: 22px; letter-spacing: 1px; }
