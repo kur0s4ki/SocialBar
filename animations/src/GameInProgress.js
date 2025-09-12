@@ -19,10 +19,12 @@ function GipMission({
   leftText = 'Touchez uniquement les trous',
   blueWord = 'BLEUS',
   rightText = 'Évitez les',
-  redWord = 'rouges'
+  redWord = 'rouges',
+  showBadge = true
 }) {
   return (
     <div className="gip-box gip-mission">
+      {showBadge && <div className="gip-mission-badge gip-mission-badge--inset">MISSION</div>}
       <p className="gip-mission-text">
         {leftText} <span className="gip-blue">{blueWord}</span> !
         <span className="gip-sep" />
@@ -60,12 +62,6 @@ function GameInProgress() {
             <GipScore />
             <GipTimer />
           </div>
-        </div>
-
-        <div className="gip-mission-row">
-          <div className="gip-line" />
-          <div className="gip-mission-badge">MISSION</div>
-          <div className="gip-line" />
         </div>
 
         <GipMission />
