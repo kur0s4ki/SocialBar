@@ -37,7 +37,7 @@ function GameInProgress() {
               {/* Original 28 text */}
               <span className="text-white text-9xl font-bold">28</span>
               {/* Inner Circle */}
-              <div className="absolute w-60 h-60 bg-transparent border-8 border-cyan-400 rounded-full z-10"></div>
+              <div className="absolute w-60 h-60 bg-transparent border-8 border-transparent border-t-cyan-400 border-r-cyan-400 rounded-full z-10"></div>
             </div>
           </div>
 
