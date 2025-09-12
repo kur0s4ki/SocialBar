@@ -1,24 +1,167 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 function GameInProgress() {
+  // WebSocket connection state
+  const [isConnected, setIsConnected] = useState(false);
+  const [clientId, setClientId] = useState(null);
+  const ws = useRef(null);
+  const isConnecting = useRef(false);
+
+  // Dynamic game data state
+  const [gameData, setGameData] = useState({
+    manche: 2,
+    niveau: 1,
+    score: 4270,
+    missionNumber: 28,
+    multiplier: 'x2',
+    missionDescription: 'Touchez uniquement les trous BLEUS! Évitez les rouges!'
+  });
+
+  // Time state managed by server
+  const [timeLeft, setTimeLeft] = useState(15 * 60);
+  const [timeString, setTimeString] = useState('15:00');
+
   useEffect(() => {
     document.title = 'Social Bar - Game In Progress';
   }, []);
 
+  useEffect(() => {
+    const connect = () => {
+      // Prevent duplicate connections
+      if (isConnecting.current || (ws.current && ws.current.readyState === WebSocket.OPEN)) {
+        return;
+      }
+      
+      isConnecting.current = true;
+      
+      // Close existing connection if any
+      if (ws.current) {
+        ws.current.close();
+      }
+      
+      console.log('[GAMEINPROGRESS] Attempting to connect to WebSocket server...');
+      ws.current = new WebSocket('ws://localhost:8080');
+
+      ws.current.onopen = () => {
+        console.log('[GAMEINPROGRESS] Connected to WebSocket server as new client');
+        setIsConnected(true);
+        isConnecting.current = false;
+        
+        // Send identification message
+        ws.current.send(JSON.stringify({
+          type: 'clientConnect',
+          clientType: 'gameInProgress',
+          timestamp: Date.now()
+        }));
+      };
+
+      ws.current.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          console.log('[GAMEINPROGRESS] Received from server:', data);
+          
+          // Handle different message types
+          switch (data.type) {
+            case 'clientId':
+              setClientId(data.clientId);
+              console.log('[GAMEINPROGRESS] Assigned client ID:', data.clientId);
+              break;
+            case 'gameData':
+              console.log('[GAMEINPROGRESS] Updating game data:', data.gameData);
+              setGameData(prevData => ({ ...prevData, ...data.gameData }));
+              break;
+            case 'scoreUpdate':
+              console.log('[GAMEINPROGRESS] Score update:', data.score);
+              setGameData(prevData => ({ ...prevData, score: data.score }));
+              break;
+            case 'missionUpdate':
+              console.log('[GAMEINPROGRESS] Mission update:', data.mission);
+              setGameData(prevData => ({ 
+                ...prevData, 
+                missionNumber: data.mission.number,
+                missionDescription: data.mission.description
+              }));
+              break;
+            case 'timeUpdate':
+              console.log('[GAMEINPROGRESS] Time update received:', data);
+              setTimeLeft(data.timeLeft);
+              setTimeString(data.timeString);
+              break;
+            case 'reset':
+              console.log('[GAMEINPROGRESS] Game reset received');
+              // Reset to default values
+              setGameData({
+                manche: 1,
+                niveau: 1,
+                score: 0,
+                missionNumber: 1,
+                multiplier: 'x1',
+                missionDescription: 'Waiting for mission...'
+              });
+              setTimeLeft(15 * 60);
+              setTimeString('15:00');
+              break;
+            default:
+              console.log('[GAMEINPROGRESS] Unknown message type:', data.type);
+          }
+        } catch (error) {
+          console.error('[GAMEINPROGRESS] Error parsing message:', error);
+        }
+      };
+
+      ws.current.onclose = () => {
+        console.log('[GAMEINPROGRESS] Disconnected from WebSocket server');
+        setIsConnected(false);
+        setClientId(null);
+        isConnecting.current = false;
+        // Retry connection after 3 seconds
+        setTimeout(connect, 3000);
+      };
+
+      ws.current.onerror = (error) => {
+        console.error('[GAMEINPROGRESS] WebSocket connection error:', error);
+        setIsConnected(false);
+        setClientId(null);
+        isConnecting.current = false;
+      };
+    };
+
+    connect();
+
+    return () => {
+      if (ws.current) {
+        console.log('[GAMEINPROGRESS] Component unmounting, closing WebSocket connection');
+        ws.current.close();
+      }
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-slate-900 px-8 py-2 font-sans flex items-center justify-center">
+      {/* Connection Status Indicator */}
+      <div className="fixed top-4 right-4 z-50">
+        <div className={`px-4 py-2 rounded-lg text-white font-bold ${
+          isConnected ? 'bg-green-600' : 'bg-red-600'
+        }`}>
+          {isConnected ? `✔️ Connected ${clientId ? `(ID: ${clientId})` : ''}` : '🔴 Disconnected'}
+        </div>
+      </div>
+      
+
       <div className="max-w-[90vw] w-full space-y-12">
         {/* Top Row - Score Section */}
         <div className="flex gap-8">
           {/* Left Panel - Round and Score */}
           <div className="flex-1 bg-slate-900 border-8 border-cyan-400 rounded-2xl p-10">
-            <h2 className="text-yellow-400 text-6xl font-bold text-center">MANCHE 2-NIVEAU</h2>
+            <h2 className="text-yellow-400 text-6xl font-bold text-center">
+              MANCHE {gameData.manche}-NIVEAU {gameData.niveau}
+            </h2>
             <h2 className="text-yellow-400 text-6xl font-bold text-center mt-2">SCORE</h2>
           </div>
 
           {/* Right Panel - Score Number */}
           <div className="bg-slate-900 border-8 border-cyan-400 rounded-2xl p-10 flex items-center justify-center min-w-[250px]">
-            <span className="text-yellow-400 text-9xl font-bold">4270</span>
+            <span className="text-yellow-400 text-9xl font-bold">{gameData.score}</span>
           </div>
         </div>
 
@@ -31,11 +174,11 @@ function GameInProgress() {
             </div>
           </div>
 
-          {/* Mission Number Circle */}
+          {/* Game Timer Circle */}
           <div className="absolute top-1/2 right-12 transform -translate-y-1/2">
             <div className="w-64 h-64 bg-slate-900 border-8 border-red-500 rounded-full flex items-center justify-center relative">
-              {/* Original 28 text */}
-              <span className="text-white text-9xl font-bold">28</span>
+              {/* Game timer display */}
+              <span className="text-white text-6xl font-bold font-mono">{timeString}</span>
               {/* Inner Circle */}
               <div className="absolute w-60 h-60 bg-transparent border-8 border-transparent border-t-cyan-400 border-r-cyan-400 rounded-full z-10"></div>
             </div>
@@ -44,10 +187,7 @@ function GameInProgress() {
           {/* Mission Text */}
           <div className="text-center pr-80">
             <p className="text-white text-7xl font-medium">
-              Touchez uniquement les trous <span className="text-cyan-400 font-bold">BLEUS</span>
-              {"! "}
-              Évitez les <span className="text-red-500 font-bold">rouges</span>
-              {"!"}
+              {gameData.missionDescription}
             </p>
           </div>
         </div>
@@ -56,7 +196,7 @@ function GameInProgress() {
         <div className="grid grid-cols-3 gap-8">
           {/* Multiplier */}
           <div className="bg-slate-900 border-8 border-cyan-400 rounded-2xl p-12 flex items-center justify-center">
-            <span className="text-yellow-400 text-9xl font-bold">x2</span>
+            <span className="text-yellow-400 text-9xl font-bold">{gameData.multiplier}</span>
           </div>
 
           {/* Bonus Central */}

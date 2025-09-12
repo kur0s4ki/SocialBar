@@ -73,6 +73,21 @@ let countdownInterval;
 let isRunning = false;
 let keyboardListenerActive = false;
 
+// Game state variables for dynamic data transfer
+let gameState = {
+  manche: 1,
+  niveau: 1,
+  score: 0,
+  missionNumber: 1,
+  multiplier: 'x1',
+  missionDescription: 'Waiting for mission...',
+  gameTimeMinutes: 15 // Configurable game time in minutes
+};
+
+// Timer variables for game time management
+let gameTimeSeconds = 15 * 60; // Total game time in seconds
+let timeUpdateInterval;
+
 // Color mapping for LED control
 const COLORS = {
   'r': '#e74c3c', // red
@@ -108,6 +123,7 @@ emitter.on('start', (teamData) => {
   console.log('[STRIKELOOP] Game start received for team:', teamData.teamName);
   startCountdown();
   setupKeyboardListener();
+  //TODO : game logic here
 });
 
 
@@ -135,15 +151,80 @@ function startCountdown() {
   
   isRunning = true;
   console.log('[STRIKELOOP] Starting countdown timer');
+  
+  // Initialize game state
+  initializeGameState();
+  
   emitter.emit('gameStarted');
   
-  // Set timeout for 15 minutes
+  // Set timeout for configured game time
   countdownInterval = setTimeout(() => {
     isRunning = false;
     disableKeyboardListener();
-    console.log('[STRIKELOOP] 15 minutes elapsed - game finished');
+    stopTimeUpdates();
+    console.log(`[STRIKELOOP] ${gameState.gameTimeMinutes} minutes elapsed - game finished`);
     emitter.emit('gameFinished');
-  }, 2 * 60 * 1000); // 15 minutes in milliseconds
+  }, gameTimeSeconds * 1000);
+}
+
+// Initialize game state and send to frontend
+function initializeGameState() {
+  gameTimeSeconds = gameState.gameTimeMinutes * 60; // Set game time in seconds
+  
+  gameState = {
+    manche: 1,
+    niveau: 1,
+    score: 0,
+    missionNumber: 1,
+    multiplier: 'x1',
+    missionDescription: 'Game starting... Prepare for first mission!',
+    gameTimeMinutes: gameState.gameTimeMinutes
+  };
+  
+  console.log('[STRIKELOOP] Game state initialized:', gameState);
+  console.log('[STRIKELOOP] Game time set to:', gameTimeSeconds, 'seconds');
+  emitter.emit('gameDataUpdate', gameState);
+  
+  // Start the time update interval
+  startTimeUpdates();
+  
+  // Simulate first mission after a short delay
+  setTimeout(() => {
+    updateMission(1, 'Touch the GREEN circles only! Avoid the red ones!');
+  }, 3000);
+}
+
+// Function to update game score (to be called from game logic later)
+function updateScore(newScore) {
+  gameState.score = newScore;
+  console.log('[STRIKELOOP] Score updated to:', newScore);
+  emitter.emit('scoreUpdate', newScore);
+}
+
+// Function to update mission (to be called from game logic later)
+function updateMission(missionNumber, description) {
+  gameState.missionNumber = missionNumber;
+  gameState.missionDescription = description;
+  console.log('[STRIKELOOP] Mission updated:', { number: missionNumber, description });
+  emitter.emit('missionUpdate', {
+    number: missionNumber,
+    description: description
+  });
+}
+
+// Function to update round/level (to be called from game logic later)
+function updateRound(manche, niveau) {
+  gameState.manche = manche;
+  gameState.niveau = niveau;
+  console.log('[STRIKELOOP] Round updated:', { manche, niveau });
+  emitter.emit('gameDataUpdate', { manche, niveau });
+}
+
+// Function to update multiplier (to be called from game logic later)
+function updateMultiplier(multiplier) {
+  gameState.multiplier = multiplier;
+  console.log('[STRIKELOOP] Multiplier updated to:', multiplier);
+  emitter.emit('gameDataUpdate', { multiplier });
 }
 
 function stopCountdown() {
@@ -151,8 +232,66 @@ function stopCountdown() {
     clearTimeout(countdownInterval);
     isRunning = false;
     keyboardListenerActive = false;
+    stopTimeUpdates();
     console.log('[STRIKELOOP] Game stopped - Keyboard controls disabled');
     emitter.emit('gameStopped');
+  }
+}
+
+// Start sending time updates to frontend
+function startTimeUpdates() {
+  // Send initial time
+  emitter.emit('timeUpdate', {
+    timeLeft: gameTimeSeconds,
+    timeString: formatTime(gameTimeSeconds)
+  });
+  
+  // Update time every second
+  timeUpdateInterval = setInterval(() => {
+    if (gameTimeSeconds > 0) {
+      gameTimeSeconds--;
+      const timeString = formatTime(gameTimeSeconds);
+      
+      emitter.emit('timeUpdate', {
+        timeLeft: gameTimeSeconds,
+        timeString: timeString
+      });
+      
+      // Log time updates every 30 seconds
+      if (gameTimeSeconds % 30 === 0) {
+        console.log(`[STRIKELOOP] Time remaining: ${timeString}`);
+      }
+    } else {
+      stopTimeUpdates();
+    }
+  }, 1000);
+}
+
+// Stop time updates
+function stopTimeUpdates() {
+  if (timeUpdateInterval) {
+    clearInterval(timeUpdateInterval);
+    timeUpdateInterval = null;
+    console.log('[STRIKELOOP] Time updates stopped');
+  }
+}
+
+// Format time in MM:SS format
+function formatTime(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+}
+
+// Function to set game time (to be called before game starts)
+function setGameTime(minutes) {
+  if (!isRunning) {
+    gameState.gameTimeMinutes = minutes;
+    gameTimeSeconds = minutes * 60;
+    console.log(`[STRIKELOOP] Game time set to ${minutes} minutes (${gameTimeSeconds} seconds)`);
+    emitter.emit('gameDataUpdate', { gameTimeMinutes: minutes });
+  } else {
+    console.log('[STRIKELOOP] Cannot change game time while game is running');
   }
 }
 
@@ -301,5 +440,14 @@ module.exports = {
   startCountdown,
   stopCountdown,
   controlOutput,
-  isRunning: () => isRunning
+  isRunning: () => isRunning,
+  // Export functions for future game logic implementation
+  updateScore,
+  updateMission,
+  updateRound,
+  updateMultiplier,
+  gameState: () => gameState,
+  // Export time management functions
+  setGameTime,
+  formatTime
 };

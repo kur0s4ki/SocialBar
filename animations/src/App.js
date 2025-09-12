@@ -51,14 +51,18 @@ function App() {
         console.log('[FRONTEND] Received from server:', data);
         
         if (data.type === 'gameStarted') {
-          console.log('[FRONTEND] Game started - starting countdown');
-          startCountdown();
+          console.log('[FRONTEND] Game started - waiting for time updates from server');
+          setIsStarted(true);
         } else if (data.type === 'reset') {
           console.log('[FRONTEND] Game reset received');
           resetGame();
         } else if (data.type === 'ledControl') {
           console.log('[FRONTEND] LED control received:', data);
           handleLEDControl(data);
+        } else if (data.type === 'timeUpdate') {
+          console.log('[FRONTEND] Time update received:', data);
+          setTimeLeft(data.timeLeft);
+          setTimeString(data.timeString);
         }
       };
 
@@ -89,34 +93,16 @@ function App() {
     };
   }, []);
 
-  const startCountdown = () => {
-    setIsStarted(true);
-    setTimeLeft(15 * 60);
-    setTimeString('15:00');
-    
-    countdownInterval.current = setInterval(() => {
-      setTimeLeft(prevTime => {
-        const newTime = prevTime - 1;
-        const minutes = Math.floor(newTime / 60);
-        const seconds = newTime % 60;
-        setTimeString(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
-        
-        if (newTime <= 0) {
-          clearInterval(countdownInterval.current);
-          return 0;
-        }
-        return newTime;
-      });
-    }, 1000);
-  };
+  // Remove local countdown - now handled by server
+  // const startCountdown = () => {
+  //   Server now manages time and sends updates via WebSocket
+  // };
 
   const resetGame = () => {
     setIsStarted(false);
-    setTimeLeft(15 * 60);
-    setTimeString('15:00');
-    if (countdownInterval.current) {
-      clearInterval(countdownInterval.current);
-    }
+    setTimeLeft(15 * 60); // Default fallback
+    setTimeString('15:00'); // Default fallback
+    // Server manages time, no local interval to clear
   };
 
   const handleStart = () => {
