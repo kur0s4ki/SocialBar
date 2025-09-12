@@ -33,8 +33,11 @@ function GameInProgress() {
 
           {/* Mission Number Circle */}
           <div className="absolute top-1/2 right-12 transform -translate-y-1/2">
-            <div className="w-64 h-64 bg-slate-900 border-8 border-red-500 rounded-full flex items-center justify-center">
+            <div className="w-64 h-64 bg-slate-900 border-8 border-red-500 rounded-full flex items-center justify-center relative">
+              {/* Original 28 text */}
               <span className="text-white text-9xl font-bold">28</span>
+              {/* Inner Circle */}
+              <div className="absolute w-60 h-60 bg-transparent border-8 border-cyan-400 rounded-full z-10"></div>
             </div>
           </div>
 
@@ -73,7 +76,7 @@ function GameInProgress() {
             </div>
             <span className="text-cyan-400 text-3xl font-bold">BOUTONS</span>
           </div>
-        </div>
+            </div>
       </div>
     </div>
   )
