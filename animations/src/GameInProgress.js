@@ -32,9 +32,9 @@ function GameInProgress() {
           </div>
 
           {/* Mission Number Circle */}
-          <div className="absolute -top-10 right-16">
-            <div className="w-40 h-40 bg-slate-900 border-4 border-red-500 rounded-full flex items-center justify-center">
-              <span className="text-white text-8xl font-bold">28</span>
+          <div className="absolute -top-16 right-12">
+            <div className="w-64 h-64 bg-slate-900 border-8 border-red-500 rounded-full flex items-center justify-center">
+              <span className="text-white text-9xl font-bold">28</span>
             </div>
           </div>
 
