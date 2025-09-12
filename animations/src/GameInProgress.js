@@ -13,7 +13,7 @@ function GameInProgress() {
           {/* Left Panel - Round and Score */}
           <div className="flex-1 bg-slate-900 border-8 border-cyan-400 rounded-2xl p-10">
             <h2 className="text-yellow-400 text-6xl font-bold text-center">MANCHE 2-NIVEAU</h2>
-            <h2 className="text-yellow-400 text-5xl font-bold text-center mt-2">SCORE</h2>
+            <h2 className="text-yellow-400 text-6xl font-bold text-center mt-2">SCORE</h2>
           </div>
 
           {/* Right Panel - Score Number */}
@@ -53,7 +53,7 @@ function GameInProgress() {
         <div className="grid grid-cols-3 gap-8">
           {/* Multiplier */}
           <div className="bg-slate-900 border-8 border-cyan-400 rounded-2xl p-12 flex items-center justify-center">
-            <span className="text-yellow-400 text-8xl font-bold">x2</span>
+            <span className="text-yellow-400 text-9xl font-bold">x2</span>
           </div>
 
           {/* Bonus Central */}
