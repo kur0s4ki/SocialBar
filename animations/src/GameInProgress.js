@@ -1,147 +1,92 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 
-function GameInProgress() {
-  const [isConnected, setIsConnected] = useState(false);
-  const [isStarted, setIsStarted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(15 * 60);
-  const [timeString, setTimeString] = useState('15:00');
-  const [ledStates, setLedStates] = useState({});
-  const ws = useRef(null);
-  const countdownInterval = useRef(null);
-  const isConnecting = useRef(false);
+// Dynamic UI components
+function GipTitle({ roundLabel = 'MANCHE 2 - NIVEAU', secondLine = 'SCORE' }) {
+  return (
+    <div className="gip-box gip-title">
+      <div className="gip-title-line1">{roundLabel}</div>
+      <div className="gip-title-line2">{secondLine}</div>
+    </div>
+  );
+}
 
+function GipScore({ value = 4270 }) {
+  return <div className="gip-box gip-score">{value}</div>;
+}
+
+function GipMission({
+  leftText = 'Touchez uniquement les trous',
+  blueWord = 'BLEUS',
+  rightText = 'Évitez les',
+  redWord = 'rouges'
+}) {
+  return (
+    <div className="gip-box gip-mission">
+      <p className="gip-mission-text">
+        {leftText} <span className="gip-blue">{blueWord}</span> !
+        <span className="gip-sep" />
+        {rightText} <span className="gip-red">{redWord}</span> !
+      </p>
+    </div>
+  );
+}
+
+function GipMultiplier({ value = 2 }) {
+  return <div className="gip-box gip-bonus">x{value}</div>;
+}
+
+function GipTimer({ value = 28 }) {
+  return (
+    <div className="gip-timer">
+      <div className="gip-timer-ring">
+        <span>{value}</span>
+      </div>
+    </div>
+  );
+}
+
+function GameInProgress() {
   useEffect(() => {
     document.title = 'Social Bar - Game In Progress';
   }, []);
 
-  useEffect(() => {
-    const connect = () => {
-      if (isConnecting.current || (ws.current && ws.current.readyState === WebSocket.OPEN)) {
-        return;
-      }
-      isConnecting.current = true;
-
-      if (ws.current) {
-        ws.current.close();
-      }
-
-      ws.current = new WebSocket('ws://localhost:8080');
-
-      ws.current.onopen = () => {
-        setIsConnected(true);
-        isConnecting.current = false;
-      };
-
-      ws.current.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        if (data.type === 'gameStarted') {
-          startCountdown();
-        } else if (data.type === 'reset') {
-          resetGame();
-        } else if (data.type === 'ledControl') {
-          handleLEDControl(data);
-        }
-      };
-
-      ws.current.onclose = () => {
-        setIsConnected(false);
-        isConnecting.current = false;
-        setTimeout(connect, 3000);
-      };
-
-      ws.current.onerror = () => {
-        setIsConnected(false);
-        isConnecting.current = false;
-      };
-    };
-
-    connect();
-
-    return () => {
-      if (ws.current) {
-        ws.current.close();
-      }
-      if (countdownInterval.current) {
-        clearInterval(countdownInterval.current);
-      }
-    };
-  }, []);
-
-  const startCountdown = () => {
-    setIsStarted(true);
-    setTimeLeft(15 * 60);
-    setTimeString('15:00');
-
-    countdownInterval.current = setInterval(() => {
-      setTimeLeft(prevTime => {
-        const newTime = prevTime - 1;
-        const minutes = Math.floor(newTime / 60);
-        const seconds = newTime % 60;
-        setTimeString(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
-        if (newTime <= 0) {
-          clearInterval(countdownInterval.current);
-          return 0;
-        }
-        return newTime;
-      });
-    }, 1000);
-  };
-
-  const resetGame = () => {
-    setIsStarted(false);
-    setTimeLeft(15 * 60);
-    setTimeString('15:00');
-    if (countdownInterval.current) {
-      clearInterval(countdownInterval.current);
-    }
-  };
-
-  const handleLEDControl = (data) => {
-    const { elementId, colorCode, colorValue } = data;
-    setLedStates(prev => ({
-      ...prev,
-      [elementId]: {
-        colorCode,
-        colorValue,
-        active: colorCode !== 'o'
-      }
-    }));
-  };
-
-  const getCentralCircleColor = () => {
-    const ledState = ledStates[9];
-    if (ledState && ledState.active) {
-      return ledState.colorValue;
-    }
-    return '#ffffff';
-  };
-
   return (
-    <div className="App">
-      <div className="container">
-        <h1>Game In Progress</h1>
-        <div className="status">Status: {isConnected ? '✔️ Connected' : '🔴 Disconnected'}</div>
-        {isStarted ? (
-          <>
-            <div className="countdown-container">
-              <div className="countdown-timer">{timeString}</div>
-              <div className="countdown-label">Time Remaining</div>
+    <div className="App gip-bg">
+      <div className="gip-root">
+        <div className="gip-top">
+          <GipTitle />
+          <div className="gip-right">
+            <GipScore />
+            <GipTimer />
+          </div>
+        </div>
+
+        <div className="gip-mission-row">
+          <div className="gip-line" />
+          <div className="gip-mission-badge">MISSION</div>
+          <div className="gip-line" />
+        </div>
+
+        <GipMission />
+
+        <div className="gip-bottom">
+          <GipMultiplier />
+          <div className="gip-box gip-bonus-central">
+            <div className="gip-icon">
+              <div className="gip-icon-circle" />
+              <div className="gip-icon-base" />
             </div>
-            <div
-              className="circle central-circle"
-              style={{
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                borderColor: getCentralCircleColor()
-              }}
-              title="Output ID: 9 (Central Circle)"
-            ></div>
-          </>
-        ) : (
-          <p>Waiting for game to start...</p>
-        )}
+            <div className="gip-box-label">BONUS CENTRAL</div>
+          </div>
+          <div className="gip-box gip-buttons">
+            <div className="gip-dots">
+              <span /><span /><span />
+              <span /><span /><span />
+            </div>
+            <div className="gip-box-label">BOUTONS</div>
+          </div>
+        </div>
       </div>
     </div>
   );
