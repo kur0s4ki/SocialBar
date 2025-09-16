@@ -72,7 +72,7 @@ const CENTRAL_CIRCLE_ID = 9;
 let roundInterval;
 let isRunning = false;
 let keyboardListenerActive = false;
-let currentRoundIndex = 0;
+let currentLevelIndex = 0; // Index into gameRounds array (0-29 for 30 levels total)
 
 // Game state variables for dynamic data transfer
 let gameState = {
@@ -85,56 +85,43 @@ let gameState = {
   totalGameTimeMinutes: 15 // Total game time in minutes
 };
 
-// Round-based game configuration
+// Round-based game configuration: 3 rounds, each with 10 levels
 let gameRounds = [
-  {
-    round: 1,
-    level: 1,
-    mission: 'Warm-up: Touch any GREEN circles!',
-    duration: 60 // 1 minute
-  },
-  {
-    round: 2,
-    level: 1,
-    mission: 'Speed round: Touch BLUE circles quickly!',
-    duration: 45 // 45 seconds
-  },
-  {
-    round: 3,
-    level: 2,
-    mission: 'Precision: Only YELLOW circles, avoid RED!',
-    duration: 90 // 1.5 minutes
-  },
-  {
-    round: 4,
-    level: 2,
-    mission: 'Memory test: Follow the pattern sequence!',
-    duration: 120 // 2 minutes
-  },
-  {
-    round: 5,
-    level: 3,
-    mission: 'Challenge: Mix of all colors, bonus points!',
-    duration: 75 // 1.25 minutes
-  },
-  {
-    round: 6,
-    level: 3,
-    mission: 'Final sprint: Maximum speed and accuracy!',
-    duration: 60 // 1 minute
-  },
-  {
-    round: 7,
-    level: 4,
-    mission: 'Ultimate challenge: Master all techniques!',
-    duration: 150 // 2.5 minutes
-  },
-  {
-    round: 8,
-    level: 4,
-    mission: 'Finale: Show your mastery for maximum score!',
-    duration: 210 // 3.5 minutes
-  }
+  // ROUND 1: Basic Training (5 minutes = 300 seconds)
+  { round: 1, level: 1, mission: 'Warm-up: Touch GREEN circles!', duration: 30 },
+  { round: 1, level: 2, mission: 'Get familiar with BLUE circles!', duration: 30 },
+  { round: 1, level: 3, mission: 'Try YELLOW circles now!', duration: 30 },
+  { round: 1, level: 4, mission: 'Practice with RED circles!', duration: 30 },
+  { round: 1, level: 5, mission: 'Mix of GREEN and BLUE!', duration: 30 },
+  { round: 1, level: 6, mission: 'YELLOW and RED combination!', duration: 30 },
+  { round: 1, level: 7, mission: 'Speed up: Any GREEN circles!', duration: 30 },
+  { round: 1, level: 8, mission: 'Quick BLUE circles only!', duration: 30 },
+  { round: 1, level: 9, mission: 'Fast YELLOW targets!', duration: 30 },
+  { round: 1, level: 10, mission: 'Round 1 finale: All colors!', duration: 30 },
+
+  // ROUND 2: Intermediate Challenge (5 minutes = 300 seconds)
+  { round: 2, level: 1, mission: 'Precision: Only BLUE circles!', duration: 30 },
+  { round: 2, level: 2, mission: 'Avoid RED, hit GREEN!', duration: 30 },
+  { round: 2, level: 3, mission: 'YELLOW only, ignore others!', duration: 30 },
+  { round: 2, level: 4, mission: 'Memory: Follow the pattern!', duration: 30 },
+  { round: 2, level: 5, mission: 'Speed round: Quick hits!', duration: 30 },
+  { round: 2, level: 6, mission: 'Accuracy test: No mistakes!', duration: 30 },
+  { round: 2, level: 7, mission: 'Multi-color challenge!', duration: 30 },
+  { round: 2, level: 8, mission: 'Sequence memory test!', duration: 30 },
+  { round: 2, level: 9, mission: 'Rapid fire challenge!', duration: 30 },
+  { round: 2, level: 10, mission: 'Round 2 boss level!', duration: 30 },
+
+  // ROUND 3: Master Level (5 minutes = 300 seconds)
+  { round: 3, level: 1, mission: 'Master warm-up!', duration: 30 },
+  { round: 3, level: 2, mission: 'Advanced patterns!', duration: 30 },
+  { round: 3, level: 3, mission: 'Speed and precision!', duration: 30 },
+  { round: 3, level: 4, mission: 'Complex sequences!', duration: 30 },
+  { round: 3, level: 5, mission: 'Maximum difficulty!', duration: 30 },
+  { round: 3, level: 6, mission: 'Elite challenge!', duration: 30 },
+  { round: 3, level: 7, mission: 'Ultimate speed test!', duration: 30 },
+  { round: 3, level: 8, mission: 'Master precision!', duration: 30 },
+  { round: 3, level: 9, mission: 'Final challenge!', duration: 30 },
+  { round: 3, level: 10, mission: 'GRAND FINALE!', duration: 30 }
 ];
 
 // Ensure total duration equals 15 minutes (900 seconds)
@@ -215,48 +202,48 @@ function startRoundBasedGame() {
   if (isRunning) return;
 
   isRunning = true;
-  currentRoundIndex = 0;
-  console.log('[STRIKELOOP] Starting round-based game');
+  currentLevelIndex = 0;
+  console.log('[STRIKELOOP] Starting game: 3 rounds, 10 levels each');
 
   // Initialize game state
   initializeGameState();
 
   emitter.emit('gameStarted');
 
-  // Start the first round
-  startNextRound();
+  // Start the first level
+  startNextLevel();
 }
 
-function startNextRound() {
-  if (currentRoundIndex >= gameRounds.length) {
-    // All rounds completed
+function startNextLevel() {
+  if (currentLevelIndex >= gameRounds.length) {
+    // All levels completed
     finishGame();
     return;
   }
 
-  const currentRound = gameRounds[currentRoundIndex];
-  currentRoundTimeLeft = currentRound.duration;
+  const currentLevel = gameRounds[currentLevelIndex];
+  currentRoundTimeLeft = currentLevel.duration;
 
-  console.log(`[STRIKELOOP] Starting Round ${currentRound.round} - Level ${currentRound.level}`);
-  console.log(`[STRIKELOOP] Mission: ${currentRound.mission}`);
-  console.log(`[STRIKELOOP] Duration: ${currentRound.duration} seconds`);
+  console.log(`[STRIKELOOP] Starting Round ${currentLevel.round} - Level ${currentLevel.level}`);
+  console.log(`[STRIKELOOP] Mission: ${currentLevel.mission}`);
+  console.log(`[STRIKELOOP] Duration: ${currentLevel.duration} seconds`);
 
   // Update game state
-  gameState.round = currentRound.round;
-  gameState.level = currentRound.level;
-  gameState.missionNumber = currentRound.round;
-  gameState.missionDescription = currentRound.mission;
+  gameState.round = currentLevel.round;
+  gameState.level = currentLevel.level;
+  gameState.missionNumber = currentLevel.level; // Mission number is the level number
+  gameState.missionDescription = currentLevel.mission;
 
   // Emit individual events for each aspect of the game
   emitter.emit('roundUpdate', {
-    round: currentRound.round,
-    level: currentRound.level,
-    duration: currentRound.duration
+    round: currentLevel.round,
+    level: currentLevel.level,
+    duration: currentLevel.duration
   });
 
   emitter.emit('missionUpdate', {
-    number: currentRound.round,
-    description: currentRound.mission
+    number: currentLevel.level,
+    description: currentLevel.mission
   });
 
   emitter.emit('timeUpdate', {
@@ -268,11 +255,11 @@ function startNextRound() {
 
   emitter.emit('multiplierUpdate', gameState.multiplier);
 
-  // Start round timer
-  startRoundTimer();
+  // Start level timer
+  startLevelTimer();
 }
 
-function startRoundTimer() {
+function startLevelTimer() {
   // Send initial time
   emitter.emit('timeUpdate', {
     timeLeft: currentRoundTimeLeft,
@@ -297,31 +284,41 @@ function startRoundTimer() {
 
       // Log time updates every 30 seconds
       if (currentRoundTimeLeft % 30 === 0) {
-        console.log(`[STRIKELOOP] Round ${gameRounds[currentRoundIndex].round} time remaining: ${timeString}`);
+        console.log(`[STRIKELOOP] Round ${gameRounds[currentLevelIndex].round} Level ${gameRounds[currentLevelIndex].level} time remaining: ${timeString}`);
       }
     } else {
-      // Round finished, move to next
-      stopRoundTimer();
-      currentRoundIndex++;
+      // Level finished, move to next
+      stopLevelTimer();
+      const currentLevel = gameRounds[currentLevelIndex];
+      currentLevelIndex++;
 
-      if (currentRoundIndex < gameRounds.length) {
-        console.log(`[STRIKELOOP] Round ${gameRounds[currentRoundIndex - 1].round} completed, starting next round...`);
+      if (currentLevelIndex < gameRounds.length) {
+        console.log(`[STRIKELOOP] Round ${currentLevel.round} Level ${currentLevel.level} completed, starting next level...`);
 
-        // Add random score at end of each round
-        const randomScoreIncrease = Math.floor(Math.random() * 500) + 100; // Random between 100-600 points
+        // Add random score at end of each level
+        const randomScoreIncrease = Math.floor(Math.random() * 200) + 50; // Random between 50-250 points per level
         const newScore = gameState.score + randomScoreIncrease;
         updateScore(newScore);
-        console.log(`[STRIKELOOP] Round completed! Added ${randomScoreIncrease} points. New total: ${newScore}`);
+        console.log(`[STRIKELOOP] Level completed! Added ${randomScoreIncrease} points. New total: ${newScore}`);
+
+        // Check if we completed a round (every 10 levels)
+        if (currentLevelIndex % 10 === 0) {
+          const completedRound = Math.floor(currentLevelIndex / 10);
+          const roundBonus = completedRound * 500; // Bonus for completing a round
+          const bonusScore = newScore + roundBonus;
+          updateScore(bonusScore);
+          console.log(`[STRIKELOOP] ROUND ${completedRound} COMPLETED! Round bonus: ${roundBonus} points. Total: ${bonusScore}`);
+        }
 
         setTimeout(() => {
-          startNextRound();
-        }, 2000); // 2-second break between rounds
+          startNextLevel();
+        }, 2000); // 2-second break between levels
       } else {
         // Add final score bonus when game completes
-        const finalBonus = Math.floor(Math.random() * 1000) + 500; // Random between 500-1500 points
+        const finalBonus = Math.floor(Math.random() * 2000) + 1000; // Random between 1000-3000 points
         const finalScore = gameState.score + finalBonus;
         updateScore(finalScore);
-        console.log(`[STRIKELOOP] Game completed! Final bonus: ${finalBonus} points. Final score: ${finalScore}`);
+        console.log(`[STRIKELOOP] ALL 3 ROUNDS COMPLETED! Final bonus: ${finalBonus} points. Final score: ${finalScore}`);
 
         finishGame();
       }
@@ -329,7 +326,7 @@ function startRoundTimer() {
   }, 1000);
 }
 
-function stopRoundTimer() {
+function stopLevelTimer() {
   if (timeUpdateInterval) {
     clearInterval(timeUpdateInterval);
     timeUpdateInterval = null;
@@ -339,8 +336,8 @@ function stopRoundTimer() {
 function finishGame() {
   isRunning = false;
   disableKeyboardListener();
-  stopRoundTimer();
-  console.log('[STRIKELOOP] All rounds completed - game finished');
+  stopLevelTimer();
+  console.log('[STRIKELOOP] All 30 levels (3 rounds × 10 levels) completed - game finished');
   emitter.emit('gameFinished');
 
   // Cleanup event listeners
@@ -416,27 +413,27 @@ function stopGame() {
   if (isRunning) {
     isRunning = false;
     keyboardListenerActive = false;
-    stopRoundTimer();
+    stopLevelTimer();
     console.log('[STRIKELOOP] Game stopped - Keyboard controls disabled');
     emitter.emit('gameStopped');
     cleanupGameEventListeners();
   }
 }
 
-// Get current round info
-function getCurrentRound() {
-  if (currentRoundIndex < gameRounds.length) {
-    return gameRounds[currentRoundIndex];
+// Get current level info
+function getCurrentLevel() {
+  if (currentLevelIndex < gameRounds.length) {
+    return gameRounds[currentLevelIndex];
   }
   return null;
 }
 
-// Get total remaining time across all rounds
+// Get total remaining time across all levels
 function getTotalRemainingTime() {
   let totalRemaining = currentRoundTimeLeft;
 
-  // Add time from remaining rounds
-  for (let i = currentRoundIndex + 1; i < gameRounds.length; i++) {
+  // Add time from remaining levels
+  for (let i = currentLevelIndex + 1; i < gameRounds.length; i++) {
     totalRemaining += gameRounds[i].duration;
   }
 
@@ -614,14 +611,14 @@ module.exports = {
   updateRound,
   updateMultiplier,
   gameState: () => gameState,
-  // Export round management functions
+  // Export level management functions
   setGameRounds,
-  getCurrentRound,
+  getCurrentLevel,
   getTotalRemainingTime,
   formatTime,
   // Export game rounds for inspection
   gameRounds: () => gameRounds,
-  currentRoundIndex: () => currentRoundIndex
+  currentLevelIndex: () => currentLevelIndex
 };
 
 // Handle graceful shutdown - prevent infinite loop
