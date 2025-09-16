@@ -396,6 +396,80 @@ function updateMultiplier(multiplier) {
   emitter.emit('gameDataUpdate', { multiplier });
 }
 
+// Centralized helper function to update multiple dynamic frontend elements
+function updateGameDisplay(updates) {
+  const supportedUpdates = ['score', 'mission', 'round', 'level', 'multiplier', 'timeLeft', 'timeString'];
+
+  console.log('[STRIKELOOP] Updating game display with:', updates);
+
+  // Handle score update
+  if (updates.hasOwnProperty('score')) {
+    gameState.score = updates.score;
+    emitter.emit('scoreUpdate', updates.score);
+    console.log('[STRIKELOOP] Score updated to:', updates.score);
+  }
+
+  // Handle mission update
+  if (updates.hasOwnProperty('mission')) {
+    const mission = updates.mission;
+    if (typeof mission === 'object' && mission.number && mission.description) {
+      gameState.missionNumber = mission.number;
+      gameState.missionDescription = mission.description;
+      emitter.emit('missionUpdate', mission);
+      console.log('[STRIKELOOP] Mission updated:', mission);
+    }
+  }
+
+  // Handle round/level update
+  if (updates.hasOwnProperty('round') || updates.hasOwnProperty('level')) {
+    const updateData = {};
+    if (updates.hasOwnProperty('round')) {
+      gameState.manche = updates.round;
+      updateData.manche = updates.round;
+    }
+    if (updates.hasOwnProperty('level')) {
+      gameState.niveau = updates.level;
+      updateData.niveau = updates.level;
+    }
+    emitter.emit('gameDataUpdate', updateData);
+    console.log('[STRIKELOOP] Round/Level updated:', updateData);
+  }
+
+  // Handle multiplier update
+  if (updates.hasOwnProperty('multiplier')) {
+    gameState.multiplier = updates.multiplier;
+    emitter.emit('gameDataUpdate', { multiplier: updates.multiplier });
+    console.log('[STRIKELOOP] Multiplier updated to:', updates.multiplier);
+  }
+
+  // Handle time updates (for timer display)
+  if (updates.hasOwnProperty('timeLeft') || updates.hasOwnProperty('timeString')) {
+    const timeUpdate = {};
+    if (updates.hasOwnProperty('timeLeft')) {
+      timeUpdate.timeLeft = updates.timeLeft;
+    }
+    if (updates.hasOwnProperty('timeString')) {
+      timeUpdate.timeString = updates.timeString;
+    }
+    emitter.emit('timeUpdate', timeUpdate);
+    // Don't log time updates to reduce spam
+  }
+
+  // Handle complete round updates (round, level, mission, duration, timeLeft, timeString)
+  if (updates.hasOwnProperty('roundData')) {
+    const roundData = updates.roundData;
+    emitter.emit('roundUpdate', roundData);
+    console.log('[STRIKELOOP] Complete round data updated:', roundData);
+  }
+
+  // Log unsupported update keys
+  Object.keys(updates).forEach(key => {
+    if (!supportedUpdates.includes(key) && key !== 'mission' && key !== 'roundData') {
+      console.warn('[STRIKELOOP] Unsupported update key:', key);
+    }
+  });
+}
+
 function stopGame() {
   if (isRunning) {
     isRunning = false;
@@ -608,6 +682,7 @@ module.exports = {
   updateMission,
   updateRound,
   updateMultiplier,
+  updateGameDisplay, // Centralized helper for updating multiple frontend elements
   gameState: () => gameState,
   // Export round management functions
   setGameRounds,

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import './App.css';
 
 function App() {
   // WebSocket connection state
@@ -177,7 +178,6 @@ function App() {
         </div>
       </div>
 
-
       <div className="max-w-[90vw] w-full space-y-12">
         {/* Top Row - Score Section */}
         <div className="flex gap-8">
@@ -198,17 +198,17 @@ function App() {
         {/* Mission Section */}
         <div className="bg-slate-900 border-8 border-cyan-400 rounded-2xl p-16 relative min-h-[35vh] flex items-center justify-center">
           {/* Mission Badge */}
-          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
+          <div className="absolute -top-8 left-half transform translate-x-neg-half">
             <div className="bg-slate-900 border-8 border-yellow-400 rounded-2xl px-16 py-6">
               <span className="text-yellow-400 text-6xl font-bold">MISSION</span>
             </div>
           </div>
 
           {/* Game Timer Circle */}
-          <div className="absolute top-1/2 right-12 transform -translate-y-1/2">
+          <div className="absolute top-half right-12 transform translate-y-neg-half">
             <div className="w-64 h-64 bg-slate-900 border-8 border-red-500 rounded-full flex items-center justify-center relative">
               {/* Round timer display - seconds only */}
-              <span className="text-white text-6xl font-bold font-mono">{currentRound.timeLeft}</span>
+              <span className="text-white text-9xl font-bold font-mono">{currentRound.timeLeft}</span>
               {/* Inner Circle */}
               <div className="absolute w-60 h-60 bg-transparent border-8 border-transparent border-t-cyan-400 border-r-cyan-400 rounded-full z-10"></div>
             </div>
