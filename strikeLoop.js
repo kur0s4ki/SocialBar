@@ -87,41 +87,41 @@ let gameState = {
 
 // Round-based game configuration: 3 rounds, each with 10 levels
 let gameRounds = [
-  // ROUND 1: Basic Training (5 minutes = 300 seconds)
-  { round: 1, level: 1, mission: 'Warm-up: Touch GREEN circles!', duration: 30 },
-  { round: 1, level: 2, mission: 'Get familiar with BLUE circles!', duration: 30 },
-  { round: 1, level: 3, mission: 'Try YELLOW circles now!', duration: 30 },
-  { round: 1, level: 4, mission: 'Practice with RED circles!', duration: 30 },
-  { round: 1, level: 5, mission: 'Mix of GREEN and BLUE!', duration: 30 },
-  { round: 1, level: 6, mission: 'YELLOW and RED combination!', duration: 30 },
-  { round: 1, level: 7, mission: 'Speed up: Any GREEN circles!', duration: 30 },
-  { round: 1, level: 8, mission: 'Quick BLUE circles only!', duration: 30 },
-  { round: 1, level: 9, mission: 'Fast YELLOW targets!', duration: 30 },
-  { round: 1, level: 10, mission: 'Round 1 finale: All colors!', duration: 30 },
+  // ROUND 1: Basic Training (5 minutes = 300 seconds) - Single color targeting
+  { round: 1, level: 1, mission: 'Touch GREEN circles!', duration: 30, targetColors: ['g'], pointsPerHit: 10 },
+  { round: 1, level: 2, mission: 'Touch BLUE circles!', duration: 30, targetColors: ['b'], pointsPerHit: 10 },
+  { round: 1, level: 3, mission: 'Touch YELLOW circles!', duration: 30, targetColors: ['y'], pointsPerHit: 10 },
+  { round: 1, level: 4, mission: 'Touch RED circles!', duration: 30, targetColors: ['r'], pointsPerHit: 10 },
+  { round: 1, level: 5, mission: 'Touch GREEN or BLUE!', duration: 30, targetColors: ['g', 'b'], pointsPerHit: 15 },
+  { round: 1, level: 6, mission: 'Touch YELLOW or RED!', duration: 30, targetColors: ['y', 'r'], pointsPerHit: 15 },
+  { round: 1, level: 7, mission: 'Speed: Any GREEN circles!', duration: 30, targetColors: ['g'], pointsPerHit: 20 },
+  { round: 1, level: 8, mission: 'Speed: Any BLUE circles!', duration: 30, targetColors: ['b'], pointsPerHit: 20 },
+  { round: 1, level: 9, mission: 'Speed: Any YELLOW circles!', duration: 30, targetColors: ['y'], pointsPerHit: 20 },
+  { round: 1, level: 10, mission: 'Any color counts!', duration: 30, targetColors: ['g', 'b', 'y', 'r'], pointsPerHit: 25 },
 
-  // ROUND 2: Intermediate Challenge (5 minutes = 300 seconds)
-  { round: 2, level: 1, mission: 'Precision: Only BLUE circles!', duration: 30 },
-  { round: 2, level: 2, mission: 'Avoid RED, hit GREEN!', duration: 30 },
-  { round: 2, level: 3, mission: 'YELLOW only, ignore others!', duration: 30 },
-  { round: 2, level: 4, mission: 'Memory: Follow the pattern!', duration: 30 },
-  { round: 2, level: 5, mission: 'Speed round: Quick hits!', duration: 30 },
-  { round: 2, level: 6, mission: 'Accuracy test: No mistakes!', duration: 30 },
-  { round: 2, level: 7, mission: 'Multi-color challenge!', duration: 30 },
-  { round: 2, level: 8, mission: 'Sequence memory test!', duration: 30 },
-  { round: 2, level: 9, mission: 'Rapid fire challenge!', duration: 30 },
-  { round: 2, level: 10, mission: 'Round 2 boss level!', duration: 30 },
+  // ROUND 2: Intermediate Challenge (5 minutes = 300 seconds) - Precision and avoidance
+  { round: 2, level: 1, mission: 'Only BLUE circles!', duration: 30, targetColors: ['b'], avoidColors: ['r', 'g', 'y'], pointsPerHit: 30, penaltyPerMiss: -10 },
+  { round: 2, level: 2, mission: 'Only GREEN, avoid RED!', duration: 30, targetColors: ['g'], avoidColors: ['r'], pointsPerHit: 35, penaltyPerMiss: -15 },
+  { round: 2, level: 3, mission: 'Only YELLOW, ignore others!', duration: 30, targetColors: ['y'], avoidColors: ['r', 'g', 'b'], pointsPerHit: 30, penaltyPerMiss: -10 },
+  { round: 2, level: 4, mission: 'Sequence: GREEN then BLUE!', duration: 30, sequence: ['g', 'b'], pointsPerSequence: 50 },
+  { round: 2, level: 5, mission: 'Fast hits on any color!', duration: 30, targetColors: ['g', 'b', 'y', 'r'], pointsPerHit: 40, speedBonus: true },
+  { round: 2, level: 6, mission: 'No mistakes allowed!', duration: 30, targetColors: ['g', 'b'], avoidColors: ['r', 'y'], pointsPerHit: 50, penaltyPerMiss: -25 },
+  { round: 2, level: 7, mission: 'Multi-color precision!', duration: 30, targetColors: ['g', 'b', 'y'], avoidColors: ['r'], pointsPerHit: 45, penaltyPerMiss: -15 },
+  { round: 2, level: 8, mission: 'Pattern: RED-YELLOW-GREEN!', duration: 30, sequence: ['r', 'y', 'g'], pointsPerSequence: 75 },
+  { round: 2, level: 9, mission: 'Rapid fire challenge!', duration: 30, targetColors: ['g', 'b', 'y', 'r'], pointsPerHit: 60, speedBonus: true },
+  { round: 2, level: 10, mission: 'Round 2 boss level!', duration: 30, targetColors: ['g', 'b'], avoidColors: ['r', 'y'], pointsPerHit: 70, penaltyPerMiss: -20, speedBonus: true },
 
-  // ROUND 3: Master Level (5 minutes = 300 seconds)
-  { round: 3, level: 1, mission: 'Master warm-up!', duration: 30 },
-  { round: 3, level: 2, mission: 'Advanced patterns!', duration: 30 },
-  { round: 3, level: 3, mission: 'Speed and precision!', duration: 30 },
-  { round: 3, level: 4, mission: 'Complex sequences!', duration: 30 },
-  { round: 3, level: 5, mission: 'Maximum difficulty!', duration: 30 },
-  { round: 3, level: 6, mission: 'Elite challenge!', duration: 30 },
-  { round: 3, level: 7, mission: 'Ultimate speed test!', duration: 30 },
-  { round: 3, level: 8, mission: 'Master precision!', duration: 30 },
-  { round: 3, level: 9, mission: 'Final challenge!', duration: 30 },
-  { round: 3, level: 10, mission: 'GRAND FINALE!', duration: 30 }
+  // ROUND 3: Master Level (5 minutes = 300 seconds) - Complex patterns and high stakes
+  { round: 3, level: 1, mission: 'Master precision: BLUE only!', duration: 30, targetColors: ['b'], avoidColors: ['r', 'g', 'y'], pointsPerHit: 80, penaltyPerMiss: -30 },
+  { round: 3, level: 2, mission: 'Complex pattern: G-R-B-Y!', duration: 30, sequence: ['g', 'r', 'b', 'y'], pointsPerSequence: 120 },
+  { round: 3, level: 3, mission: 'Speed and precision!', duration: 30, targetColors: ['g', 'y'], avoidColors: ['r', 'b'], pointsPerHit: 90, penaltyPerMiss: -25, speedBonus: true },
+  { round: 3, level: 4, mission: 'Reverse: Y-B-R-G pattern!', duration: 30, sequence: ['y', 'b', 'r', 'g'], pointsPerSequence: 140 },
+  { round: 3, level: 5, mission: 'Maximum difficulty!', duration: 30, targetColors: ['g'], avoidColors: ['r', 'b', 'y'], pointsPerHit: 100, penaltyPerMiss: -40, speedBonus: true },
+  { round: 3, level: 6, mission: 'Elite double sequence!', duration: 30, sequence: ['r', 'g', 'r', 'g'], pointsPerSequence: 160 },
+  { round: 3, level: 7, mission: 'Ultimate speed test!', duration: 30, targetColors: ['g', 'b', 'y', 'r'], pointsPerHit: 120, speedBonus: true, speedMultiplier: 2 },
+  { round: 3, level: 8, mission: 'Master precision combo!', duration: 30, targetColors: ['b', 'y'], avoidColors: ['r', 'g'], pointsPerHit: 110, penaltyPerMiss: -35, speedBonus: true },
+  { round: 3, level: 9, mission: 'Final sequence: G-B-Y-R-G!', duration: 30, sequence: ['g', 'b', 'y', 'r', 'g'], pointsPerSequence: 200 },
+  { round: 3, level: 10, mission: 'GRAND FINALE: All skills!', duration: 30, targetColors: ['g', 'b', 'y'], avoidColors: ['r'], pointsPerHit: 150, penaltyPerMiss: -50, speedBonus: true, speedMultiplier: 3 }
 ];
 
 // Ensure total duration equals 15 minutes (900 seconds)
@@ -131,6 +131,19 @@ console.log(`[STRIKELOOP] Total game duration: ${totalDuration} seconds (${Math.
 // Timer variables for round-based time management
 let currentRoundTimeLeft = 0;
 let timeUpdateInterval;
+
+// Mission state tracking
+let activeMission = null;
+let activeTargets = []; // Array of {elementId, colorCode} objects that should be clicked
+let missionTargetsHit = 0;
+
+// Sequence tracking for pattern-based missions
+let currentSequence = [];
+let sequenceProgress = 0;
+let lastHitTime = 0;
+
+// LED refresh interval for continuous gameplay
+let ledRefreshInterval;
 
 // Color mapping for LED control
 const COLORS = {
@@ -184,6 +197,8 @@ addTrackedGameListener(emitter, 'start', (teamData) => {
 addTrackedGameListener(emitter, 'EventInput', (message, value) => {
   if (isRunning) {
     console.log('[STRIKELOOP] Arduino input received during game:', message, 'Value:', value);
+    // Process Arduino input through mission validation
+    processGameInput(message, 'arduino');
   } else {
     console.log('[STRIKELOOP] Arduino input received but no game running');
   }
@@ -193,6 +208,8 @@ addTrackedGameListener(emitter, 'EventInput', (message, value) => {
 addTrackedGameListener(emitter, 'circleClick', (data) => {
   if (isRunning) {
     console.log('[STRIKELOOP] Circle clicked - ID:', data.circleId);
+    // Process simulator click through mission validation
+    processGameInput(data.circleId, 'simulator');
   } else {
     console.log('[STRIKELOOP] Circle clicked but no game running');
   }
@@ -234,6 +251,9 @@ function startNextLevel() {
   gameState.missionNumber = currentLevel.level; // Mission number is the level number
   gameState.missionDescription = currentLevel.mission;
 
+  // Initialize mission logic
+  initializeMission(currentLevel);
+
   // Emit individual events for each aspect of the game
   emitter.emit('roundUpdate', {
     round: currentLevel.round,
@@ -257,6 +277,245 @@ function startNextLevel() {
 
   // Start level timer
   startLevelTimer();
+}
+
+// Initialize mission logic for the current level
+function initializeMission(levelConfig) {
+  activeMission = levelConfig;
+  activeTargets = [];
+  missionTargetsHit = 0;
+  sequenceProgress = 0;
+  currentSequence = levelConfig.sequence || [];
+
+  console.log(`[STRIKELOOP] Mission initialized:`, {
+    targetColors: levelConfig.targetColors,
+    avoidColors: levelConfig.avoidColors,
+    sequence: levelConfig.sequence,
+    pointsPerHit: levelConfig.pointsPerHit,
+    penaltyPerMiss: levelConfig.penaltyPerMiss
+  });
+
+  // Start random LED activation based on mission type
+  startMissionLEDs();
+
+  // Start continuous LED refresh for non-sequence missions
+  if (!activeMission.sequence) {
+    startLEDRefresh();
+  }
+}
+
+// Start continuous LED refresh for active gameplay
+function startLEDRefresh() {
+  // Clear any existing refresh interval
+  if (ledRefreshInterval) {
+    clearInterval(ledRefreshInterval);
+  }
+
+  // Refresh LEDs every 3-5 seconds for continuous play
+  const refreshDelay = Math.floor(Math.random() * 2000) + 3000; // 3-5 seconds
+  ledRefreshInterval = setInterval(() => {
+    if (activeMission && !activeMission.sequence) {
+      activateRandomLEDs();
+    }
+  }, refreshDelay);
+
+  console.log(`[STRIKELOOP] LED refresh started every ${Math.floor(refreshDelay/1000)} seconds`);
+}
+
+// Stop LED refresh and clear all LEDs
+function stopLEDRefresh() {
+  if (ledRefreshInterval) {
+    clearInterval(ledRefreshInterval);
+    ledRefreshInterval = null;
+  }
+
+  // Turn off all LEDs
+  for (let i = 1; i <= 8; i++) {
+    controlLED(i, 'o');
+  }
+
+  // Clear central circle
+  controlLED(CENTRAL_CIRCLE_ID, 'o');
+
+  activeTargets = [];
+  console.log('[STRIKELOOP] LED refresh stopped, all LEDs cleared');
+}
+
+// Start LED patterns for the current mission
+function startMissionLEDs() {
+  if (!activeMission) return;
+
+  // For sequence missions, show the first target
+  if (activeMission.sequence) {
+    showSequenceTarget();
+  } else {
+    // For regular missions, randomly activate LEDs
+    activateRandomLEDs();
+  }
+}
+
+// Show the next target in a sequence mission
+function showSequenceTarget() {
+  if (!activeMission.sequence || sequenceProgress >= activeMission.sequence.length) return;
+
+  const targetColor = activeMission.sequence[sequenceProgress];
+  const randomCircle = Math.floor(Math.random() * 8) + 1; // Random circle 1-8
+
+  console.log(`[STRIKELOOP] Sequence target ${sequenceProgress + 1}/${activeMission.sequence.length}: Circle ${randomCircle} -> ${targetColor.toUpperCase()}`);
+  controlLED(randomCircle, targetColor);
+
+  activeTargets = [{elementId: randomCircle, colorCode: targetColor}];
+}
+
+// Activate random LEDs for regular missions
+function activateRandomLEDs() {
+  if (!activeMission.targetColors) return;
+
+  // Clear existing targets
+  activeTargets = [];
+
+  // Turn off all circles first
+  for (let i = 1; i <= 8; i++) {
+    controlLED(i, 'o');
+  }
+
+  // Activate 2-4 random circles with mission colors
+  const numTargets = Math.floor(Math.random() * 3) + 2; // 2-4 targets
+  const usedCircles = new Set();
+
+  for (let i = 0; i < numTargets; i++) {
+    let circleId;
+    do {
+      circleId = Math.floor(Math.random() * 8) + 1; // Circle 1-8
+    } while (usedCircles.has(circleId));
+    usedCircles.add(circleId);
+
+    // Choose color based on mission
+    let color;
+    if (activeMission.targetColors && activeMission.avoidColors) {
+      // Mix of target and avoid colors
+      const allColors = [...activeMission.targetColors, ...activeMission.avoidColors];
+      color = allColors[Math.floor(Math.random() * allColors.length)];
+    } else if (activeMission.targetColors) {
+      // Only target colors
+      color = activeMission.targetColors[Math.floor(Math.random() * activeMission.targetColors.length)];
+    } else {
+      // Random color
+      color = ['r', 'g', 'b', 'y'][Math.floor(Math.random() * 4)];
+    }
+
+    controlLED(circleId, color);
+    activeTargets.push({elementId: circleId, colorCode: color});
+  }
+
+  console.log(`[STRIKELOOP] Activated ${numTargets} LEDs for mission:`, activeTargets);
+}
+
+// Process game input and validate against active mission
+function processGameInput(inputId, source) {
+  if (!activeMission || !activeTargets.length) return;
+
+  const currentTime = Date.now();
+  lastHitTime = currentTime;
+
+  // Find the clicked target
+  const clickedTarget = activeTargets.find(target => target.elementId == inputId);
+
+  if (!clickedTarget) {
+    console.log(`[STRIKELOOP] Input ${inputId} not found in active targets`);
+    return;
+  }
+
+  console.log(`[STRIKELOOP] Input detected: Circle ${inputId} (${clickedTarget.colorCode.toUpperCase()}) from ${source}`);
+
+  // Validate input against mission requirements
+  validateInput(clickedTarget, currentTime);
+}
+
+// Validate input against mission requirements and award points
+function validateInput(target, timestamp) {
+  if (!activeMission) return;
+
+  const { elementId, colorCode } = target;
+  let pointsAwarded = 0;
+  let valid = false;
+
+  // Handle sequence missions
+  if (activeMission.sequence) {
+    const expectedColor = activeMission.sequence[sequenceProgress];
+
+    if (colorCode === expectedColor) {
+      valid = true;
+      sequenceProgress++;
+
+      console.log(`[STRIKELOOP] Sequence progress: ${sequenceProgress}/${activeMission.sequence.length}`);
+
+      if (sequenceProgress >= activeMission.sequence.length) {
+        // Sequence completed
+        pointsAwarded = activeMission.pointsPerSequence || 100;
+        console.log(`[STRIKELOOP] SEQUENCE COMPLETED! +${pointsAwarded} points`);
+
+        // Reset sequence for next round
+        sequenceProgress = 0;
+        setTimeout(() => showSequenceTarget(), 1000);
+      } else {
+        // Show next target in sequence
+        setTimeout(() => showSequenceTarget(), 500);
+        pointsAwarded = (activeMission.pointsPerSequence || 100) / activeMission.sequence.length;
+      }
+    } else {
+      console.log(`[STRIKELOOP] Wrong sequence! Expected ${expectedColor.toUpperCase()}, got ${colorCode.toUpperCase()}`);
+      if (activeMission.penaltyPerMiss) {
+        pointsAwarded = activeMission.penaltyPerMiss;
+      }
+      // Reset sequence on mistake
+      sequenceProgress = 0;
+      setTimeout(() => showSequenceTarget(), 1000);
+    }
+  }
+  // Handle regular target/avoid missions
+  else {
+    // Check if it's a target color
+    if (activeMission.targetColors && activeMission.targetColors.includes(colorCode)) {
+      valid = true;
+      pointsAwarded = activeMission.pointsPerHit || 10;
+
+      // Apply speed bonus if applicable
+      if (activeMission.speedBonus) {
+        const timeSinceLastHit = timestamp - (lastHitTime - 1000); // Rough calculation
+        if (timeSinceLastHit < 2000) { // Fast hit within 2 seconds
+          const speedMultiplier = activeMission.speedMultiplier || 1.5;
+          pointsAwarded = Math.floor(pointsAwarded * speedMultiplier);
+          console.log(`[STRIKELOOP] SPEED BONUS! x${speedMultiplier}`);
+        }
+      }
+
+      console.log(`[STRIKELOOP] TARGET HIT! ${colorCode.toUpperCase()} circle +${pointsAwarded} points`);
+      missionTargetsHit++;
+    }
+    // Check if it's an avoid color
+    else if (activeMission.avoidColors && activeMission.avoidColors.includes(colorCode)) {
+      valid = false;
+      pointsAwarded = activeMission.penaltyPerMiss || -10;
+      console.log(`[STRIKELOOP] WRONG TARGET! ${colorCode.toUpperCase()} circle ${pointsAwarded} points`);
+    }
+    // Neutral hit (neither target nor avoid)
+    else {
+      console.log(`[STRIKELOOP] Neutral hit: ${colorCode.toUpperCase()} circle (no points)`);
+    }
+
+    // Generate new targets for continuous play
+    setTimeout(() => activateRandomLEDs(), 500);
+  }
+
+  // Update score
+  if (pointsAwarded !== 0) {
+    const newScore = gameState.score + pointsAwarded;
+    updateScore(newScore);
+  }
+
+  // Turn off the clicked LED
+  controlLED(elementId, 'o');
 }
 
 function startLevelTimer() {
@@ -293,26 +552,26 @@ function startLevelTimer() {
       currentLevelIndex++;
 
       if (currentLevelIndex < gameRounds.length) {
-        console.log(`[STRIKELOOP] Round ${currentLevel.round} Level ${currentLevel.level} completed, starting next level...`);
+        console.log(`[STRIKELOOP] Round ${currentLevel.round} Level ${currentLevel.level} completed!`);
 
-        // Add random score at end of each level
-        const randomScoreIncrease = Math.floor(Math.random() * 200) + 50; // Random between 50-250 points per level
-        const newScore = gameState.score + randomScoreIncrease;
-        updateScore(newScore);
-        console.log(`[STRIKELOOP] Level completed! Added ${randomScoreIncrease} points. New total: ${newScore}`);
+        // Award level completion bonus based on hits scored during the level
+        const levelCompletionBonus = Math.floor(missionTargetsHit * 10); // 10 points per hit
+        if (levelCompletionBonus > 0) {
+          const newScore = gameState.score + levelCompletionBonus;
+          updateScore(newScore);
+          console.log(`[STRIKELOOP] Level completion bonus: ${missionTargetsHit} hits x10 = +${levelCompletionBonus} points. Total: ${newScore}`);
+        }
 
         // Check if we completed a round (every 10 levels)
         if (currentLevelIndex % 10 === 0) {
           const completedRound = Math.floor(currentLevelIndex / 10);
           const roundBonus = completedRound * 500; // Bonus for completing a round
-          const bonusScore = newScore + roundBonus;
+          const bonusScore = gameState.score + roundBonus;
           updateScore(bonusScore);
-          console.log(`[STRIKELOOP] ROUND ${completedRound} COMPLETED! Round bonus: ${roundBonus} points. Total: ${bonusScore}`);
+          console.log(`[STRIKELOOP] 🎉 ROUND ${completedRound} COMPLETED! Round bonus: ${roundBonus} points. Total: ${bonusScore}`);
         }
 
-        setTimeout(() => {
-          startNextLevel();
-        }, 2000); // 2-second break between levels
+        startNextLevel(); // Immediate transition to next level
       } else {
         // Add final score bonus when game completes
         const finalBonus = Math.floor(Math.random() * 2000) + 1000; // Random between 1000-3000 points
@@ -337,6 +596,8 @@ function finishGame() {
   isRunning = false;
   disableKeyboardListener();
   stopLevelTimer();
+  stopLEDRefresh(); // Clean up LED refresh
+  activeMission = null; // Clear mission state
   console.log('[STRIKELOOP] All 30 levels (3 rounds × 10 levels) completed - game finished');
   emitter.emit('gameFinished');
 
@@ -414,6 +675,8 @@ function stopGame() {
     isRunning = false;
     keyboardListenerActive = false;
     stopLevelTimer();
+    stopLEDRefresh(); // Clean up LED refresh
+    activeMission = null; // Clear mission state
     console.log('[STRIKELOOP] Game stopped - Keyboard controls disabled');
     emitter.emit('gameStopped');
     cleanupGameEventListeners();
