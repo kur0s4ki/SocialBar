@@ -405,7 +405,7 @@ function showSequenceTarget() {
   activeTargets[targetIndex].isSequenceTarget = true;
 
   console.log(`[STRIKELOOP] Sequence LED Pattern:`, activeTargets.map(t =>
-    `${t.elementId}:${t.colorCode.toUpperCase()}${t.isSequenceTarget ? '*' : ''}`
+    `${t.elementId}:${t.colorCode ? t.colorCode.toUpperCase() : 'UNDEFINED'}${t.isSequenceTarget ? '*' : ''}`
   ).join(' '));
 }
 
@@ -448,12 +448,23 @@ function activateRandomLEDs() {
       } else {
         // Use non-target colors as distractors
         const distractors = allColors.filter(c => !activeMission.targetColors.includes(c));
-        color = distractors[Math.floor(Math.random() * distractors.length)];
+        if (distractors.length > 0) {
+          color = distractors[Math.floor(Math.random() * distractors.length)];
+        } else {
+          // If no distractors available (all colors are targets), just use random target color
+          color = activeMission.targetColors[Math.floor(Math.random() * activeMission.targetColors.length)];
+        }
       }
     }
     else {
       // Fallback: random color
       color = allColors[Math.floor(Math.random() * 4)];
+    }
+
+    // Safety check: ensure color is never undefined
+    if (!color) {
+      color = allColors[Math.floor(Math.random() * 4)];
+      console.warn(`[STRIKELOOP] Color was undefined, using fallback: ${color}`);
     }
 
     controlLED(circleId, color);
@@ -465,7 +476,7 @@ function activateRandomLEDs() {
   const avoidCircles = activeTargets.filter(t => activeMission.avoidColors && activeMission.avoidColors.includes(t.colorCode));
 
   console.log(`[STRIKELOOP] All 8 LEDs activated! Targets: ${targetCircles.length}, Avoid: ${avoidCircles.length}, Neutral: ${8 - targetCircles.length - avoidCircles.length}`);
-  console.log(`[STRIKELOOP] LED Pattern:`, activeTargets.map(t => `${t.elementId}:${t.colorCode.toUpperCase()}`).join(' '));
+  console.log(`[STRIKELOOP] LED Pattern:`, activeTargets.map(t => `${t.elementId}:${t.colorCode ? t.colorCode.toUpperCase() : 'UNDEFINED'}`).join(' '));
 }
 
 // Process game input and validate against active mission
