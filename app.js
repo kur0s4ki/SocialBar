@@ -3,84 +3,135 @@ const http = require('http');
 const arduino = require('./arduino.js');
 const strikeLoop = require('./strikeLoop.js');
 
-// Create HTTP server
-const server = http.createServer();
+// Create HTTP servers for both staff and display clients
+const staffServer = http.createServer();
+const displayServer = http.createServer();
 
-// Create WebSocket server
-const wss = new WebSocket.Server({ server });
+// Create separate WebSocket servers
+const staffWss = new WebSocket.Server({ server: staffServer });
+const displayWss = new WebSocket.Server({ server: displayServer });
 
 // Store connected clients with metadata
-const clients = new Map();
-let clientIdCounter = 1;
+const staffClients = new Map();
+const displayClients = new Map();
+let staffClientIdCounter = 1;
+let displayClientIdCounter = 1;
 
-// WebSocket connection handling
-wss.on('connection', (ws) => {
-  const clientId = `client-${clientIdCounter++}`;
+// Staff WebSocket connection handling
+staffWss.on('connection', (ws) => {
+  const clientId = `staff-${staffClientIdCounter++}`;
   const clientData = {
     id: clientId,
     ws: ws,
-    type: 'unknown',
+    type: 'staff',
     connectedAt: new Date().toISOString(),
     ip: ws._socket.remoteAddress
   };
-  
-  clients.set(clientId, clientData);
-  console.log(`[APP] New client connected: ${clientId} from ${clientData.ip} (Total clients: ${clients.size})`);
-  
+
+  staffClients.set(clientId, clientData);
+  console.log(`[STAFF-WS] New staff client connected: ${clientId} from ${clientData.ip} (Total staff clients: ${staffClients.size})`);
+
   // Send client ID to the new client
   ws.send(JSON.stringify({
     type: 'clientId',
     clientId: clientId
   }));
-  
+
   ws.on('message', (message) => {
     try {
       const data = JSON.parse(message.toString());
-      const client = [...clients.values()].find(c => c.ws === ws);
+      const client = [...staffClients.values()].find(c => c.ws === ws);
       const clientId = client ? client.id : 'unknown';
-      
-      console.log(`[APP] Message from ${clientId}:`, data);
-      
+
+      console.log(`[STAFF-WS] Message from ${clientId}:`, data);
+
       // Handle different message types
       switch (data.type) {
-        case 'clientConnect':
-          if (client) {
-            client.type = data.clientType || 'unknown';
-            console.log(`[APP] Client ${clientId} identified as: ${client.type}`);
-          }
-          break;
-          
         case 'start':
           if (data.teamName) {
-            console.log(`[APP] Game start request from ${clientId} for team: ${data.teamName}`);
+            console.log(`[STAFF-WS] Game start request from ${clientId} for team: ${data.teamName}`);
             strikeLoop.emitter.emit('start', data);
           }
           break;
-          
+
         case 'circleClick':
           if (data.circleId) {
-            console.log(`[APP] Circle click from ${clientId}: circle ${data.circleId}`);
+            console.log(`[STAFF-WS] Circle click from ${clientId}: circle ${data.circleId}`);
             strikeLoop.emitter.emit('circleClick', data);
           }
           break;
-          
+
         default:
-          console.log(`[APP] Unknown message type from ${clientId}: ${data.type}`);
+          console.log(`[STAFF-WS] Unknown message type from ${clientId}: ${data.type}`);
       }
     } catch (error) {
-      console.error(`[APP] Error parsing message from client:`, error);
+      console.error(`[STAFF-WS] Error parsing message from client:`, error);
     }
   });
 
   ws.on('close', () => {
-    const client = [...clients.values()].find(c => c.ws === ws);
+    const client = [...staffClients.values()].find(c => c.ws === ws);
     if (client) {
-      console.log(`[APP] Client disconnected: ${client.id} (${client.type}) - was connected since ${client.connectedAt}`);
-      clients.delete(client.id);
+      console.log(`[STAFF-WS] Client disconnected: ${client.id} - was connected since ${client.connectedAt}`);
+      staffClients.delete(client.id);
     } else {
-      console.log('[APP] Unknown client disconnected');
+      console.log('[STAFF-WS] Unknown client disconnected');
     }
-    console.log(`[APP] Total clients remaining: ${clients.size}`);
+    console.log(`[STAFF-WS] Total staff clients remaining: ${staffClients.size}`);
+  });
+});
+
+// Display WebSocket connection handling
+displayWss.on('connection', (ws) => {
+  const clientId = `display-${displayClientIdCounter++}`;
+  const clientData = {
+    id: clientId,
+    ws: ws,
+    type: 'display',
+    connectedAt: new Date().toISOString(),
+    ip: ws._socket.remoteAddress
+  };
+
+  displayClients.set(clientId, clientData);
+  console.log(`[DISPLAY-WS] New display client connected: ${clientId} from ${clientData.ip} (Total display clients: ${displayClients.size})`);
+
+  // Send client ID to the new client
+  ws.send(JSON.stringify({
+    type: 'clientId',
+    clientId: clientId
+  }));
+
+  ws.on('message', (message) => {
+    try {
+      const data = JSON.parse(message.toString());
+      const client = [...displayClients.values()].find(c => c.ws === ws);
+      const clientId = client ? client.id : 'unknown';
+
+      console.log(`[DISPLAY-WS] Message from ${clientId}:`, data);
+
+      // Display clients are mainly read-only, but can acknowledge messages
+      switch (data.type) {
+        case 'acknowledge':
+          console.log(`[DISPLAY-WS] Acknowledgment from ${clientId}:`, data.messageType);
+          break;
+
+        default:
+          console.log(`[DISPLAY-WS] Unknown message type from ${clientId}: ${data.type}`);
+      }
+    } catch (error) {
+      console.error(`[DISPLAY-WS] Error parsing message from client:`, error);
+    }
+  });
+
+  ws.on('close', () => {
+    const client = [...displayClients.values()].find(c => c.ws === ws);
+    if (client) {
+      console.log(`[DISPLAY-WS] Client disconnected: ${client.id} - was connected since ${client.connectedAt}`);
+      displayClients.delete(client.id);
+    } else {
+      console.log('[DISPLAY-WS] Unknown client disconnected');
+    }
+    console.log(`[DISPLAY-WS] Total display clients remaining: ${displayClients.size}`);
   });
 });
 
@@ -90,22 +141,70 @@ arduino.emitter.on('EventInput', (message, value) => {
   strikeLoop.emitter.emit('EventInput', message, value);
 });
 
-// Listen for strikeLoop events
-strikeLoop.emitter.on('gameStarted', () => {
+// Broadcast function to send messages to staff clients
+function broadcastToStaff(message) {
+  const messageStr = JSON.stringify(message);
+  let sentCount = 0;
+
+  staffClients.forEach((client, clientId) => {
+    if (client.ws.readyState === WebSocket.OPEN) {
+      client.ws.send(messageStr);
+      sentCount++;
+    } else {
+      console.log(`[STAFF-WS] Removing disconnected client: ${clientId}`);
+      staffClients.delete(clientId);
+    }
+  });
+
+  console.log(`[STAFF-WS] Broadcasted message type '${message.type}' to ${sentCount} staff clients`);
+}
+
+// Broadcast function to send messages to display clients
+function broadcastToDisplay(message) {
+  const messageStr = JSON.stringify(message);
+  let sentCount = 0;
+
+  displayClients.forEach((client, clientId) => {
+    if (client.ws.readyState === WebSocket.OPEN) {
+      client.ws.send(messageStr);
+      sentCount++;
+    } else {
+      console.log(`[DISPLAY-WS] Removing disconnected client: ${clientId}`);
+      displayClients.delete(clientId);
+    }
+  });
+
+  console.log(`[DISPLAY-WS] Broadcasted message type '${message.type}' to ${sentCount} display clients`);
+}
+
+// Event listener cleanup tracking
+const eventListeners = [];
+
+// Helper function to add tracked event listeners
+function addTrackedListener(emitter, event, handler) {
+  emitter.on(event, handler);
+  eventListeners.push({ emitter, event, handler });
+}
+
+// Listen for strikeLoop events with proper scoping
+addTrackedListener(strikeLoop.emitter, 'gameStarted', () => {
   console.log('[APP] Game started event received from strikeLoop');
-  
-  // Send game started message to all clients
-  broadcastToClients({
+
+  // Send to staff clients
+  broadcastToStaff({
+    type: 'gameStarted'
+  });
+
+  // Send to display clients
+  broadcastToDisplay({
     type: 'gameStarted'
   });
 });
 
 // Listen for LED control events from strikeLoop
-strikeLoop.emitter.on('ledControl', (data) => {
-  //console.log('[APP] LED control event received:', data);
-  
-  // Send LED control message to all clients
-  broadcastToClients({
+addTrackedListener(strikeLoop.emitter, 'ledControl', (data) => {
+  // LED control is primarily for staff clients
+  broadcastToStaff({
     type: 'ledControl',
     elementId: data.elementId,
     colorCode: data.colorCode,
@@ -114,90 +213,95 @@ strikeLoop.emitter.on('ledControl', (data) => {
   });
 });
 
-strikeLoop.emitter.on('gameFinished', () => {
+addTrackedListener(strikeLoop.emitter, 'gameFinished', () => {
   console.log('[APP] Game finished, resetting frontend');
-  
-  // Send reset message to all clients
-  broadcastToClients({
+
+  // Send reset message to both client types
+  broadcastToStaff({
+    type: 'reset'
+  });
+
+  broadcastToDisplay({
     type: 'reset'
   });
 });
 
-// Broadcast function to send messages to all connected clients
-function broadcastToClients(message, excludeTypes = []) {
-  const messageStr = JSON.stringify(message);
-  let sentCount = 0;
-  
-  clients.forEach((client, clientId) => {
-    if (excludeTypes.includes(client.type)) {
-      return; // Skip excluded client types
-    }
-    
-    if (client.ws.readyState === WebSocket.OPEN) {
-      client.ws.send(messageStr);
-      sentCount++;
-    } else {
-      console.log(`[APP] Removing disconnected client: ${clientId}`);
-      clients.delete(clientId);
-    }
-  });
-  
-  console.log(`[APP] Broadcasted message type '${message.type}' to ${sentCount} clients`);
-}
-
-// Function to send message to specific client types
-function sendToClientTypes(message, targetTypes = []) {
-  const messageStr = JSON.stringify(message);
-  let sentCount = 0;
-  
-  clients.forEach((client, clientId) => {
-    if (targetTypes.length === 0 || targetTypes.includes(client.type)) {
-      if (client.ws.readyState === WebSocket.OPEN) {
-        client.ws.send(messageStr);
-        sentCount++;
-      }
-    }
-  });
-  
-  console.log(`[APP] Sent message type '${message.type}' to ${sentCount} clients of types: ${targetTypes.join(', ')}`);
-}
-
-// Add new event listeners for dynamic game data
-strikeLoop.emitter.on('gameDataUpdate', (gameData) => {
+// Add new event listeners for dynamic game data (display clients only)
+addTrackedListener(strikeLoop.emitter, 'gameDataUpdate', (gameData) => {
   console.log('[APP] Game data update received:', gameData);
-  sendToClientTypes({
+  broadcastToDisplay({
     type: 'gameData',
     gameData: gameData
-  }, ['gameInProgress']);
+  });
 });
 
-strikeLoop.emitter.on('scoreUpdate', (score) => {
+addTrackedListener(strikeLoop.emitter, 'scoreUpdate', (score) => {
   console.log('[APP] Score update received:', score);
-  sendToClientTypes({
+  broadcastToDisplay({
     type: 'scoreUpdate',
     score: score
-  }, ['gameInProgress']);
+  });
 });
 
-strikeLoop.emitter.on('missionUpdate', (mission) => {
+addTrackedListener(strikeLoop.emitter, 'missionUpdate', (mission) => {
   console.log('[APP] Mission update received:', mission);
-  sendToClientTypes({
+  broadcastToDisplay({
     type: 'missionUpdate',
     mission: mission
-  }, ['gameInProgress']);
+  });
 });
 
-strikeLoop.emitter.on('timeUpdate', (timeData) => {
-  // Send time updates to all clients (both main app and gameInProgress)
-  broadcastToClients({
+addTrackedListener(strikeLoop.emitter, 'roundUpdate', (roundData) => {
+  console.log('[APP] Round update received:', roundData);
+
+  // Send to both staff and display clients
+  const message = {
+    type: 'roundUpdate',
+    round: roundData.round,
+    level: roundData.level,
+    mission: roundData.mission,
+    duration: roundData.duration,
+    timeLeft: roundData.timeLeft,
+    timeString: roundData.timeString
+  };
+
+  broadcastToStaff(message);
+  broadcastToDisplay(message);
+});
+
+addTrackedListener(strikeLoop.emitter, 'timeUpdate', (timeData) => {
+  // Send time updates to both client types
+  const message = {
     type: 'timeUpdate',
     timeLeft: timeData.timeLeft,
     timeString: timeData.timeString
-  });
+  };
+
+  broadcastToStaff(message);
+  broadcastToDisplay(message);
 });
 
-// Start the server
-const PORT = 8080;
-server.listen(PORT, () => {
-  console.log('[APP] WebSocket server running on port', PORT);
+// Start the servers
+const STAFF_PORT = 8080;
+const DISPLAY_PORT = 8081;
+
+staffServer.listen(STAFF_PORT, () => {
+  console.log(`[STAFF-WS] Staff WebSocket server running on port ${STAFF_PORT}`);
 });
+
+displayServer.listen(DISPLAY_PORT, () => {
+  console.log(`[DISPLAY-WS] Display WebSocket server running on port ${DISPLAY_PORT}`);
+});
+
+// Cleanup function to remove all event listeners
+function cleanup() {
+  console.log('[APP] Cleaning up event listeners...');
+  eventListeners.forEach(({ emitter, event, handler }) => {
+    emitter.removeListener(event, handler);
+  });
+  eventListeners.length = 0;
+}
+
+// Handle graceful shutdown
+process.on('SIGTERM', cleanup);
+process.on('SIGINT', cleanup);

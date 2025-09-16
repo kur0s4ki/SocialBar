@@ -5,10 +5,14 @@ function App() {
   const [teamName, setTeamName] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes in seconds
-  const [timeString, setTimeString] = useState('15:00');
+  const [currentRound, setCurrentRound] = useState({
+    round: 1,
+    level: 1,
+    mission: 'Waiting for game to start...',
+    timeLeft: 0,
+    timeString: '00:00'
+  });
   const ws = useRef(null);
-  const countdownInterval = useRef(null);
   const isConnecting = useRef(false);
 
   useEffect(() => {
@@ -25,7 +29,7 @@ function App() {
         ws.current.close();
       }
       
-      ws.current = new WebSocket('ws://localhost:8080');
+      ws.current = new WebSocket('ws://localhost:8080'); // Staff WebSocket server
 
       ws.current.onopen = () => {
         console.log('[FRONTEND] Connected to WebSocket server');
@@ -36,13 +40,40 @@ function App() {
       ws.current.onmessage = (event) => {
         const data = JSON.parse(event.data);
         console.log('[FRONTEND] Received from server:', data);
-        
-        if (data.type === 'gameStarted') {
-          console.log('[FRONTEND] Game started - starting countdown');
-          startCountdown();
-        } else if (data.type === 'reset') {
-          console.log('[FRONTEND] Game reset received');
-          resetGame();
+
+        switch (data.type) {
+          case 'gameStarted':
+            console.log('[FRONTEND] Game started');
+            setIsStarted(true);
+            break;
+
+          case 'roundUpdate':
+            console.log('[FRONTEND] Round update received:', data);
+            setCurrentRound({
+              round: data.round,
+              level: data.level,
+              mission: data.mission,
+              timeLeft: data.timeLeft,
+              timeString: data.timeString
+            });
+            break;
+
+          case 'timeUpdate':
+            console.log('[FRONTEND] Time update received:', data.timeString);
+            setCurrentRound(prev => ({
+              ...prev,
+              timeLeft: data.timeLeft,
+              timeString: data.timeString
+            }));
+            break;
+
+          case 'reset':
+            console.log('[FRONTEND] Game reset received');
+            resetGame();
+            break;
+
+          default:
+            console.log('[FRONTEND] Unknown message type:', data.type);
         }
       };
 
@@ -67,40 +98,25 @@ function App() {
       if (ws.current) {
         ws.current.close();
       }
-      if (countdownInterval.current) {
-        clearInterval(countdownInterval.current);
-      }
     };
   }, []);
 
+  // This function is no longer needed as timing is handled by the server
+  // Kept for backward compatibility but does nothing
   const startCountdown = () => {
-    setIsStarted(true);
-    setTimeLeft(15 * 60);
-    setTimeString('15:00');
-    
-    countdownInterval.current = setInterval(() => {
-      setTimeLeft(prevTime => {
-        const newTime = prevTime - 1;
-        const minutes = Math.floor(newTime / 60);
-        const seconds = newTime % 60;
-        setTimeString(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
-        
-        if (newTime <= 0) {
-          clearInterval(countdownInterval.current);
-          return 0;
-        }
-        return newTime;
-      });
-    }, 1000);
+    // Server now handles all timing logic
+    console.log('[FRONTEND] Game timing is now managed by the server');
   };
 
   const resetGame = () => {
     setIsStarted(false);
-    setTimeLeft(15 * 60);
-    setTimeString('15:00');
-    if (countdownInterval.current) {
-      clearInterval(countdownInterval.current);
-    }
+    setCurrentRound({
+      round: 1,
+      level: 1,
+      mission: 'Waiting for game to start...',
+      timeLeft: 0,
+      timeString: '00:00'
+    });
   };
 
   const handleStart = () => {
@@ -158,12 +174,23 @@ function App() {
               Status: {isConnected ? '✔️ Connected' : '🔴 Disconnected'}
             </div>
 
-            <div className="countdown-container">
-              <div className="countdown-timer">
-                {timeString}
+            <div className="game-info-container">
+              <div className="round-info">
+                <div className="round-display">
+                  Round {currentRound.round} - Level {currentRound.level}
+                </div>
+                <div className="mission-display">
+                  {currentRound.mission}
+                </div>
               </div>
-              <div className="countdown-label">
-                Time Remaining
+
+              <div className="countdown-container">
+                <div className="countdown-timer">
+                  {currentRound.timeString}
+                </div>
+                <div className="countdown-label">
+                  Round Time Remaining
+                </div>
               </div>
             </div>
           </>

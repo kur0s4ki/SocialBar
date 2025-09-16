@@ -69,9 +69,10 @@ const CENTRAL_CIRCLE_ID = 9;
 
 
 
-let countdownInterval;
+let roundInterval;
 let isRunning = false;
 let keyboardListenerActive = false;
+let currentRoundIndex = 0;
 
 // Game state variables for dynamic data transfer
 let gameState = {
@@ -81,11 +82,67 @@ let gameState = {
   missionNumber: 1,
   multiplier: 'x1',
   missionDescription: 'Waiting for mission...',
-  gameTimeMinutes: 15 // Configurable game time in minutes
+  totalGameTimeMinutes: 15 // Total game time in minutes
 };
 
-// Timer variables for game time management
-let gameTimeSeconds = 15 * 60; // Total game time in seconds
+// Round-based game configuration
+let gameRounds = [
+  {
+    round: 1,
+    level: 1,
+    mission: 'Warm-up: Touch any GREEN circles!',
+    duration: 60 // 1 minute
+  },
+  {
+    round: 2,
+    level: 1,
+    mission: 'Speed round: Touch BLUE circles quickly!',
+    duration: 45 // 45 seconds
+  },
+  {
+    round: 3,
+    level: 2,
+    mission: 'Precision: Only YELLOW circles, avoid RED!',
+    duration: 90 // 1.5 minutes
+  },
+  {
+    round: 4,
+    level: 2,
+    mission: 'Memory test: Follow the pattern sequence!',
+    duration: 120 // 2 minutes
+  },
+  {
+    round: 5,
+    level: 3,
+    mission: 'Challenge: Mix of all colors, bonus points!',
+    duration: 75 // 1.25 minutes
+  },
+  {
+    round: 6,
+    level: 3,
+    mission: 'Final sprint: Maximum speed and accuracy!',
+    duration: 60 // 1 minute
+  },
+  {
+    round: 7,
+    level: 4,
+    mission: 'Ultimate challenge: Master all techniques!',
+    duration: 150 // 2.5 minutes
+  },
+  {
+    round: 8,
+    level: 4,
+    mission: 'Finale: Show your mastery for maximum score!',
+    duration: 210 // 3.5 minutes
+  }
+];
+
+// Ensure total duration equals 15 minutes (900 seconds)
+const totalDuration = gameRounds.reduce((sum, round) => sum + round.duration, 0);
+console.log(`[STRIKELOOP] Total game duration: ${totalDuration} seconds (${Math.floor(totalDuration/60)} minutes ${totalDuration%60} seconds)`);
+
+// Timer variables for round-based time management
+let currentRoundTimeLeft = 0;
 let timeUpdateInterval;
 
 // Color mapping for LED control
@@ -118,18 +175,26 @@ const rl = readline.createInterface({
 
 // Readline will handle input properly
 
+// Event listener cleanup tracking
+const gameEventListeners = [];
+
+// Helper function to add tracked game event listeners
+function addTrackedGameListener(emitter, event, handler) {
+  emitter.on(event, handler);
+  gameEventListeners.push({ emitter, event, handler });
+}
+
 // Listen for game start events
-emitter.on('start', (teamData) => {
+addTrackedGameListener(emitter, 'start', (teamData) => {
   console.log('[STRIKELOOP] Game start received for team:', teamData.teamName);
-  startCountdown();
+  startRoundBasedGame();
   setupKeyboardListener();
-  //TODO : game logic here
 });
 
 
 
 // Listen for Arduino input events during game
-emitter.on('EventInput', (message, value) => {
+addTrackedGameListener(emitter, 'EventInput', (message, value) => {
   if (isRunning) {
     console.log('[STRIKELOOP] Arduino input received during game:', message, 'Value:', value);
   } else {
@@ -138,7 +203,7 @@ emitter.on('EventInput', (message, value) => {
 });
 
 // Listen for circle click events from simulator
-emitter.on('circleClick', (data) => {
+addTrackedGameListener(emitter, 'circleClick', (data) => {
   if (isRunning) {
     console.log('[STRIKELOOP] Circle clicked - ID:', data.circleId);
   } else {
@@ -146,52 +211,151 @@ emitter.on('circleClick', (data) => {
   }
 });
 
-function startCountdown() {
+function startRoundBasedGame() {
   if (isRunning) return;
-  
+
   isRunning = true;
-  console.log('[STRIKELOOP] Starting countdown timer');
-  
+  currentRoundIndex = 0;
+  console.log('[STRIKELOOP] Starting round-based game');
+
   // Initialize game state
   initializeGameState();
-  
+
   emitter.emit('gameStarted');
-  
-  // Set timeout for configured game time
-  countdownInterval = setTimeout(() => {
-    isRunning = false;
-    disableKeyboardListener();
-    stopTimeUpdates();
-    console.log(`[STRIKELOOP] ${gameState.gameTimeMinutes} minutes elapsed - game finished`);
-    emitter.emit('gameFinished');
-  }, gameTimeSeconds * 1000);
+
+  // Start the first round
+  startNextRound();
+}
+
+function startNextRound() {
+  if (currentRoundIndex >= gameRounds.length) {
+    // All rounds completed
+    finishGame();
+    return;
+  }
+
+  const currentRound = gameRounds[currentRoundIndex];
+  currentRoundTimeLeft = currentRound.duration;
+
+  console.log(`[STRIKELOOP] Starting Round ${currentRound.round} - Level ${currentRound.level}`);
+  console.log(`[STRIKELOOP] Mission: ${currentRound.mission}`);
+  console.log(`[STRIKELOOP] Duration: ${currentRound.duration} seconds`);
+
+  // Update game state
+  gameState.manche = currentRound.round;
+  gameState.niveau = currentRound.level;
+  gameState.missionNumber = currentRound.round;
+  gameState.missionDescription = currentRound.mission;
+
+  // Emit round update to clients
+  emitter.emit('roundUpdate', {
+    round: currentRound.round,
+    level: currentRound.level,
+    mission: currentRound.mission,
+    duration: currentRound.duration,
+    timeLeft: currentRoundTimeLeft,
+    timeString: formatTime(currentRoundTimeLeft)
+  });
+
+  // Emit game data update
+  emitter.emit('gameDataUpdate', gameState);
+  emitter.emit('missionUpdate', {
+    number: currentRound.round,
+    description: currentRound.mission
+  });
+
+  // Start round timer
+  startRoundTimer();
+}
+
+function startRoundTimer() {
+  // Send initial time
+  emitter.emit('timeUpdate', {
+    timeLeft: currentRoundTimeLeft,
+    timeString: formatTime(currentRoundTimeLeft)
+  });
+
+  // Clear any existing timer
+  if (timeUpdateInterval) {
+    clearInterval(timeUpdateInterval);
+  }
+
+  // Update time every second
+  timeUpdateInterval = setInterval(() => {
+    if (currentRoundTimeLeft > 0) {
+      currentRoundTimeLeft--;
+      const timeString = formatTime(currentRoundTimeLeft);
+
+      emitter.emit('timeUpdate', {
+        timeLeft: currentRoundTimeLeft,
+        timeString: timeString
+      });
+
+      // Log time updates every 15 seconds
+      if (currentRoundTimeLeft % 15 === 0) {
+        console.log(`[STRIKELOOP] Round ${gameRounds[currentRoundIndex].round} time remaining: ${timeString}`);
+      }
+    } else {
+      // Round finished, move to next
+      stopRoundTimer();
+      currentRoundIndex++;
+
+      if (currentRoundIndex < gameRounds.length) {
+        console.log(`[STRIKELOOP] Round ${gameRounds[currentRoundIndex - 1].round} completed, starting next round...`);
+        setTimeout(() => {
+          startNextRound();
+        }, 2000); // 2-second break between rounds
+      } else {
+        finishGame();
+      }
+    }
+  }, 1000);
+}
+
+function stopRoundTimer() {
+  if (timeUpdateInterval) {
+    clearInterval(timeUpdateInterval);
+    timeUpdateInterval = null;
+  }
+}
+
+function finishGame() {
+  isRunning = false;
+  disableKeyboardListener();
+  stopRoundTimer();
+  console.log('[STRIKELOOP] All rounds completed - game finished');
+  emitter.emit('gameFinished');
+
+  // Cleanup event listeners
+  cleanupGameEventListeners();
+}
+
+// Cleanup function to remove all game event listeners
+function cleanupGameEventListeners() {
+  console.log('[STRIKELOOP] Cleaning up game event listeners...');
+  gameEventListeners.forEach(({ emitter, event, handler }) => {
+    emitter.removeListener(event, handler);
+  });
+  gameEventListeners.length = 0;
 }
 
 // Initialize game state and send to frontend
 function initializeGameState() {
-  gameTimeSeconds = gameState.gameTimeMinutes * 60; // Set game time in seconds
-  
   gameState = {
     manche: 1,
     niveau: 1,
     score: 0,
     missionNumber: 1,
     multiplier: 'x1',
-    missionDescription: 'Game starting... Prepare for first mission!',
-    gameTimeMinutes: gameState.gameTimeMinutes
+    missionDescription: 'Game starting... Prepare for first round!',
+    totalGameTimeMinutes: 15
   };
-  
+
   console.log('[STRIKELOOP] Game state initialized:', gameState);
-  console.log('[STRIKELOOP] Game time set to:', gameTimeSeconds, 'seconds');
+  console.log('[STRIKELOOP] Total rounds configured:', gameRounds.length);
+  console.log('[STRIKELOOP] Total game duration:', totalDuration, 'seconds');
+
   emitter.emit('gameDataUpdate', gameState);
-  
-  // Start the time update interval
-  startTimeUpdates();
-  
-  // Simulate first mission after a short delay
-  setTimeout(() => {
-    updateMission(1, 'Touch the GREEN circles only! Avoid the red ones!');
-  }, 3000);
 }
 
 // Function to update game score (to be called from game logic later)
@@ -227,53 +391,35 @@ function updateMultiplier(multiplier) {
   emitter.emit('gameDataUpdate', { multiplier });
 }
 
-function stopCountdown() {
-  if (countdownInterval) {
-    clearTimeout(countdownInterval);
+function stopGame() {
+  if (isRunning) {
     isRunning = false;
     keyboardListenerActive = false;
-    stopTimeUpdates();
+    stopRoundTimer();
     console.log('[STRIKELOOP] Game stopped - Keyboard controls disabled');
     emitter.emit('gameStopped');
+    cleanupGameEventListeners();
   }
 }
 
-// Start sending time updates to frontend
-function startTimeUpdates() {
-  // Send initial time
-  emitter.emit('timeUpdate', {
-    timeLeft: gameTimeSeconds,
-    timeString: formatTime(gameTimeSeconds)
-  });
-  
-  // Update time every second
-  timeUpdateInterval = setInterval(() => {
-    if (gameTimeSeconds > 0) {
-      gameTimeSeconds--;
-      const timeString = formatTime(gameTimeSeconds);
-      
-      emitter.emit('timeUpdate', {
-        timeLeft: gameTimeSeconds,
-        timeString: timeString
-      });
-      
-      // Log time updates every 30 seconds
-      if (gameTimeSeconds % 30 === 0) {
-        console.log(`[STRIKELOOP] Time remaining: ${timeString}`);
-      }
-    } else {
-      stopTimeUpdates();
-    }
-  }, 1000);
+// Get current round info
+function getCurrentRound() {
+  if (currentRoundIndex < gameRounds.length) {
+    return gameRounds[currentRoundIndex];
+  }
+  return null;
 }
 
-// Stop time updates
-function stopTimeUpdates() {
-  if (timeUpdateInterval) {
-    clearInterval(timeUpdateInterval);
-    timeUpdateInterval = null;
-    console.log('[STRIKELOOP] Time updates stopped');
+// Get total remaining time across all rounds
+function getTotalRemainingTime() {
+  let totalRemaining = currentRoundTimeLeft;
+
+  // Add time from remaining rounds
+  for (let i = currentRoundIndex + 1; i < gameRounds.length; i++) {
+    totalRemaining += gameRounds[i].duration;
   }
+
+  return totalRemaining;
 }
 
 // Format time in MM:SS format
@@ -283,21 +429,32 @@ function formatTime(seconds) {
   return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
 }
 
-// Function to set game time (to be called before game starts)
-function setGameTime(minutes) {
+// Function to customize game rounds (to be called before game starts)
+function setGameRounds(customRounds) {
   if (!isRunning) {
-    gameState.gameTimeMinutes = minutes;
-    gameTimeSeconds = minutes * 60;
-    console.log(`[STRIKELOOP] Game time set to ${minutes} minutes (${gameTimeSeconds} seconds)`);
-    emitter.emit('gameDataUpdate', { gameTimeMinutes: minutes });
+    gameRounds = customRounds;
+    const totalDuration = gameRounds.reduce((sum, round) => sum + round.duration, 0);
+    console.log(`[STRIKELOOP] Custom rounds set: ${gameRounds.length} rounds, ${totalDuration} seconds total`);
   } else {
-    console.log('[STRIKELOOP] Cannot change game time while game is running');
+    console.log('[STRIKELOOP] Cannot change rounds while game is running');
   }
 }
 
 function disableKeyboardListener() {
   keyboardListenerActive = false;
   console.log('[STRIKELOOP] Keyboard controls disabled - Game ended');
+}
+
+// Legacy function for backward compatibility
+function startCountdown() {
+  console.log('[STRIKELOOP] startCountdown() is deprecated, using startRoundBasedGame() instead');
+  startRoundBasedGame();
+}
+
+// Legacy function for backward compatibility
+function stopCountdown() {
+  console.log('[STRIKELOOP] stopCountdown() is deprecated, using stopGame() instead');
+  stopGame();
 }
 
 
@@ -437,8 +594,8 @@ function setupKeyboardListener() {
 
 module.exports = {
   emitter,
-  startCountdown,
-  stopCountdown,
+  startRoundBasedGame,
+  stopGame,
   controlOutput,
   isRunning: () => isRunning,
   // Export functions for future game logic implementation
@@ -447,7 +604,16 @@ module.exports = {
   updateRound,
   updateMultiplier,
   gameState: () => gameState,
-  // Export time management functions
-  setGameTime,
-  formatTime
+  // Export round management functions
+  setGameRounds,
+  getCurrentRound,
+  getTotalRemainingTime,
+  formatTime,
+  // Export game rounds for inspection
+  gameRounds: () => gameRounds,
+  currentRoundIndex: () => currentRoundIndex
 };
+
+// Handle graceful shutdown
+process.on('SIGTERM', cleanupGameEventListeners);
+process.on('SIGINT', cleanupGameEventListeners);

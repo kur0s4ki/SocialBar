@@ -9,17 +9,23 @@ function GameInProgress() {
 
   // Dynamic game data state
   const [gameData, setGameData] = useState({
-    manche: 2,
+    manche: 1,
     niveau: 1,
-    score: 4270,
-    missionNumber: 28,
-    multiplier: 'x2',
-    missionDescription: 'Touchez uniquement les trous BLEUS! Évitez les rouges!'
+    score: 0,
+    missionNumber: 1,
+    multiplier: 'x1',
+    missionDescription: 'Waiting for game to start...'
   });
 
-  // Time state managed by server
-  const [timeLeft, setTimeLeft] = useState(15 * 60);
-  const [timeString, setTimeString] = useState('15:00');
+  // Round state managed by server
+  const [currentRound, setCurrentRound] = useState({
+    round: 1,
+    level: 1,
+    mission: 'Waiting for game to start...',
+    duration: 0,
+    timeLeft: 0,
+    timeString: '00:00'
+  });
 
   useEffect(() => {
     document.title = 'Social Bar - Game In Progress';
@@ -39,20 +45,16 @@ function GameInProgress() {
         ws.current.close();
       }
       
-      console.log('[GAMEINPROGRESS] Attempting to connect to WebSocket server...');
-      ws.current = new WebSocket('ws://localhost:8080');
+      console.log('[GAMEINPROGRESS] Attempting to connect to Display WebSocket server...');
+      ws.current = new WebSocket('ws://localhost:8081'); // Display WebSocket server
 
       ws.current.onopen = () => {
         console.log('[GAMEINPROGRESS] Connected to WebSocket server as new client');
         setIsConnected(true);
         isConnecting.current = false;
         
-        // Send identification message
-        ws.current.send(JSON.stringify({
-          type: 'clientConnect',
-          clientType: 'gameInProgress',
-          timestamp: Date.now()
-        }));
+        // Display clients don't need to send identification messages
+        // The server automatically recognizes them as display clients
       };
 
       ws.current.onmessage = (event) => {
@@ -82,10 +84,32 @@ function GameInProgress() {
                 missionDescription: data.mission.description
               }));
               break;
+            case 'roundUpdate':
+              console.log('[GAMEINPROGRESS] Round update received:', data);
+              setCurrentRound({
+                round: data.round,
+                level: data.level,
+                mission: data.mission,
+                duration: data.duration,
+                timeLeft: data.timeLeft,
+                timeString: data.timeString
+              });
+              // Also update game data manche/niveau
+              setGameData(prevData => ({
+                ...prevData,
+                manche: data.round,
+                niveau: data.level,
+                missionNumber: data.round,
+                missionDescription: data.mission
+              }));
+              break;
             case 'timeUpdate':
               console.log('[GAMEINPROGRESS] Time update received:', data);
-              setTimeLeft(data.timeLeft);
-              setTimeString(data.timeString);
+              setCurrentRound(prev => ({
+                ...prev,
+                timeLeft: data.timeLeft,
+                timeString: data.timeString
+              }));
               break;
             case 'reset':
               console.log('[GAMEINPROGRESS] Game reset received');
@@ -96,10 +120,16 @@ function GameInProgress() {
                 score: 0,
                 missionNumber: 1,
                 multiplier: 'x1',
-                missionDescription: 'Waiting for mission...'
+                missionDescription: 'Waiting for game to start...'
               });
-              setTimeLeft(15 * 60);
-              setTimeString('15:00');
+              setCurrentRound({
+                round: 1,
+                level: 1,
+                mission: 'Waiting for game to start...',
+                duration: 0,
+                timeLeft: 0,
+                timeString: '00:00'
+              });
               break;
             default:
               console.log('[GAMEINPROGRESS] Unknown message type:', data.type);
@@ -154,7 +184,7 @@ function GameInProgress() {
           {/* Left Panel - Round and Score */}
           <div className="flex-1 bg-slate-900 border-8 border-cyan-400 rounded-2xl p-10">
             <h2 className="text-yellow-400 text-6xl font-bold text-center">
-              MANCHE {gameData.manche}-NIVEAU {gameData.niveau}
+              ROUND {currentRound.round} - LEVEL {currentRound.level}
             </h2>
             <h2 className="text-yellow-400 text-6xl font-bold text-center mt-2">SCORE</h2>
           </div>
@@ -170,15 +200,15 @@ function GameInProgress() {
           {/* Mission Badge */}
           <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
             <div className="bg-slate-900 border-8 border-yellow-400 rounded-2xl px-16 py-6">
-              <span className="text-yellow-400 text-6xl font-bold">MISSION</span>
+              <span className="text-yellow-400 text-6xl font-bold">ROUND {currentRound.round} MISSION</span>
             </div>
           </div>
 
           {/* Game Timer Circle */}
           <div className="absolute top-1/2 right-12 transform -translate-y-1/2">
             <div className="w-64 h-64 bg-slate-900 border-8 border-red-500 rounded-full flex items-center justify-center relative">
-              {/* Game timer display */}
-              <span className="text-white text-6xl font-bold font-mono">{timeString}</span>
+              {/* Round timer display */}
+              <span className="text-white text-6xl font-bold font-mono">{currentRound.timeString}</span>
               {/* Inner Circle */}
               <div className="absolute w-60 h-60 bg-transparent border-8 border-transparent border-t-cyan-400 border-r-cyan-400 rounded-full z-10"></div>
             </div>
@@ -187,7 +217,7 @@ function GameInProgress() {
           {/* Mission Text */}
           <div className="text-center pr-80">
             <p className="text-white text-7xl font-medium">
-              {gameData.missionDescription}
+              {currentRound.mission}
             </p>
           </div>
         </div>
