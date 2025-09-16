@@ -174,7 +174,10 @@ function broadcastToDisplay(message) {
     }
   });
 
-  console.log(`[DISPLAY-WS] Broadcasted message type '${message.type}' to ${sentCount} display clients`);
+  // Don't log timeUpdate broadcasts to reduce spam
+  if (message.type !== 'timeUpdate') {
+    console.log(`[DISPLAY-WS] Broadcasted message type '${message.type}' to ${sentCount} display clients`);
+  }
 }
 
 // Event listener cleanup tracking
@@ -254,7 +257,7 @@ addTrackedListener(strikeLoop.emitter, 'missionUpdate', (mission) => {
 addTrackedListener(strikeLoop.emitter, 'roundUpdate', (roundData) => {
   console.log('[APP] Round update received:', roundData);
 
-  // Send to both staff and display clients
+  // Send only to display clients
   const message = {
     type: 'roundUpdate',
     round: roundData.round,
@@ -265,19 +268,17 @@ addTrackedListener(strikeLoop.emitter, 'roundUpdate', (roundData) => {
     timeString: roundData.timeString
   };
 
-  broadcastToStaff(message);
   broadcastToDisplay(message);
 });
 
 addTrackedListener(strikeLoop.emitter, 'timeUpdate', (timeData) => {
-  // Send time updates to both client types
+  // Send time updates only to display clients (not to staff) - no logging
   const message = {
     type: 'timeUpdate',
     timeLeft: timeData.timeLeft,
     timeString: timeData.timeString
   };
 
-  broadcastToStaff(message);
   broadcastToDisplay(message);
 });
 
@@ -294,7 +295,12 @@ displayServer.listen(DISPLAY_PORT, () => {
 });
 
 // Cleanup function to remove all event listeners
+let isAppCleanedUp = false;
+
 function cleanup() {
+  if (isAppCleanedUp) return;
+  isAppCleanedUp = true;
+
   console.log('[APP] Cleaning up event listeners...');
   eventListeners.forEach(({ emitter, event, handler }) => {
     emitter.removeListener(event, handler);
@@ -303,5 +309,30 @@ function cleanup() {
 }
 
 // Handle graceful shutdown
-process.on('SIGTERM', cleanup);
-process.on('SIGINT', cleanup);
+let isShuttingDown = false;
+
+function gracefulShutdown() {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
+
+  console.log('[APP] Shutting down servers...');
+  cleanup();
+
+  // Close servers
+  staffServer.close(() => {
+    console.log('[STAFF-WS] Server closed');
+  });
+
+  displayServer.close(() => {
+    console.log('[DISPLAY-WS] Server closed');
+  });
+
+  // Force exit after 2 seconds if cleanup doesn't complete
+  setTimeout(() => {
+    console.log('[APP] Force exit');
+    process.exit(0);
+  }, 2000);
+}
+
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);

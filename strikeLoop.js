@@ -291,8 +291,8 @@ function startRoundTimer() {
         timeString: timeString
       });
 
-      // Log time updates every 15 seconds
-      if (currentRoundTimeLeft % 15 === 0) {
+      // Log time updates every 30 seconds
+      if (currentRoundTimeLeft % 30 === 0) {
         console.log(`[STRIKELOOP] Round ${gameRounds[currentRoundIndex].round} time remaining: ${timeString}`);
       }
     } else {
@@ -331,7 +331,12 @@ function finishGame() {
 }
 
 // Cleanup function to remove all game event listeners
+let isGameCleanedUp = false;
+
 function cleanupGameEventListeners() {
+  if (isGameCleanedUp) return;
+  isGameCleanedUp = true;
+
   console.log('[STRIKELOOP] Cleaning up game event listeners...');
   gameEventListeners.forEach(({ emitter, event, handler }) => {
     emitter.removeListener(event, handler);
@@ -614,6 +619,19 @@ module.exports = {
   currentRoundIndex: () => currentRoundIndex
 };
 
-// Handle graceful shutdown
-process.on('SIGTERM', cleanupGameEventListeners);
-process.on('SIGINT', cleanupGameEventListeners);
+// Handle graceful shutdown - prevent infinite loop
+let isCleaningUp = false;
+
+function handleShutdown() {
+  if (isCleaningUp) return;
+  isCleaningUp = true;
+
+  console.log('[STRIKELOOP] Shutting down...');
+  stopGame();
+
+  // Don't call cleanupGameEventListeners here as it's already called by stopGame()
+  process.exit(0);
+}
+
+process.on('SIGTERM', handleShutdown);
+process.on('SIGINT', handleShutdown);

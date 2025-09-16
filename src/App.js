@@ -168,29 +168,20 @@ function App() {
           </>
         ) : (
           <>
-            <h1>Team: {teamName}</h1>
-            
+            <h1>Game Control - Team: {teamName}</h1>
+
             <div className="status">
               Status: {isConnected ? '✔️ Connected' : '🔴 Disconnected'}
             </div>
 
-            <div className="game-info-container">
-              <div className="round-info">
-                <div className="round-display">
-                  Round {currentRound.round} - Level {currentRound.level}
-                </div>
-                <div className="mission-display">
-                  {currentRound.mission}
-                </div>
-              </div>
+            <div className="simulator-container">
+              <h2>Game Simulator</h2>
+              <p>Game is running. Use the display screen to monitor progress.</p>
+              <p>LED controls and Arduino inputs are active.</p>
 
-              <div className="countdown-container">
-                <div className="countdown-timer">
-                  {currentRound.timeString}
-                </div>
-                <div className="countdown-label">
-                  Round Time Remaining
-                </div>
+              <div className="simulator-note">
+                💡 <strong>Note:</strong> This is the control interface.
+                View game progress on the <strong>/game-in-progress</strong> display screen.
               </div>
             </div>
           </>

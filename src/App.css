@@ -83,48 +83,36 @@ input:focus {
   transform: translateY(0);
 }
 
-.game-info-container {
+.simulator-container {
   margin-top: 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
-
-.round-info {
   background: #f8f9fa;
-  padding: 20px;
+  padding: 30px;
   border-radius: 15px;
   border: 2px solid #e1e5e9;
+  text-align: left;
 }
 
-.round-display {
+.simulator-container h2 {
+  color: #333;
   font-size: 1.8em;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  margin-top: 0;
 }
 
-.mission-display {
-  font-size: 1.2em;
+.simulator-container p {
+  font-size: 1.1em;
   color: #555;
+  margin-bottom: 15px;
   line-height: 1.4;
-  font-style: italic;
 }
 
-.countdown-container {
+.simulator-note {
+  background: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 10px;
+  padding: 15px;
   margin-top: 20px;
-}
-
-.countdown-timer {
-  font-size: 4em;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10px;
-  font-family: 'Courier New', monospace;
-}
-
-.countdown-label {
-  font-size: 1.2em;
-  color: #666;
-  font-weight: 500;
+  color: #1565c0;
+  font-size: 1em;
+  line-height: 1.5;
 }
