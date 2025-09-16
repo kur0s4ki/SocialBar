@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-function GameInProgress() {
+function App() {
   // WebSocket connection state
   const [isConnected, setIsConnected] = useState(false);
   const [clientId, setClientId] = useState(null);
@@ -37,14 +37,14 @@ function GameInProgress() {
       if (isConnecting.current || (ws.current && ws.current.readyState === WebSocket.OPEN)) {
         return;
       }
-      
+
       isConnecting.current = true;
-      
+
       // Close existing connection if any
       if (ws.current) {
         ws.current.close();
       }
-      
+
       console.log('[GAMEINPROGRESS] Attempting to connect to Display WebSocket server...');
       ws.current = new WebSocket('ws://localhost:8081'); // Display WebSocket server
 
@@ -52,7 +52,7 @@ function GameInProgress() {
         console.log('[GAMEINPROGRESS] Connected to WebSocket server as new client');
         setIsConnected(true);
         isConnecting.current = false;
-        
+
         // Display clients don't need to send identification messages
         // The server automatically recognizes them as display clients
       };
@@ -61,7 +61,7 @@ function GameInProgress() {
         try {
           const data = JSON.parse(event.data);
           console.log('[GAMEINPROGRESS] Received from server:', data);
-          
+
           // Handle different message types
           switch (data.type) {
             case 'clientId':
@@ -78,8 +78,8 @@ function GameInProgress() {
               break;
             case 'missionUpdate':
               console.log('[GAMEINPROGRESS] Mission update:', data.mission);
-              setGameData(prevData => ({ 
-                ...prevData, 
+              setGameData(prevData => ({
+                ...prevData,
                 missionNumber: data.mission.number,
                 missionDescription: data.mission.description
               }));
@@ -176,7 +176,7 @@ function GameInProgress() {
           {isConnected ? `✔️ Connected ${clientId ? `(ID: ${clientId})` : ''}` : '🔴 Disconnected'}
         </div>
       </div>
-      
+
 
       <div className="max-w-[90vw] w-full space-y-12">
         {/* Top Row - Score Section */}
@@ -252,6 +252,4 @@ function GameInProgress() {
   )
 }
 
-export default GameInProgress;
-
-
+export default App;

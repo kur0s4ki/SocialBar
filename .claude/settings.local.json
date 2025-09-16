@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(del \"C:\\Users\\Amine\\Desktop\\fiddle\\SocialBar\\staff\\src\\GameInProgress.js\")"
     ],
     "deny": [],
     "ask": []
