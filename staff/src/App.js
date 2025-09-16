@@ -266,12 +266,7 @@ function App() {
             {!showSimulator ? (
               <>
                 <div className="countdown-container">
-                  <div className="countdown-timer">
-                    {timeString}
-                  </div>
-                  <div className="countdown-label">
-                    Time Remaining
-                  </div>
+
                 </div>
                 
                 <button 
