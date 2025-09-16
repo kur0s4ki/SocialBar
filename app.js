@@ -43,8 +43,6 @@ staffWss.on('connection', (ws) => {
       const client = [...staffClients.values()].find(c => c.ws === ws);
       const clientId = client ? client.id : 'unknown';
 
-      console.log(`[STAFF-WS] Message from ${clientId}:`, data);
-
       // Handle different message types
       switch (data.type) {
         case 'start':
