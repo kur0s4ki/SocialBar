@@ -354,61 +354,118 @@ function startMissionLEDs() {
   }
 }
 
-// Show the next target in a sequence mission
+// Show the next target in a sequence mission with all 8 LEDs active
 function showSequenceTarget() {
   if (!activeMission.sequence || sequenceProgress >= activeMission.sequence.length) return;
 
   const targetColor = activeMission.sequence[sequenceProgress];
-  const randomCircle = Math.floor(Math.random() * 8) + 1; // Random circle 1-8
-
-  console.log(`[STRIKELOOP] Sequence target ${sequenceProgress + 1}/${activeMission.sequence.length}: Circle ${randomCircle} -> ${targetColor.toUpperCase()}`);
-  controlLED(randomCircle, targetColor);
-
-  activeTargets = [{elementId: randomCircle, colorCode: targetColor}];
-}
-
-// Activate random LEDs for regular missions
-function activateRandomLEDs() {
-  if (!activeMission.targetColors) return;
+  const allColors = ['r', 'g', 'b', 'y'];
 
   // Clear existing targets
   activeTargets = [];
 
-  // Turn off all circles first
-  for (let i = 1; i <= 8; i++) {
-    controlLED(i, 'o');
-  }
+  // Pick a random circle for the target
+  const targetCircle = Math.floor(Math.random() * 8) + 1;
 
-  // Activate 2-4 random circles with mission colors
-  const numTargets = Math.floor(Math.random() * 3) + 2; // 2-4 targets
-  const usedCircles = new Set();
+  console.log(`[STRIKELOOP] Sequence ${sequenceProgress + 1}/${activeMission.sequence.length}: Circle ${targetCircle} -> ${targetColor.toUpperCase()}`);
 
-  for (let i = 0; i < numTargets; i++) {
-    let circleId;
-    do {
-      circleId = Math.floor(Math.random() * 8) + 1; // Circle 1-8
-    } while (usedCircles.has(circleId));
-    usedCircles.add(circleId);
-
-    // Choose color based on mission
+  // Activate ALL 8 circles with mixed colors for challenging sequence gameplay
+  for (let circleId = 1; circleId <= 8; circleId++) {
     let color;
-    if (activeMission.targetColors && activeMission.avoidColors) {
-      // Mix of target and avoid colors
-      const allColors = [...activeMission.targetColors, ...activeMission.avoidColors];
-      color = allColors[Math.floor(Math.random() * allColors.length)];
-    } else if (activeMission.targetColors) {
-      // Only target colors
-      color = activeMission.targetColors[Math.floor(Math.random() * activeMission.targetColors.length)];
+
+    if (circleId === targetCircle) {
+      // This is the target circle with the required sequence color
+      color = targetColor;
     } else {
-      // Random color
-      color = ['r', 'g', 'b', 'y'][Math.floor(Math.random() * 4)];
+      // Fill other circles with distractor colors
+      // 60% chance of wrong colors, 40% chance of neutral colors
+      if (Math.random() < 0.6) {
+        // Use colors from the sequence as distractors (confusing!)
+        const sequenceColors = [...new Set(activeMission.sequence)];
+        const wrongColors = sequenceColors.filter(c => c !== targetColor);
+        if (wrongColors.length > 0) {
+          color = wrongColors[Math.floor(Math.random() * wrongColors.length)];
+        } else {
+          // Fallback to any other color
+          color = allColors.filter(c => c !== targetColor)[Math.floor(Math.random() * 3)];
+        }
+      } else {
+        // Use any color except the target
+        const distractorColors = allColors.filter(c => c !== targetColor);
+        color = distractorColors[Math.floor(Math.random() * distractorColors.length)];
+      }
     }
 
     controlLED(circleId, color);
     activeTargets.push({elementId: circleId, colorCode: color});
   }
 
-  console.log(`[STRIKELOOP] Activated ${numTargets} LEDs for mission:`, activeTargets);
+  // Mark which one is the actual target for validation
+  const targetIndex = activeTargets.findIndex(t => t.elementId === targetCircle);
+  activeTargets[targetIndex].isSequenceTarget = true;
+
+  console.log(`[STRIKELOOP] Sequence LED Pattern:`, activeTargets.map(t =>
+    `${t.elementId}:${t.colorCode.toUpperCase()}${t.isSequenceTarget ? '*' : ''}`
+  ).join(' '));
+}
+
+// Activate ALL 8 LEDs with mixed colors for challenging gameplay
+function activateRandomLEDs() {
+  if (!activeMission.targetColors) return;
+
+  // Clear existing targets
+  activeTargets = [];
+
+  const allColors = ['r', 'g', 'b', 'y'];
+
+  // Always activate ALL 8 circles for maximum difficulty
+  for (let circleId = 1; circleId <= 8; circleId++) {
+    let color;
+
+    // Create strategic mix of colors based on mission type
+    if (activeMission.targetColors && activeMission.avoidColors) {
+      // For precision missions: guaranteed mix of target and avoid colors
+      const shouldBeTarget = Math.random() < 0.4; // 40% chance of target color
+      if (shouldBeTarget) {
+        color = activeMission.targetColors[Math.floor(Math.random() * activeMission.targetColors.length)];
+      } else {
+        // Mix of avoid colors and neutral colors
+        const distractors = [...activeMission.avoidColors];
+        // Add neutral colors (not target, not avoid)
+        allColors.forEach(c => {
+          if (!activeMission.targetColors.includes(c) && !activeMission.avoidColors.includes(c)) {
+            distractors.push(c);
+          }
+        });
+        color = distractors[Math.floor(Math.random() * distractors.length)];
+      }
+    }
+    else if (activeMission.targetColors) {
+      // For target-only missions: mix target colors with all other colors
+      const shouldBeTarget = Math.random() < 0.3; // 30% chance of target color
+      if (shouldBeTarget) {
+        color = activeMission.targetColors[Math.floor(Math.random() * activeMission.targetColors.length)];
+      } else {
+        // Use non-target colors as distractors
+        const distractors = allColors.filter(c => !activeMission.targetColors.includes(c));
+        color = distractors[Math.floor(Math.random() * distractors.length)];
+      }
+    }
+    else {
+      // Fallback: random color
+      color = allColors[Math.floor(Math.random() * 4)];
+    }
+
+    controlLED(circleId, color);
+    activeTargets.push({elementId: circleId, colorCode: color});
+  }
+
+  // Count target vs distractor circles for logging
+  const targetCircles = activeTargets.filter(t => activeMission.targetColors && activeMission.targetColors.includes(t.colorCode));
+  const avoidCircles = activeTargets.filter(t => activeMission.avoidColors && activeMission.avoidColors.includes(t.colorCode));
+
+  console.log(`[STRIKELOOP] All 8 LEDs activated! Targets: ${targetCircles.length}, Avoid: ${avoidCircles.length}, Neutral: ${8 - targetCircles.length - avoidCircles.length}`);
+  console.log(`[STRIKELOOP] LED Pattern:`, activeTargets.map(t => `${t.elementId}:${t.colorCode.toUpperCase()}`).join(' '));
 }
 
 // Process game input and validate against active mission
@@ -444,16 +501,17 @@ function validateInput(target, timestamp) {
   if (activeMission.sequence) {
     const expectedColor = activeMission.sequence[sequenceProgress];
 
-    if (colorCode === expectedColor) {
+    // For sequences, must click the correct circle with correct color
+    if (colorCode === expectedColor && target.isSequenceTarget) {
       valid = true;
       sequenceProgress++;
 
-      console.log(`[STRIKELOOP] Sequence progress: ${sequenceProgress}/${activeMission.sequence.length}`);
+      console.log(`[STRIKELOOP] ✓ Sequence progress: ${sequenceProgress}/${activeMission.sequence.length}`);
 
       if (sequenceProgress >= activeMission.sequence.length) {
         // Sequence completed
         pointsAwarded = activeMission.pointsPerSequence || 100;
-        console.log(`[STRIKELOOP] SEQUENCE COMPLETED! +${pointsAwarded} points`);
+        console.log(`[STRIKELOOP] 🎉 SEQUENCE COMPLETED! +${pointsAwarded} points`);
 
         // Reset sequence for next round
         sequenceProgress = 0;
@@ -461,10 +519,17 @@ function validateInput(target, timestamp) {
       } else {
         // Show next target in sequence
         setTimeout(() => showSequenceTarget(), 500);
-        pointsAwarded = (activeMission.pointsPerSequence || 100) / activeMission.sequence.length;
+        pointsAwarded = Math.floor((activeMission.pointsPerSequence || 100) / activeMission.sequence.length);
       }
     } else {
-      console.log(`[STRIKELOOP] Wrong sequence! Expected ${expectedColor.toUpperCase()}, got ${colorCode.toUpperCase()}`);
+      // Wrong click in sequence
+      if (target.isSequenceTarget) {
+        console.log(`[STRIKELOOP] ❌ Wrong color! Expected ${expectedColor.toUpperCase()}, got ${colorCode.toUpperCase()}`);
+      } else {
+        console.log(`[STRIKELOOP] ❌ Wrong circle! Need to click the ${expectedColor.toUpperCase()} circle`);
+      }
+
+      // Apply penalty
       if (activeMission.penaltyPerMiss) {
         pointsAwarded = activeMission.penaltyPerMiss;
       }
@@ -490,18 +555,18 @@ function validateInput(target, timestamp) {
         }
       }
 
-      console.log(`[STRIKELOOP] TARGET HIT! ${colorCode.toUpperCase()} circle +${pointsAwarded} points`);
+      console.log(`[STRIKELOOP] ✅ TARGET HIT! ${colorCode.toUpperCase()} circle +${pointsAwarded} points`);
       missionTargetsHit++;
     }
     // Check if it's an avoid color
     else if (activeMission.avoidColors && activeMission.avoidColors.includes(colorCode)) {
       valid = false;
       pointsAwarded = activeMission.penaltyPerMiss || -10;
-      console.log(`[STRIKELOOP] WRONG TARGET! ${colorCode.toUpperCase()} circle ${pointsAwarded} points`);
+      console.log(`[STRIKELOOP] ❌ PENALTY! ${colorCode.toUpperCase()} circle ${pointsAwarded} points`);
     }
     // Neutral hit (neither target nor avoid)
     else {
-      console.log(`[STRIKELOOP] Neutral hit: ${colorCode.toUpperCase()} circle (no points)`);
+      console.log(`[STRIKELOOP] ⚪ Neutral: ${colorCode.toUpperCase()} circle (no points)`);
     }
 
     // Generate new targets for continuous play
