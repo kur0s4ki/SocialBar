@@ -149,6 +149,14 @@ html, body, #root, .App {
   margin-top: 0.5rem;
 }
 
+.mt-8 {
+  margin-top: 2rem;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
 .pr-80 {
   padding-right: 20rem;
 }

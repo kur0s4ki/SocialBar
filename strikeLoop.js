@@ -302,10 +302,23 @@ function startRoundTimer() {
 
       if (currentRoundIndex < gameRounds.length) {
         console.log(`[STRIKELOOP] Round ${gameRounds[currentRoundIndex - 1].round} completed, starting next round...`);
+
+        // Add random score at end of each round
+        const randomScoreIncrease = Math.floor(Math.random() * 500) + 100; // Random between 100-600 points
+        const newScore = gameState.score + randomScoreIncrease;
+        updateScore(newScore);
+        console.log(`[STRIKELOOP] Round completed! Added ${randomScoreIncrease} points. New total: ${newScore}`);
+
         setTimeout(() => {
           startNextRound();
         }, 2000); // 2-second break between rounds
       } else {
+        // Add final score bonus when game completes
+        const finalBonus = Math.floor(Math.random() * 1000) + 500; // Random between 500-1500 points
+        const finalScore = gameState.score + finalBonus;
+        updateScore(finalScore);
+        console.log(`[STRIKELOOP] Game completed! Final bonus: ${finalBonus} points. Final score: ${finalScore}`);
+
         finishGame();
       }
     }

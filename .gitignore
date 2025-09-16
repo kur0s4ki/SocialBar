@@ -7,6 +7,9 @@
 /.pnp
 .pnp.js
 
+/staff/build
+/game/build
+
 # testing
 /coverage
 

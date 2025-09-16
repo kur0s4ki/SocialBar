@@ -169,15 +169,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-slate-900 px-8 py-2 font-sans flex items-center justify-center">
-      {/* Connection Status Indicator */}
-      <div className="fixed top-4 right-4 z-50">
-        <div className={`px-4 py-2 rounded-lg text-white font-bold ${
-          isConnected ? 'bg-green-600' : 'bg-red-600'
-        }`}>
-          {isConnected ? `✔️ Connected ${clientId ? `(ID: ${clientId})` : ''}` : '🔴 Disconnected'}
-        </div>
-      </div>
-
       <div className="max-w-[90vw] w-full space-y-12">
         {/* Top Row - Score Section */}
         <div className="flex gap-8">
@@ -216,7 +207,7 @@ function App() {
 
           {/* Mission Text */}
           <div className="text-center pr-80">
-            <p className="text-white text-7xl font-medium">
+            <p className="text-white text-7xl font-medium mt-8 uppercase">
               {currentRound.mission}
             </p>
           </div>
