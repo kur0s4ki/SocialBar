@@ -76,8 +76,8 @@ let currentRoundIndex = 0;
 
 // Game state variables for dynamic data transfer
 let gameState = {
-  manche: 1,
-  niveau: 1,
+  round: 1,
+  level: 1,
   score: 0,
   missionNumber: 1,
   multiplier: 'x1',
@@ -242,26 +242,26 @@ function startNextRound() {
   console.log(`[STRIKELOOP] Duration: ${currentRound.duration} seconds`);
 
   // Update game state
-  gameState.manche = currentRound.round;
-  gameState.niveau = currentRound.level;
+  gameState.round = currentRound.round;
+  gameState.level = currentRound.level;
   gameState.missionNumber = currentRound.round;
   gameState.missionDescription = currentRound.mission;
 
-  // Emit round update to clients
-  emitter.emit('roundUpdate', {
+  // Emit comprehensive game update - all data in one message
+  emitter.emit('gameUpdate', {
+    // Round information
     round: currentRound.round,
     level: currentRound.level,
     mission: currentRound.mission,
     duration: currentRound.duration,
     timeLeft: currentRoundTimeLeft,
-    timeString: formatTime(currentRoundTimeLeft)
-  });
-
-  // Emit game data update
-  emitter.emit('gameDataUpdate', gameState);
-  emitter.emit('missionUpdate', {
-    number: currentRound.round,
-    description: currentRound.mission
+    timeString: formatTime(currentRoundTimeLeft),
+    // Game state information
+    score: gameState.score,
+    multiplier: gameState.multiplier,
+    // Mission information
+    missionNumber: currentRound.round,
+    missionDescription: currentRound.mission
   });
 
   // Start round timer
@@ -360,8 +360,8 @@ function cleanupGameEventListeners() {
 // Initialize game state and send to frontend
 function initializeGameState() {
   gameState = {
-    manche: 1,
-    niveau: 1,
+    round: 1,
+    level: 1,
     score: 0,
     missionNumber: 1,
     multiplier: 'x1',
@@ -395,11 +395,11 @@ function updateMission(missionNumber, description) {
 }
 
 // Function to update round/level (to be called from game logic later)
-function updateRound(manche, niveau) {
-  gameState.manche = manche;
-  gameState.niveau = niveau;
-  console.log('[STRIKELOOP] Round updated:', { manche, niveau });
-  emitter.emit('gameDataUpdate', { manche, niveau });
+function updateRound(round, level) {
+  gameState.round = round;
+  gameState.level = level;
+  console.log('[STRIKELOOP] Round updated:', { round, level });
+  emitter.emit('gameDataUpdate', { round, level });
 }
 
 // Function to update multiplier (to be called from game logic later)
@@ -437,12 +437,12 @@ function updateGameDisplay(updates) {
   if (updates.hasOwnProperty('round') || updates.hasOwnProperty('level')) {
     const updateData = {};
     if (updates.hasOwnProperty('round')) {
-      gameState.manche = updates.round;
-      updateData.manche = updates.round;
+      gameState.round = updates.round;
+      updateData.round = updates.round;
     }
     if (updates.hasOwnProperty('level')) {
-      gameState.niveau = updates.level;
-      updateData.niveau = updates.level;
+      gameState.level = updates.level;
+      updateData.level = updates.level;
     }
     emitter.emit('gameDataUpdate', updateData);
     console.log('[STRIKELOOP] Round/Level updated:', updateData);

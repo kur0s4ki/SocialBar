@@ -227,46 +227,22 @@ addTrackedListener(strikeLoop.emitter, 'gameFinished', () => {
   });
 });
 
-// Add new event listeners for dynamic game data (display clients only)
-addTrackedListener(strikeLoop.emitter, 'gameDataUpdate', (gameData) => {
-  console.log('[APP] Game data update received:', gameData);
+// Unified game update listener - handles all game data in one event
+addTrackedListener(strikeLoop.emitter, 'gameUpdate', (gameUpdateData) => {
+  console.log('[APP] Game update received:', gameUpdateData);
   broadcastToDisplay({
-    type: 'gameData',
-    gameData: gameData
+    type: 'gameUpdate',
+    ...gameUpdateData
   });
 });
 
+// Keep separate score update listener for mid-round score changes
 addTrackedListener(strikeLoop.emitter, 'scoreUpdate', (score) => {
   console.log('[APP] Score update received:', score);
   broadcastToDisplay({
     type: 'scoreUpdate',
     score: score
   });
-});
-
-addTrackedListener(strikeLoop.emitter, 'missionUpdate', (mission) => {
-  console.log('[APP] Mission update received:', mission);
-  broadcastToDisplay({
-    type: 'missionUpdate',
-    mission: mission
-  });
-});
-
-addTrackedListener(strikeLoop.emitter, 'roundUpdate', (roundData) => {
-  console.log('[APP] Round update received:', roundData);
-
-  // Send only to display clients
-  const message = {
-    type: 'roundUpdate',
-    round: roundData.round,
-    level: roundData.level,
-    mission: roundData.mission,
-    duration: roundData.duration,
-    timeLeft: roundData.timeLeft,
-    timeString: roundData.timeString
-  };
-
-  broadcastToDisplay(message);
 });
 
 addTrackedListener(strikeLoop.emitter, 'timeUpdate', (timeData) => {

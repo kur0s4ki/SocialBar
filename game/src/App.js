@@ -10,8 +10,8 @@ function App() {
 
   // Dynamic game data state
   const [gameData, setGameData] = useState({
-    manche: 1,
-    niveau: 1,
+    round: 1,
+    level: 1,
     score: 0,
     missionNumber: 1,
     multiplier: 'x1',
@@ -69,24 +69,9 @@ function App() {
               setClientId(data.clientId);
               console.log('[GAMEINPROGRESS] Assigned client ID:', data.clientId);
               break;
-            case 'gameData':
-              console.log('[GAMEINPROGRESS] Updating game data:', data.gameData);
-              setGameData(prevData => ({ ...prevData, ...data.gameData }));
-              break;
-            case 'scoreUpdate':
-              console.log('[GAMEINPROGRESS] Score update:', data.score);
-              setGameData(prevData => ({ ...prevData, score: data.score }));
-              break;
-            case 'missionUpdate':
-              console.log('[GAMEINPROGRESS] Mission update:', data.mission);
-              setGameData(prevData => ({
-                ...prevData,
-                missionNumber: data.mission.number,
-                missionDescription: data.mission.description
-              }));
-              break;
-            case 'roundUpdate':
-              console.log('[GAMEINPROGRESS] Round update received:', data);
+            case 'gameUpdate':
+              console.log('[GAMEINPROGRESS] Game update received:', data);
+              // Update current round data
               setCurrentRound({
                 round: data.round,
                 level: data.level,
@@ -95,14 +80,20 @@ function App() {
                 timeLeft: data.timeLeft,
                 timeString: data.timeString
               });
-              // Also update game data manche/niveau
+              // Update game data
               setGameData(prevData => ({
                 ...prevData,
-                manche: data.round,
-                niveau: data.level,
-                missionNumber: data.round,
-                missionDescription: data.mission
+                round: data.round,
+                level: data.level,
+                score: data.score,
+                multiplier: data.multiplier,
+                missionNumber: data.missionNumber,
+                missionDescription: data.missionDescription
               }));
+              break;
+            case 'scoreUpdate':
+              console.log('[GAMEINPROGRESS] Score update:', data.score);
+              setGameData(prevData => ({ ...prevData, score: data.score }));
               break;
             case 'timeUpdate':
               // No logging for time updates to reduce spam
@@ -116,8 +107,8 @@ function App() {
               console.log('[GAMEINPROGRESS] Game reset received');
               // Reset to default values
               setGameData({
-                manche: 1,
-                niveau: 1,
+                round: 1,
+                level: 1,
                 score: 0,
                 missionNumber: 1,
                 multiplier: 'x1',
