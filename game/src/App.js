@@ -69,26 +69,37 @@ function App() {
               setClientId(data.clientId);
               console.log('[GAMEINPROGRESS] Assigned client ID:', data.clientId);
               break;
-            case 'gameUpdate':
-              console.log('[GAMEINPROGRESS] Game update received:', data);
-              // Update current round data
-              setCurrentRound({
+            case 'roundUpdate':
+              console.log('[GAMEINPROGRESS] Round update received:', data);
+              setCurrentRound(prev => ({
+                ...prev,
                 round: data.round,
                 level: data.level,
-                mission: data.mission,
-                duration: data.duration,
-                timeLeft: data.timeLeft,
-                timeString: data.timeString
-              });
-              // Update game data
+                duration: data.duration || prev.duration
+              }));
               setGameData(prevData => ({
                 ...prevData,
                 round: data.round,
-                level: data.level,
-                score: data.score,
-                multiplier: data.multiplier,
-                missionNumber: data.missionNumber,
-                missionDescription: data.missionDescription
+                level: data.level
+              }));
+              break;
+            case 'missionUpdate':
+              console.log('[GAMEINPROGRESS] Mission update received:', data);
+              setCurrentRound(prev => ({
+                ...prev,
+                mission: data.description
+              }));
+              setGameData(prevData => ({
+                ...prevData,
+                missionNumber: data.number,
+                missionDescription: data.description
+              }));
+              break;
+            case 'multiplierUpdate':
+              console.log('[GAMEINPROGRESS] Multiplier update received:', data);
+              setGameData(prevData => ({
+                ...prevData,
+                multiplier: data.multiplier
               }));
               break;
             case 'scoreUpdate':
@@ -190,7 +201,7 @@ function App() {
           <div className="absolute top-half right-12 transform translate-y-neg-half">
             <div className="w-64 h-64 bg-slate-900 border-8 border-red-500 rounded-full flex items-center justify-center relative">
               {/* Round timer display - seconds only */}
-              <span className="text-white text-9xl font-bold font-mono">{currentRound.timeLeft}</span>
+              <span className="text-white text-8xl font-bold font-mono">{currentRound.timeLeft}</span>
               {/* Inner Circle */}
               <div className="absolute w-60 h-60 bg-transparent border-8 border-transparent border-t-cyan-400 border-r-cyan-400 rounded-full z-10"></div>
             </div>

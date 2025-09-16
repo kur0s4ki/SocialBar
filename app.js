@@ -227,12 +227,28 @@ addTrackedListener(strikeLoop.emitter, 'gameFinished', () => {
   });
 });
 
-// Unified game update listener - handles all game data in one event
-addTrackedListener(strikeLoop.emitter, 'gameUpdate', (gameUpdateData) => {
-  console.log('[APP] Game update received:', gameUpdateData);
+// Individual event listeners for separation of concerns
+addTrackedListener(strikeLoop.emitter, 'roundUpdate', (roundData) => {
+  console.log('[APP] Round update received:', roundData);
   broadcastToDisplay({
-    type: 'gameUpdate',
-    ...gameUpdateData
+    type: 'roundUpdate',
+    ...roundData
+  });
+});
+
+addTrackedListener(strikeLoop.emitter, 'missionUpdate', (missionData) => {
+  console.log('[APP] Mission update received:', missionData);
+  broadcastToDisplay({
+    type: 'missionUpdate',
+    ...missionData
+  });
+});
+
+addTrackedListener(strikeLoop.emitter, 'multiplierUpdate', (multiplier) => {
+  console.log('[APP] Multiplier update received:', multiplier);
+  broadcastToDisplay({
+    type: 'multiplierUpdate',
+    multiplier: multiplier
   });
 });
 
