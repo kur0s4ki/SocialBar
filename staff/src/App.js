@@ -5,12 +5,9 @@ function App() {
   const [teamName, setTeamName] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes in seconds
-  const [timeString, setTimeString] = useState('15:00');
   const [showSimulator, setShowSimulator] = useState(false);
   const [ledStates, setLedStates] = useState({});
   const ws = useRef(null);
-  const countdownInterval = useRef(null);
   const isConnecting = useRef(false);
 
   useEffect(() => {
@@ -61,8 +58,6 @@ function App() {
           handleLEDControl(data);
         } else if (data.type === 'timeUpdate') {
           console.log('[FRONTEND] Time update received:', data);
-          setTimeLeft(data.timeLeft);
-          setTimeString(data.timeString);
         }
       };
 
@@ -87,9 +82,6 @@ function App() {
       if (ws.current) {
         ws.current.close();
       }
-      if (countdownInterval.current) {
-        clearInterval(countdownInterval.current);
-      }
     };
   }, []);
 
@@ -100,9 +92,8 @@ function App() {
 
   const resetGame = () => {
     setIsStarted(false);
-    setTimeLeft(15 * 60); // Default fallback
-    setTimeString('15:00'); // Default fallback
-    // Server manages time, no local interval to clear
+    setShowSimulator(false);
+    setLedStates({});
   };
 
   const handleStart = () => {

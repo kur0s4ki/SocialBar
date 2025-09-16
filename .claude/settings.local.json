@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(node:*)",
-      "Bash(del \"C:\\Users\\Amine\\Desktop\\fiddle\\SocialBar\\staff\\src\\GameInProgress.js\")"
+      "Bash(del \"C:\\Users\\Amine\\Desktop\\fiddle\\SocialBar\\staff\\src\\GameInProgress.js\")",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []
