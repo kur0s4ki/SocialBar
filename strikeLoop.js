@@ -1316,12 +1316,9 @@ function validateArcadeInput(target, timestamp) {
         activateMultiplier(3);
       }
     } else {
-      // Apply penalty for wrong hits in green-only mode
-      if (activeMission.arcadeMode === 'green-only' && target.colorCode !== 'g') {
-        pointsAwarded = activeMission.traps?.penalty || -100;
-        console.log(`[STRIKELOOP] ❌ WRONG COLOR PENALTY! Hit ${target.colorCode?.toUpperCase()}, need GREEN - Penalty: ${pointsAwarded}`);
-        cancelMultiplier();
-      }
+      // Only apply penalty for trap hits (red), not neutral hits (blue/other colors)
+      // Trap penalties are already handled above in the trap detection section
+      // No additional penalty needed here for green-only mode
     }
   }
 
@@ -1366,14 +1363,14 @@ function processArcadeMode(target, timestamp) {
   }
 }
 
-// Green-only mode: only green targets are valid
+// Green-only mode: only green targets are valid, other colors are neutral (no penalty)
 function processGreenOnlyMode(target) {
   if (target.colorCode === 'g') {
     console.log(`[STRIKELOOP] ✅ GREEN HIT! Circle ${target.elementId}`);
     return true;
   } else {
-    console.log(`[STRIKELOOP] ❌ Wrong color! Need GREEN, got ${target.colorCode?.toUpperCase()}`);
-    consecutiveValidHits = 0; // Reset streak on wrong color
+    console.log(`[STRIKELOOP] ⚪ NEUTRAL HIT: ${target.colorCode?.toUpperCase()} (ignored, no penalty)`);
+    // Don't reset streak for neutral hits - only traps should do that
     return false;
   }
 }
