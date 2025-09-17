@@ -1427,7 +1427,7 @@ function processSequenceMode(target) {
   if (target.isTrap || target.colorCode === 'r') {
     console.log(`[STRIKELOOP] ❌ TRAP HIT in sequence! Resetting sequence progress.`);
     sequenceStep = 0;
-    consecutiveValidHits = 0;
+    consecutiveValidHits = 0; // Reset consecutive sequence count
     return false;
   }
 
@@ -1439,12 +1439,15 @@ function processSequenceMode(target) {
     if (sequenceStep >= sequence.length) {
       console.log(`[STRIKELOOP] 🎉 SEQUENCE COMPLETED! Restarting...`);
       sequenceStep = 0;
+      consecutiveValidHits++; // Increment consecutive complete sequences
+      console.log(`[STRIKELOOP] Consecutive complete sequences: ${consecutiveValidHits}`);
+      return true; // Only return true on complete sequence
     }
-    return true;
+    return false; // Individual hits don't count as valid for scoring
   } else {
     console.log(`[STRIKELOOP] ❌ Wrong sequence! Expected ${expectedColor.toUpperCase()}, got ${target.colorCode?.toUpperCase()}`);
     sequenceStep = 0; // Reset sequence on wrong hit
-    consecutiveValidHits = 0;
+    consecutiveValidHits = 0; // Reset consecutive sequence count
     return false;
   }
 }
@@ -1515,6 +1518,24 @@ function processComboSystemMode(target) {
 
 // Calculate points based on target and current game state
 function calculatePoints(target) {
+  // For sequence mode, use pointsPerHit as points per complete sequence
+  if (activeMission.arcadeMode === 'sequence') {
+    let basePoints = activeMission.pointsPerHit || 60;
+
+    // Apply multiplier based on consecutive complete sequences
+    if (consecutiveValidHits >= 2) {
+      basePoints *= 2; // x2 for 2+ consecutive sequences
+      console.log(`[STRIKELOOP] Sequence x2 multiplier applied! (${consecutiveValidHits} consecutive sequences)`);
+    }
+    if (consecutiveValidHits >= 3) {
+      basePoints = (activeMission.pointsPerHit || 60) * 3; // x3 for 3+ consecutive sequences
+      console.log(`[STRIKELOOP] Sequence x3 multiplier applied! (${consecutiveValidHits} consecutive sequences)`);
+    }
+
+    return basePoints;
+  }
+
+  // For other modes, use regular point calculation
   let basePoints = activeMission.pointsPerHit || 50;
 
   // Size bonus
