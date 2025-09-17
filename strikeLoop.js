@@ -456,15 +456,22 @@ function startLEDRefresh() {
     clearInterval(ledRefreshInterval);
   }
 
-  // Refresh LEDs every 3-5 seconds for continuous play
-  const refreshDelay = Math.floor(Math.random() * 2000) + 3000; // 3-5 seconds
-  ledRefreshInterval = setInterval(() => {
-    if (activeMission && !activeMission.sequence) {
-      activateRandomLEDs();
-    }
-  }, refreshDelay);
+  // Only start refresh for dynamic arcade modes (not green-only or sequence)
+  if (activeMission && activeMission.arcadeMode &&
+      activeMission.arcadeMode !== 'sequence' &&
+      activeMission.arcadeMode !== 'green-only') {
+    // Refresh LEDs every 3-5 seconds for continuous play
+    const refreshDelay = Math.floor(Math.random() * 2000) + 3000; // 3-5 seconds
+    ledRefreshInterval = setInterval(() => {
+      if (activeMission && activeMission.arcadeMode !== 'sequence' && activeMission.arcadeMode !== 'green-only') {
+        activateArcadeLEDs(); // Use arcade LED system, not old random system
+      }
+    }, refreshDelay);
 
-  console.log(`[STRIKELOOP] LED refresh started every ${Math.floor(refreshDelay/1000)} seconds`);
+    console.log(`[STRIKELOOP] LED refresh started every ${Math.floor(refreshDelay/1000)} seconds`);
+  } else {
+    console.log(`[STRIKELOOP] LED refresh skipped for ${activeMission?.arcadeMode || 'unknown'} mode`);
+  }
 }
 
 // Stop LED refresh and clear all LEDs
@@ -492,8 +499,14 @@ function startArcadeLEDs() {
 
   console.log(`[STRIKELOOP] Starting arcade LEDs for mode: ${activeMission.arcadeMode}`);
 
-  // Activate LEDs based on arcade configuration
-  activateArcadeLEDs();
+  // Handle sequence mode differently - it needs dynamic target display
+  if (activeMission.arcadeMode === 'sequence') {
+    console.log('[STRIKELOOP] Sequence mode detected - using dynamic target display');
+    showSequenceTarget();
+  } else {
+    // Activate LEDs based on arcade configuration for other modes
+    activateArcadeLEDs();
+  }
 }
 
 // Show the next target in a sequence mission with all 8 LEDs active
@@ -1095,8 +1108,15 @@ function setupKeyboardListener() {
 function activateArcadeLEDs() {
   if (!activeMission) return;
 
-  // Clear existing targets
+  // Clear existing blink intervals to prevent old traps from interfering
+  if (activeMission.blinkIntervals) {
+    activeMission.blinkIntervals.forEach(interval => clearInterval(interval));
+    activeMission.blinkIntervals = [];
+  }
+
+  // Clear existing targets and traps
   activeTargets = [];
+  trapPositions = [];
 
   const config = activeMission;
   const largePositions = [1, 2, 3, 4]; // Large hole positions (outer circles)
@@ -1172,19 +1192,33 @@ function setupTrapPosition(position) {
   activeTargets.push(trap);
   trapPositions.push(trap);
 
-  // Start blinking red LED for trap
-  startBlinkingLED(position, 'r');
+  // For Level 2 green-only mode, use solid red instead of blinking to avoid interference
+  if (activeMission.arcadeMode === 'green-only') {
+    console.log(`[STRIKELOOP] Setting up solid red trap at position ${position} (green-only mode)`);
+    controlLED(position, 'r');
+  } else {
+    // Start blinking red LED for trap in other modes
+    startBlinkingLED(position, 'r');
+  }
 }
 
 // Setup additional traps based on configuration
 function setupAdditionalTraps(trapConfig) {
   const allPositions = [1, 2, 3, 4, 5, 6, 7, 8];
   const existingTraps = trapPositions.map(t => t.elementId);
-  const availablePositions = allPositions.filter(pos => !existingTraps.includes(pos) && !activeTargets.some(t => t.elementId === pos && t.isValid));
+  const existingTargets = activeTargets.filter(t => t.isValid).map(t => t.elementId);
 
-  const additionalTraps = Math.min(trapConfig.count - trapPositions.length, availablePositions.length);
+  // Only use positions that are not already assigned to valid targets or existing traps
+  const availablePositions = allPositions.filter(pos =>
+    !existingTraps.includes(pos) && !existingTargets.includes(pos)
+  );
 
-  for (let i = 0; i < additionalTraps; i++) {
+  const neededTraps = trapConfig.count - trapPositions.length;
+  const trapsToAdd = Math.min(neededTraps, availablePositions.length);
+
+  console.log(`[STRIKELOOP] Setting up additional traps: need ${neededTraps}, available positions: [${availablePositions.join(',')}], adding ${trapsToAdd}`);
+
+  for (let i = 0; i < trapsToAdd; i++) {
     const position = availablePositions[Math.floor(Math.random() * availablePositions.length)];
     const index = availablePositions.indexOf(position);
     if (index > -1) availablePositions.splice(index, 1);
@@ -1335,9 +1369,18 @@ function validateArcadeInput(target, timestamp) {
     console.log(`[STRIKELOOP] Score: ${gameState.score} -> ${newScore} (${pointsAwarded > 0 ? '+' : ''}${pointsAwarded})`);
   }
 
-  // Refresh LEDs after hit (always refresh for arcade modes)
+  // Refresh LEDs after hit - handle different modes appropriately
   setTimeout(() => {
-    activateArcadeLEDs();
+    if (activeMission.arcadeMode === 'sequence') {
+      // For sequence mode, show next sequence target instead of refreshing
+      showSequenceTarget();
+    } else if (activeMission.arcadeMode === 'green-only') {
+      // For green-only mode, no refresh needed - it's a static pattern
+      console.log('[STRIKELOOP] Green-only mode: no LED refresh after hit');
+    } else {
+      // For other dynamic arcade modes, refresh the LED pattern
+      activateArcadeLEDs();
+    }
   }, 300);
 }
 
