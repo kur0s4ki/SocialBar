@@ -499,10 +499,10 @@ function startArcadeLEDs() {
 
   console.log(`[STRIKELOOP] Starting arcade LEDs for mode: ${activeMission.arcadeMode}`);
 
-  // Handle sequence mode differently - it needs dynamic target display
+  // Handle sequence mode with static colored targets like other arcade modes
   if (activeMission.arcadeMode === 'sequence') {
-    console.log('[STRIKELOOP] Sequence mode detected - using dynamic target display');
-    showSequenceTarget();
+    console.log('[STRIKELOOP] Sequence mode detected - using static colored targets');
+    activateArcadeLEDs();
   } else {
     // Activate LEDs based on arcade configuration for other modes
     activateArcadeLEDs();
@@ -511,9 +511,9 @@ function startArcadeLEDs() {
 
 // Show the next target in a sequence mission with all 8 LEDs active
 function showSequenceTarget() {
-  if (!activeMission.sequence || sequenceProgress >= activeMission.sequence.length) return;
+  if (!activeMission.sequence || sequenceStep >= activeMission.sequence.length) return;
 
-  const targetColor = activeMission.sequence[sequenceProgress];
+  const targetColor = activeMission.sequence[sequenceStep];
   const allColors = ['r', 'g', 'b', 'y'];
 
   // Clear existing targets
@@ -522,7 +522,7 @@ function showSequenceTarget() {
   // Pick a random circle for the target
   const targetCircle = Math.floor(Math.random() * 8) + 1;
 
-  console.log(`[STRIKELOOP] Sequence ${sequenceProgress + 1}/${activeMission.sequence.length}: Circle ${targetCircle} -> ${targetColor.toUpperCase()}`);
+  console.log(`[STRIKELOOP] Sequence ${sequenceStep + 1}/${activeMission.sequence.length}: Circle ${targetCircle} -> ${targetColor.toUpperCase()}`);
 
   // Activate ALL 8 circles with mixed colors for challenging sequence gameplay
   for (let circleId = 1; circleId <= 8; circleId++) {
@@ -1192,9 +1192,9 @@ function setupTrapPosition(position) {
   activeTargets.push(trap);
   trapPositions.push(trap);
 
-  // For Level 2 green-only mode, use solid red instead of blinking to avoid interference
-  if (activeMission.arcadeMode === 'green-only') {
-    console.log(`[STRIKELOOP] Setting up solid red trap at position ${position} (green-only mode)`);
+  // For green-only and sequence modes, use solid red instead of blinking to avoid interference
+  if (activeMission.arcadeMode === 'green-only' || activeMission.arcadeMode === 'sequence') {
+    console.log(`[STRIKELOOP] Setting up solid red trap at position ${position} (${activeMission.arcadeMode} mode)`);
     controlLED(position, 'r');
   } else {
     // Start blinking red LED for trap in other modes
@@ -1372,8 +1372,8 @@ function validateArcadeInput(target, timestamp) {
   // Refresh LEDs after hit - handle different modes appropriately
   setTimeout(() => {
     if (activeMission.arcadeMode === 'sequence') {
-      // For sequence mode, show next sequence target instead of refreshing
-      showSequenceTarget();
+      // For sequence mode, no refresh needed - static pattern with sequence validation
+      console.log('[STRIKELOOP] Sequence mode: no LED refresh after hit');
     } else if (activeMission.arcadeMode === 'green-only') {
       // For green-only mode, no refresh needed - it's a static pattern
       console.log('[STRIKELOOP] Green-only mode: no LED refresh after hit');
@@ -1418,11 +1418,20 @@ function processGreenOnlyMode(target) {
   }
 }
 
-// Sequence mode: Green -> Blue -> Green pattern
+// Sequence mode: Green -> Blue -> Green pattern (any green/blue targets work)
 function processSequenceMode(target) {
   const sequence = activeMission.sequence || ['g', 'b', 'g'];
   const expectedColor = sequence[sequenceStep % sequence.length];
 
+  // Check for trap hits first
+  if (target.isTrap || target.colorCode === 'r') {
+    console.log(`[STRIKELOOP] ❌ TRAP HIT in sequence! Resetting sequence progress.`);
+    sequenceStep = 0;
+    consecutiveValidHits = 0;
+    return false;
+  }
+
+  // Check if hit matches expected sequence color
   if (target.colorCode === expectedColor) {
     console.log(`[STRIKELOOP] ✅ SEQUENCE ${sequenceStep + 1}/${sequence.length}: ${expectedColor.toUpperCase()} HIT!`);
     sequenceStep++;
