@@ -154,7 +154,10 @@ function broadcastToStaff(message) {
     }
   });
 
+  // Reduced logging - only show important broadcasts
+if (message.type !== 'ledControl' && message.type !== 'timeUpdate') {
   console.log(`[STAFF-WS] Broadcasted message type '${message.type}' to ${sentCount} staff clients`);
+}
 }
 
 // Broadcast function to send messages to display clients
@@ -172,8 +175,8 @@ function broadcastToDisplay(message) {
     }
   });
 
-  // Don't log timeUpdate broadcasts to reduce spam
-  if (message.type !== 'timeUpdate') {
+  // Reduced logging - only show important broadcasts
+  if (message.type !== 'ledControl' && message.type !== 'timeUpdate') {
     console.log(`[DISPLAY-WS] Broadcasted message type '${message.type}' to ${sentCount} display clients`);
   }
 }
