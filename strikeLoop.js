@@ -82,164 +82,130 @@ let gameState = {
   missionNumber: 1,
   multiplier: 'x1',
   missionDescription: 'Waiting for mission...',
-  totalGameTimeMinutes: 15 
+  totalGameTimeMinutes: 15
 };
+
+let localScore = 0;
+let goalAchieved = false;
 
 
 let gameRounds = [
-  
   {
     round: 1, level: 1,
-    mission: 'Touchez uniquement les VERTS. Évitez les rouges !',
-    duration: 25,
-    arcadeMode: 'green-only',
-    largeHoles: { active: 4, color: 'g' }, 
-    mediumHoles: { active: 4, color: 'trap', blinking: true }, 
-    smallHoles: { active: 0 }, 
-    traps: { count: 4, penalty: -100, reactivateDelay: 0 },
-    multiplier: { x2After: 2, x3After: 3, x2Duration: 10, x3Duration: 12 },
-    pointsPerHit: 50
+    mission: 'Touchez uniquement les verts et les bleus !',
+    duration: 30,
+    goalScore: 1000,
+    arcadeMode: 'green-blue-combo',
+    greenTargets: [1, 2, 3, 4],
+    blueTargets: [5, 6, 7, 8],
+    pointsPerGreen: 60,
+    pointsPerBlue: 80
   },
   {
     round: 1, level: 2,
-    mission: 'Touchez uniquement les VERTS. Évitez les rouges !',
-    duration: 26,
-    arcadeMode: 'green-only',
-    largeHoles: { active: 4, color: 'g' },
-    mediumHoles: { active: 2, color: 'b' }, 
-    smallHoles: { active: 0 },
-    traps: { count: 2, penalty: -100, reactivateDelay: 0 },
-    multiplier: { x2After: 2, x3After: 3, x2Duration: 10, x3Duration: 12 },
-    pointsPerHit: 50
+    mission: 'Touchez uniquement les verts. Évitez les rouges !',
+    duration: 30,
+    goalScore: 1200,
+    arcadeMode: 'green-avoid-red',
+    greenTargets: [1, 2, 3, 4],
+    redTraps: [5, 6, 7, 8],
+    pointsPerGreen: 50,
+    penaltyRed: -100
   },
   {
     round: 1, level: 3,
-    mission: 'Séquence: VERT > BLEU > VERT !',
-    duration: 27,
-    arcadeMode: 'sequence',
-    sequence: ['g', 'b', 'g'], 
-    largeHoles: { active: 3, color: 'g' },
-    mediumHoles: { active: 3, color: 'b' },
-    smallHoles: { active: 0 },
-    traps: { count: 2, penalty: -100, reactivateDelay: 0 },
-    multiplier: { x2After: 2, x3After: 3, x2Duration: 10, x3Duration: 12 },
-    pointsPerHit: 60
+    mission: 'Touchez uniquement les bleus !',
+    duration: 30,
+    goalScore: 1400,
+    arcadeMode: 'blue-avoid-red',
+    blueTargets: [5, 6, 7, 8],
+    redTraps: [1, 2, 3, 4],
+    pointsPerBlue: 90,
+    penaltyRed: -100
   },
   {
     round: 1, level: 4,
-    mission: 'Séquence: VERT > BLEU > VERT !',
-    duration: 29,
-    arcadeMode: 'sequence',
-    sequence: ['g', 'b', 'g'],
-    largeHoles: { active: 2, color: 'g' }, 
-    mediumHoles: { active: 4, color: 'b' },
-    smallHoles: { active: 0 },
-    traps: { count: 2, penalty: -100, reactivateDelay: 0 },
-    multiplier: { x2After: 2, x3After: 3, x2Duration: 10, x3Duration: 12 },
-    pointsPerHit: 60
+    mission: 'Touchez uniquement les verts !',
+    duration: 30,
+    goalScore: 1600,
+    arcadeMode: 'rotating-green',
+    greenTargets: [1, 2, 3, 4],
+    pointsPerGreen: 80,
+    penaltyRed: -100,
+    rotationDelay: 2000
   },
   {
     round: 1, level: 5,
-    mission: 'Enchaînez 3 cibles correctes pour activer x2 !',
+    mission: 'Touchez uniquement les verts et les bleus !',
     duration: 30,
-    arcadeMode: 'chain-activation',
-    activationRequirement: 3, 
-    largeHoles: { active: 2, color: 'g' },
-    mediumHoles: { active: 4, color: 'b' },
-    smallHoles: { active: 0 },
-    traps: { count: 2, penalty: -100, reactivateDelay: 0 },
-    multiplier: { x2After: 2, x3After: 3, x2Duration: 10, x3Duration: 12 },
-    pointsPerHit: 50
+    goalScore: 1800,
+    arcadeMode: 'rotating-green-blue',
+    greenTargets: [1, 2, 3, 4],
+    blueTargets: [5, 6, 7, 8],
+    pointsPerGreen: 90,
+    pointsPerBlue: 100,
+    penaltyRed: -100,
+    rotationDelay: 2000
   },
   {
     round: 1, level: 6,
-    mission: 'Enchaînez 3 cibles correctes pour activer x2 !',
-    duration: 31,
-    arcadeMode: 'chain-activation',
-    activationRequirement: 3,
-    largeHoles: { active: 1, color: 'g' }, 
-    mediumHoles: { active: 4, color: 'b' },
-    smallHoles: { active: 0 },
-    traps: { count: 3, penalty: -100, reactivateDelay: 0 }, 
-    multiplier: { x2After: 2, x3After: 3, x2Duration: 10, x3Duration: 12 },
-    pointsPerHit: 50
+    mission: 'Touchez uniquement les Bleus !',
+    duration: 30,
+    goalScore: 2000,
+    arcadeMode: 'rotating-blue',
+    blueTargets: [5, 6, 7, 8],
+    pointsPerBlue: 110,
+    penaltyRed: -100,
+    rotationDelay: 2000
   },
   {
     round: 1, level: 7,
-    mission: 'Visez le même trou 3× pour +10 pts cumulés !',
-    duration: 32,
-    arcadeMode: 'cumulative-bonus',
-    cumulativeBonus: { hits: 3, bonus: 10 }, 
-    largeHoles: { active: 1, color: 'g' },
-    mediumHoles: { active: 4, color: 'b' },
-    smallHoles: { active: 0 },
-    traps: { count: 3, penalty: -100, reactivateDelay: 3 }, 
-    multiplier: { x2After: 2, x3After: 3, x2Duration: 10, x3Duration: 12 },
-    pointsPerHit: 50
+    mission: 'Touchez 2 fois la même cible verte. Évitez les rouges !',
+    duration: 30,
+    goalScore: 2200,
+    arcadeMode: 'multi-hit-green',
+    greenTargets: [1, 2, 3, 4],
+    redTraps: [5, 6, 7, 8],
+    requiredHits: 2,
+    pointsPerCompletion: 120,
+    penaltyRed: -100
   },
   {
     round: 1, level: 8,
-    mission: 'Visez le même trou 3× pour +10 pts cumulés !',
-    duration: 33,
-    arcadeMode: 'cumulative-bonus',
-    cumulativeBonus: { hits: 3, bonus: 10 },
-    largeHoles: { active: 0, color: 'trap' }, 
-    mediumHoles: { active: 4, color: 'b' }, 
-    smallHoles: { active: 0 },
-    traps: { count: 4, penalty: -100, reactivateDelay: 3 }, 
-    multiplier: { x2After: 2, x3After: 3, x2Duration: 10, x3Duration: 12 },
-    pointsPerHit: 50
+    mission: 'Touchez 2 fois la même cible bleue. Évitez les rouges !',
+    duration: 30,
+    goalScore: 2300,
+    arcadeMode: 'multi-hit-blue',
+    blueTargets: [5, 6, 7, 8],
+    redTraps: [1, 2, 3, 4],
+    requiredHits: 2,
+    pointsPerCompletion: 120,
+    penaltyRed: -100
   },
   {
     round: 1, level: 9,
-    mission: 'Évitez les rouges. Réalisez un combo de 3 !',
-    duration: 33,
-    arcadeMode: 'combo-system',
-    comboRequirement: 3, 
-    largeHoles: { active: 0, color: 'trap' }, 
-    mediumHoles: { active: 4, color: 'b' },
-    smallHoles: { active: 0 },
-    traps: { count: 3, penalty: -100, reactivateDelay: 3 }, 
-    multiplier: { x2After: 2, x3After: 3, x2Duration: 10, x3Duration: 12 },
-    pointsPerHit: 60
+    mission: 'Touchez 3 fois la même cible verte. Évitez les rouges !',
+    duration: 30,
+    goalScore: 2500,
+    arcadeMode: 'multi-hit-green',
+    greenTargets: [1, 2, 3, 4],
+    redTraps: [5, 6, 7, 8],
+    requiredHits: 3,
+    pointsPerCompletion: 130,
+    penaltyRed: -100
   },
   {
     round: 1, level: 10,
-    mission: 'Évitez les rouges. Réalisez un combo de 3 !',
-    duration: 34,
-    arcadeMode: 'combo-system',
-    comboRequirement: 3,
-    largeHoles: { active: 1, color: 'g' }, 
-    mediumHoles: { active: 4, color: 'b' },
-    smallHoles: { active: 0 },
-    traps: { count: 3, penalty: -100, reactivateDelay: 3 },
-    multiplier: { x2After: 2, x3After: 3, x2Duration: 10, x3Duration: 12 },
-    pointsPerHit: 60
-  },
-
-  
-  { round: 2, level: 1, mission: 'Only BLUE circles!', duration: 30, targetColors: ['b'], avoidColors: ['r', 'g', 'y'], pointsPerHit: 30, penaltyPerMiss: -10 },
-  { round: 2, level: 2, mission: 'Only GREEN, avoid RED!', duration: 30, targetColors: ['g'], avoidColors: ['r'], pointsPerHit: 35, penaltyPerMiss: -15 },
-  { round: 2, level: 3, mission: 'Only YELLOW, ignore others!', duration: 30, targetColors: ['y'], avoidColors: ['r', 'g', 'b'], pointsPerHit: 30, penaltyPerMiss: -10 },
-  { round: 2, level: 4, mission: 'Sequence: GREEN then BLUE!', duration: 30, sequence: ['g', 'b'], pointsPerSequence: 50 },
-  { round: 2, level: 5, mission: 'Fast hits on any color!', duration: 30, targetColors: ['g', 'b', 'y', 'r'], pointsPerHit: 40, speedBonus: true },
-  { round: 2, level: 6, mission: 'No mistakes allowed!', duration: 30, targetColors: ['g', 'b'], avoidColors: ['r', 'y'], pointsPerHit: 50, penaltyPerMiss: -25 },
-  { round: 2, level: 7, mission: 'Multi-color precision!', duration: 30, targetColors: ['g', 'b', 'y'], avoidColors: ['r'], pointsPerHit: 45, penaltyPerMiss: -15 },
-  { round: 2, level: 8, mission: 'Pattern: RED-YELLOW-GREEN!', duration: 30, sequence: ['r', 'y', 'g'], pointsPerSequence: 75 },
-  { round: 2, level: 9, mission: 'Rapid fire challenge!', duration: 30, targetColors: ['g', 'b', 'y', 'r'], pointsPerHit: 60, speedBonus: true },
-  { round: 2, level: 10, mission: 'Round 2 boss level!', duration: 30, targetColors: ['g', 'b'], avoidColors: ['r', 'y'], pointsPerHit: 70, penaltyPerMiss: -20, speedBonus: true },
-
-  
-  { round: 3, level: 1, mission: 'Master precision: BLUE only!', duration: 30, targetColors: ['b'], avoidColors: ['r', 'g', 'y'], pointsPerHit: 80, penaltyPerMiss: -30 },
-  { round: 3, level: 2, mission: 'Complex pattern: G-R-B-Y!', duration: 30, sequence: ['g', 'r', 'b', 'y'], pointsPerSequence: 120 },
-  { round: 3, level: 3, mission: 'Speed and precision!', duration: 30, targetColors: ['g', 'y'], avoidColors: ['r', 'b'], pointsPerHit: 90, penaltyPerMiss: -25, speedBonus: true },
-  { round: 3, level: 4, mission: 'Reverse: Y-B-R-G pattern!', duration: 30, sequence: ['y', 'b', 'r', 'g'], pointsPerSequence: 140 },
-  { round: 3, level: 5, mission: 'Maximum difficulty!', duration: 30, targetColors: ['g'], avoidColors: ['r', 'b', 'y'], pointsPerHit: 100, penaltyPerMiss: -40, speedBonus: true },
-  { round: 3, level: 6, mission: 'Elite double sequence!', duration: 30, sequence: ['r', 'g', 'r', 'g'], pointsPerSequence: 160 },
-  { round: 3, level: 7, mission: 'Ultimate speed test!', duration: 30, targetColors: ['g', 'b', 'y', 'r'], pointsPerHit: 120, speedBonus: true, speedMultiplier: 2 },
-  { round: 3, level: 8, mission: 'Master precision combo!', duration: 30, targetColors: ['b', 'y'], avoidColors: ['r', 'g'], pointsPerHit: 110, penaltyPerMiss: -35, speedBonus: true },
-  { round: 3, level: 9, mission: 'Final sequence: G-B-Y-R-G!', duration: 30, sequence: ['g', 'b', 'y', 'r', 'g'], pointsPerSequence: 200 },
-  { round: 3, level: 10, mission: 'GRAND FINALE: All skills!', duration: 30, targetColors: ['g', 'b', 'y'], avoidColors: ['r'], pointsPerHit: 150, penaltyPerMiss: -50, speedBonus: true, speedMultiplier: 3 }
+    mission: 'Touchez 3 fois la même cible bleue. Évitez les rouges !',
+    duration: 30,
+    goalScore: 2700,
+    arcadeMode: 'multi-hit-blue',
+    blueTargets: [5, 6, 7, 8],
+    redTraps: [1, 2, 3, 4],
+    requiredHits: 3,
+    pointsPerCompletion: 130,
+    penaltyRed: -100
+  }
 ];
 
 
@@ -360,9 +326,9 @@ function startRoundBasedGame() {
   startNextLevel();
 }
 
-function startNextLevel() {
+function startNextLevel(isRetry = false) {
   if (currentLevelIndex >= gameRounds.length) {
-    
+
     finishGame();
     return;
   }
@@ -370,20 +336,31 @@ function startNextLevel() {
   const currentLevel = gameRounds[currentLevelIndex];
   currentRoundTimeLeft = currentLevel.duration;
 
-  console.log(`[STRIKELOOP] Starting Round ${currentLevel.round} - Level ${currentLevel.level}`);
+  console.log(`[STRIKELOOP] Starting Round ${currentLevel.round} - Level ${currentLevel.level}${isRetry ? ' (RETRY)' : ''}`);
   console.log(`[STRIKELOOP] Mission: ${currentLevel.mission}`);
   console.log(`[STRIKELOOP] Duration: ${currentLevel.duration} seconds`);
+  console.log(`[STRIKELOOP] Goal: ${currentLevel.goalScore} points`);
 
-  
+
+  if (!isRetry) {
+    localScore = 0;
+    goalAchieved = false;
+    console.log(`[STRIKELOOP] New level - Local score reset to 0`);
+  } else {
+    console.log(`[STRIKELOOP] Retry - Keeping local score: ${localScore}`);
+  }
+
+
   gameState.round = currentLevel.round;
   gameState.level = currentLevel.level;
-  gameState.missionNumber = currentLevel.level; 
+  gameState.missionNumber = currentLevel.level;
   gameState.missionDescription = currentLevel.mission;
+  gameState.score = localScore;
 
-  
+
   initializeMission(currentLevel);
 
-  
+
   emitter.emit('roundUpdate', {
     round: currentLevel.round,
     level: currentLevel.level,
@@ -400,11 +377,11 @@ function startNextLevel() {
     timeString: formatTime(currentRoundTimeLeft)
   });
 
-  emitter.emit('scoreUpdate', gameState.score);
+  emitter.emit('scoreUpdate', localScore);
 
   emitter.emit('multiplierUpdate', gameState.multiplier);
 
-  
+
   startLevelTimer();
 }
 
@@ -416,7 +393,7 @@ function initializeMission(levelConfig) {
   sequenceProgress = 0;
   currentSequence = levelConfig.sequence || [];
 
-  
+
   consecutiveValidHits = 0;
   currentMultiplier = 1;
   multiplierActive = false;
@@ -425,52 +402,66 @@ function initializeMission(levelConfig) {
   comboProgress = 0;
   activationHits = 0;
   sequenceStep = 0;
+  multiHitTracker = {};
 
-  
+
   if (multiplierTimer) {
     clearTimeout(multiplierTimer);
     multiplierTimer = null;
   }
 
-  console.log(`[STRIKELOOP] ARCADE Mission initialized:`, {
+
+  if (rotationInterval) {
+    clearInterval(rotationInterval);
+    rotationInterval = null;
+  }
+
+  console.log(`[STRIKELOOP] Mission initialized:`, {
     arcadeMode: levelConfig.arcadeMode,
-    largeHoles: levelConfig.largeHoles,
-    mediumHoles: levelConfig.mediumHoles,
-    traps: levelConfig.traps,
-    multiplier: levelConfig.multiplier,
-    sequence: levelConfig.sequence,
-    pointsPerHit: levelConfig.pointsPerHit
+    goalScore: levelConfig.goalScore,
+    duration: levelConfig.duration
   });
 
-  
+
   startArcadeLEDs();
 
-  
+
   startLEDRefresh();
 }
 
 
 function startLEDRefresh() {
-  
+
   if (ledRefreshInterval) {
     clearInterval(ledRefreshInterval);
   }
 
-  
-  if (activeMission && activeMission.arcadeMode &&
-      activeMission.arcadeMode !== 'sequence' &&
-      activeMission.arcadeMode !== 'green-only') {
-    
-    const refreshDelay = Math.floor(Math.random() * 2000) + 3000; 
+
+  const noRefreshModes = [
+    'sequence',
+    'green-only',
+    'green-blue-combo',
+    'green-avoid-red',
+    'blue-avoid-red',
+    'rotating-green',
+    'rotating-green-blue',
+    'rotating-blue',
+    'multi-hit-green',
+    'multi-hit-blue'
+  ];
+
+  if (activeMission && !noRefreshModes.includes(activeMission.arcadeMode)) {
+
+    const refreshDelay = Math.floor(Math.random() * 2000) + 3000;
     ledRefreshInterval = setInterval(() => {
-      if (activeMission && activeMission.arcadeMode !== 'sequence' && activeMission.arcadeMode !== 'green-only') {
-        activateArcadeLEDs(); 
+      if (activeMission && !noRefreshModes.includes(activeMission.arcadeMode)) {
+        activateArcadeLEDs();
       }
     }, refreshDelay);
 
     console.log(`[STRIKELOOP] LED refresh started every ${Math.floor(refreshDelay/1000)} seconds`);
   } else {
-    console.log(`[STRIKELOOP] LED refresh skipped for ${activeMission?.arcadeMode || 'unknown'} mode`);
+    console.log(`[STRIKELOOP] LED refresh skipped for ${activeMission?.arcadeMode || 'unknown'} mode (static LEDs)`);
   }
 }
 
@@ -481,12 +472,18 @@ function stopLEDRefresh() {
     ledRefreshInterval = null;
   }
 
-  
+
+  if (rotationInterval) {
+    clearInterval(rotationInterval);
+    rotationInterval = null;
+  }
+
+
   for (let i = 1; i <= 8; i++) {
     controlLED(i, 'o');
   }
 
-  
+
   controlLED(CENTRAL_CIRCLE_ID, 'o');
 
   activeTargets = [];
@@ -756,18 +753,18 @@ function validateInput(target, timestamp) {
 }
 
 function startLevelTimer() {
-  
+
   emitter.emit('timeUpdate', {
     timeLeft: currentRoundTimeLeft,
     timeString: formatTime(currentRoundTimeLeft)
   });
 
-  
+
   if (timeUpdateInterval) {
     clearInterval(timeUpdateInterval);
   }
 
-  
+
   timeUpdateInterval = setInterval(() => {
     if (currentRoundTimeLeft > 0) {
       currentRoundTimeLeft--;
@@ -778,45 +775,41 @@ function startLevelTimer() {
         timeString: timeString
       });
 
-      
-      if (currentRoundTimeLeft % 30 === 0) {
+
+      if (currentRoundTimeLeft % 10 === 0) {
         console.log(`[STRIKELOOP] Round ${gameRounds[currentLevelIndex].round} Level ${gameRounds[currentLevelIndex].level} time remaining: ${timeString}`);
       }
     } else {
-      
+
       stopLevelTimer();
       const currentLevel = gameRounds[currentLevelIndex];
-      currentLevelIndex++;
 
-      if (currentLevelIndex < gameRounds.length) {
-        console.log(`[STRIKELOOP] Round ${currentLevel.round} Level ${currentLevel.level} completed!`);
+      if (goalAchieved) {
 
-        
-        const levelCompletionBonus = Math.floor(missionTargetsHit * 10); 
-        if (levelCompletionBonus > 0) {
-          const newScore = gameState.score + levelCompletionBonus;
-          updateScore(newScore);
-          console.log(`[STRIKELOOP] Level completion bonus: ${missionTargetsHit} hits x10 = +${levelCompletionBonus} points. Total: ${newScore}`);
+        console.log(`[STRIKELOOP] ✅ Level ${currentLevel.level} COMPLETED! Goal: ${currentLevel.goalScore}, Score: ${localScore}`);
+
+
+        stopLEDRefresh();
+
+        currentLevelIndex++;
+
+        if (currentLevelIndex < gameRounds.length) {
+
+          startNextLevel(false);
+        } else {
+
+          console.log(`[STRIKELOOP] 🎉 ALL 10 LEVELS COMPLETED! Final score: ${localScore}`);
+          finishGame();
         }
-
-        
-        if (currentLevelIndex % 10 === 0) {
-          const completedRound = Math.floor(currentLevelIndex / 10);
-          const roundBonus = completedRound * 500; 
-          const bonusScore = gameState.score + roundBonus;
-          updateScore(bonusScore);
-          console.log(`[STRIKELOOP] 🎉 ROUND ${completedRound} COMPLETED! Round bonus: ${roundBonus} points. Total: ${bonusScore}`);
-        }
-
-        startNextLevel(); 
       } else {
-        
-        const finalBonus = Math.floor(Math.random() * 2000) + 1000; 
-        const finalScore = gameState.score + finalBonus;
-        updateScore(finalScore);
-        console.log(`[STRIKELOOP] ALL 3 ROUNDS COMPLETED! Final bonus: ${finalBonus} points. Final score: ${finalScore}`);
 
-        finishGame();
+        console.log(`[STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (${localScore}/${currentLevel.goalScore}). Retrying level...`);
+
+
+        stopLEDRefresh();
+
+
+        startNextLevel(true);
       }
     }
   }, 1000);
@@ -878,9 +871,16 @@ function initializeGameState() {
 
 
 function updateScore(newScore) {
-  gameState.score = newScore;
-  console.log('[STRIKELOOP] Score updated to:', newScore);
-  emitter.emit('scoreUpdate', newScore);
+  localScore = Math.max(0, newScore);
+  gameState.score = localScore;
+  console.log('[STRIKELOOP] Local score updated to:', localScore);
+  emitter.emit('scoreUpdate', localScore);
+
+  const currentLevel = gameRounds[currentLevelIndex];
+  if (currentLevel && !goalAchieved && localScore >= currentLevel.goalScore) {
+    goalAchieved = true;
+    console.log(`[STRIKELOOP] 🎉 GOAL ACHIEVED! ${localScore}/${currentLevel.goalScore} - Level can be completed`);
+  }
 }
 
 
@@ -1108,44 +1108,243 @@ function setupKeyboardListener() {
 function activateArcadeLEDs() {
   if (!activeMission) return;
 
-  
   if (activeMission.blinkIntervals) {
     activeMission.blinkIntervals.forEach(interval => clearInterval(interval));
     activeMission.blinkIntervals = [];
   }
 
-  
   activeTargets = [];
   trapPositions = [];
 
-  const config = activeMission;
-  const largePositions = [1, 2, 3, 4]; 
-  const mediumPositions = [5, 6, 7, 8]; 
+  const mode = activeMission.arcadeMode;
 
-  
+  switch (mode) {
+    case 'green-blue-combo':
+      activateModeGreenBlueCombo();
+      break;
+    case 'green-avoid-red':
+      activateModeGreenAvoidRed();
+      break;
+    case 'blue-avoid-red':
+      activateModeBlueAvoidRed();
+      break;
+    case 'rotating-green':
+      activateModeRotatingGreen();
+      break;
+    case 'rotating-green-blue':
+      activateModeRotatingGreenBlue();
+      break;
+    case 'rotating-blue':
+      activateModeRotatingBlue();
+      break;
+    case 'multi-hit-green':
+      activateModeMultiHitGreen();
+      break;
+    case 'multi-hit-blue':
+      activateModeMultiHitBlue();
+      break;
+    default:
+      activateLegacyArcadeMode();
+      break;
+  }
+
+  const validTargets = activeTargets.filter(t => t.isValid || t.isActive).length;
+  const trapCount = trapPositions.length;
+  const ledPattern = activeTargets.map(t => `${t.elementId}:${t.colorCode?.toUpperCase()}${t.isTrap ? '(trap)' : ''}${t.isActive ? '*' : ''}`).join(' ');
+  console.log(`[STRIKELOOP] Arcade LEDs (${mode}): ${validTargets} targets, ${trapCount} traps | Pattern: ${ledPattern}`);
+}
+
+function activateModeGreenBlueCombo() {
+  activeMission.greenTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'g', isValid: true };
+    activeTargets.push(target);
+    controlLED(pos, 'g');
+  });
+  activeMission.blueTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'b', isValid: true };
+    activeTargets.push(target);
+    controlLED(pos, 'b');
+  });
+}
+
+function activateModeGreenAvoidRed() {
+  activeMission.greenTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'g', isValid: true };
+    activeTargets.push(target);
+    controlLED(pos, 'g');
+  });
+  activeMission.redTraps.forEach(pos => {
+    const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
+    activeTargets.push(trap);
+    trapPositions.push(trap);
+    controlLED(pos, 'r');
+  });
+}
+
+function activateModeBlueAvoidRed() {
+  activeMission.blueTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'b', isValid: true };
+    activeTargets.push(target);
+    controlLED(pos, 'b');
+  });
+  activeMission.redTraps.forEach(pos => {
+    const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
+    activeTargets.push(trap);
+    trapPositions.push(trap);
+    controlLED(pos, 'r');
+  });
+}
+
+let rotationInterval;
+let currentRotatingTargets = { green: null, blue: null };
+
+function activateModeRotatingGreen() {
+  if (rotationInterval) clearInterval(rotationInterval);
+
+  const activateOne = () => {
+    activeTargets = [];
+    trapPositions = [];
+
+    // Pick one random green from 1-4
+    const greenPos = activeMission.greenTargets[Math.floor(Math.random() * activeMission.greenTargets.length)];
+    const target = { elementId: greenPos, colorCode: 'g', isValid: true, isActive: true };
+    activeTargets.push(target);
+    controlLED(greenPos, 'g');
+    currentRotatingTargets.green = greenPos;
+
+    // All OTHER positions (1-4 that aren't green, and all of 5-8) become RED
+    const allPositions = [1, 2, 3, 4, 5, 6, 7, 8];
+    allPositions.forEach(pos => {
+      if (pos !== greenPos) {
+        const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
+        activeTargets.push(trap);
+        trapPositions.push(trap);
+        controlLED(pos, 'r');
+      }
+    });
+
+    console.log(`[STRIKELOOP] Rotating green: position ${greenPos} active, all others RED`);
+  };
+
+  activateOne();
+  rotationInterval = setInterval(activateOne, activeMission.rotationDelay || 2000);
+}
+
+function activateModeRotatingGreenBlue() {
+  if (rotationInterval) clearInterval(rotationInterval);
+
+  const activateTwo = () => {
+    activeTargets = [];
+    trapPositions = [];
+
+    const greenPos = activeMission.greenTargets[Math.floor(Math.random() * activeMission.greenTargets.length)];
+    const bluePos = activeMission.blueTargets[Math.floor(Math.random() * activeMission.blueTargets.length)];
+
+    const greenTarget = { elementId: greenPos, colorCode: 'g', isValid: true, isActive: true };
+    const blueTarget = { elementId: bluePos, colorCode: 'b', isValid: true, isActive: true };
+
+    activeTargets.push(greenTarget, blueTarget);
+    controlLED(greenPos, 'g');
+    controlLED(bluePos, 'b');
+
+    currentRotatingTargets.green = greenPos;
+    currentRotatingTargets.blue = bluePos;
+
+    const otherPositions = [1, 2, 3, 4, 5, 6, 7, 8].filter(p => p !== greenPos && p !== bluePos);
+    otherPositions.forEach(pos => {
+      const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
+      activeTargets.push(trap);
+      trapPositions.push(trap);
+      controlLED(pos, 'r');
+    });
+
+    console.log(`[STRIKELOOP] Rotating green-blue: green ${greenPos}, blue ${bluePos} active`);
+  };
+
+  activateTwo();
+  rotationInterval = setInterval(activateTwo, activeMission.rotationDelay || 2000);
+}
+
+function activateModeRotatingBlue() {
+  if (rotationInterval) clearInterval(rotationInterval);
+
+  const activateOne = () => {
+    activeTargets = [];
+    trapPositions = [];
+
+    // Pick one random blue from 5-8
+    const bluePos = activeMission.blueTargets[Math.floor(Math.random() * activeMission.blueTargets.length)];
+    const target = { elementId: bluePos, colorCode: 'b', isValid: true, isActive: true };
+    activeTargets.push(target);
+    controlLED(bluePos, 'b');
+    currentRotatingTargets.blue = bluePos;
+
+    // All OTHER positions (all of 1-4, and 5-8 that aren't blue) become RED
+    const allPositions = [1, 2, 3, 4, 5, 6, 7, 8];
+    allPositions.forEach(pos => {
+      if (pos !== bluePos) {
+        const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
+        activeTargets.push(trap);
+        trapPositions.push(trap);
+        controlLED(pos, 'r');
+      }
+    });
+
+    console.log(`[STRIKELOOP] Rotating blue: position ${bluePos} active, all others RED`);
+  };
+
+  activateOne();
+  rotationInterval = setInterval(activateOne, activeMission.rotationDelay || 2000);
+}
+
+function activateModeMultiHitGreen() {
+  activeMission.greenTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'g', isValid: true };
+    activeTargets.push(target);
+    controlLED(pos, 'g');
+  });
+  activeMission.redTraps.forEach(pos => {
+    const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
+    activeTargets.push(trap);
+    trapPositions.push(trap);
+    controlLED(pos, 'r');
+  });
+}
+
+function activateModeMultiHitBlue() {
+  activeMission.blueTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'b', isValid: true };
+    activeTargets.push(target);
+    controlLED(pos, 'b');
+  });
+  activeMission.redTraps.forEach(pos => {
+    const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
+    activeTargets.push(trap);
+    trapPositions.push(trap);
+    controlLED(pos, 'r');
+  });
+}
+
+function activateLegacyArcadeMode() {
+  const config = activeMission;
+  const largePositions = [1, 2, 3, 4];
+  const mediumPositions = [5, 6, 7, 8];
+
   if (config.largeHoles && config.largeHoles.active > 0) {
     const activeLargeCount = Math.min(config.largeHoles.active, largePositions.length);
     const selectedPositions = largePositions.slice(0, activeLargeCount);
 
     selectedPositions.forEach(pos => {
       if (config.largeHoles.color === 'trap') {
-        
         setupTrapPosition(pos);
       } else {
-        
-        const target = {
-          elementId: pos,
-          colorCode: config.largeHoles.color,
-          size: 'large',
-          isValid: true
-        };
+        const target = { elementId: pos, colorCode: config.largeHoles.color, size: 'large', isValid: true };
         activeTargets.push(target);
         controlLED(pos, config.largeHoles.color);
       }
     });
   }
 
-  
   if (config.mediumHoles && config.mediumHoles.active > 0) {
     const activeMediumCount = Math.min(config.mediumHoles.active, mediumPositions.length);
     const selectedPositions = mediumPositions.slice(0, activeMediumCount);
@@ -1154,29 +1353,16 @@ function activateArcadeLEDs() {
       if (config.mediumHoles.color === 'trap') {
         setupTrapPosition(pos);
       } else {
-        const target = {
-          elementId: pos,
-          colorCode: config.mediumHoles.color,
-          size: 'medium',
-          isValid: true
-        };
+        const target = { elementId: pos, colorCode: config.mediumHoles.color, size: 'medium', isValid: true };
         activeTargets.push(target);
         controlLED(pos, config.mediumHoles.color);
       }
     });
   }
 
-  
   if (config.traps && config.traps.count > 0) {
     setupAdditionalTraps(config.traps);
   }
-
-  const validTargets = activeTargets.filter(t => t.isValid).length;
-  const trapCount = trapPositions.length;
-
-  
-  const ledPattern = activeTargets.map(t => `${t.elementId}:${t.colorCode?.toUpperCase()}${t.isTrap ? '(trap)' : ''}`).join(' ');
-  console.log(`[STRIKELOOP] Arcade LEDs: ${validTargets} targets, ${trapCount} traps | Pattern: ${ledPattern}`);
 }
 
 
@@ -1319,15 +1505,16 @@ function validateArcadeInput(target, timestamp) {
 
   console.log(`[STRIKELOOP] Arcade validation - Circle ${elementId}: color=${colorCode}, isTrap=${isTrap}, isValid=${isValid}`);
 
-  
-  if (isTrap === true || colorCode === 'r') {
-    console.log(`[STRIKELOOP] ❌ TRAP HIT! Circle ${elementId} - Penalty: ${activeMission.traps?.penalty || -100}`);
-    pointsAwarded = activeMission.traps?.penalty || -100;
 
-    
+  if (isTrap === true || colorCode === 'r') {
+    const penalty = activeMission.penaltyRed || activeMission.traps?.penalty || -100;
+    console.log(`[STRIKELOOP] ❌ TRAP HIT! Circle ${elementId} - Penalty: ${penalty}`);
+    pointsAwarded = penalty;
+
+
     cancelMultiplier();
 
-    
+
     if (activeMission.traps?.reactivateDelay > 0) {
       setTimeout(() => {
         console.log(`[STRIKELOOP] Trap ${elementId} reactivated`);
@@ -1335,53 +1522,43 @@ function validateArcadeInput(target, timestamp) {
       }, activeMission.traps.reactivateDelay * 1000);
     }
   }
-  
+
   else {
     wasValidHit = processArcadeMode(target, timestamp);
     if (wasValidHit) {
       pointsAwarded = calculatePoints(target);
       consecutiveValidHits++;
 
-      
-      if (consecutiveValidHits >= (activeMission.multiplier?.x2After || 2)) {
+
+      if (activeMission.multiplier && consecutiveValidHits >= (activeMission.multiplier.x2After || 2)) {
         activateMultiplier(2);
       }
-      if (consecutiveValidHits >= (activeMission.multiplier?.x3After || 3)) {
+      if (activeMission.multiplier && consecutiveValidHits >= (activeMission.multiplier.x3After || 3)) {
         activateMultiplier(3);
       }
-    } else {
-      
-      
-      
     }
   }
 
-  
+
   if (wasValidHit && multiplierActive && pointsAwarded > 0) {
     pointsAwarded = Math.floor(pointsAwarded * currentMultiplier);
     console.log(`[STRIKELOOP] Multiplier x${currentMultiplier} applied: ${pointsAwarded} points`);
   }
 
-  
+
   if (pointsAwarded !== 0) {
-    const newScore = Math.max(0, gameState.score + pointsAwarded);
+    const newScore = localScore + pointsAwarded;
     updateScore(newScore);
-    console.log(`[STRIKELOOP] Score: ${gameState.score} -> ${newScore} (${pointsAwarded > 0 ? '+' : ''}${pointsAwarded})`);
+    console.log(`[STRIKELOOP] Score: ${localScore - pointsAwarded} -> ${localScore} (${pointsAwarded > 0 ? '+' : ''}${pointsAwarded})`);
   }
 
-  
-  setTimeout(() => {
-    if (activeMission.arcadeMode === 'sequence') {
-      
-      console.log('[STRIKELOOP] Sequence mode: no LED refresh after hit');
-    } else if (activeMission.arcadeMode === 'green-only') {
-      
-      console.log('[STRIKELOOP] Green-only mode: no LED refresh after hit');
-    } else {
-      
+
+  const noRefreshModes = ['sequence', 'green-only', 'rotating-green', 'rotating-green-blue', 'rotating-blue'];
+  if (!noRefreshModes.includes(activeMission.arcadeMode)) {
+    setTimeout(() => {
       activateArcadeLEDs();
-    }
-  }, 300);
+    }, 300);
+  }
 }
 
 
@@ -1390,6 +1567,22 @@ function processArcadeMode(target, timestamp) {
   const { elementId, colorCode } = target;
 
   switch (mode) {
+    case 'green-blue-combo':
+      return processGreenBlueComboMode(target);
+    case 'green-avoid-red':
+      return processGreenAvoidRedMode(target);
+    case 'blue-avoid-red':
+      return processBlueAvoidRedMode(target);
+    case 'rotating-green':
+      return processRotatingGreenMode(target);
+    case 'rotating-green-blue':
+      return processRotatingGreenBlueMode(target);
+    case 'rotating-blue':
+      return processRotatingBlueMode(target);
+    case 'multi-hit-green':
+      return processMultiHitGreenMode(target);
+    case 'multi-hit-blue':
+      return processMultiHitBlueMode(target);
     case 'green-only':
       return processGreenOnlyMode(target);
     case 'sequence':
@@ -1407,13 +1600,123 @@ function processArcadeMode(target, timestamp) {
 }
 
 
+function processGreenBlueComboMode(target) {
+  if (target.colorCode === 'g') {
+    console.log(`[STRIKELOOP] ✅ GREEN HIT! Circle ${target.elementId} +${activeMission.pointsPerGreen} points`);
+    return true;
+  } else if (target.colorCode === 'b') {
+    console.log(`[STRIKELOOP] ✅ BLUE HIT! Circle ${target.elementId} +${activeMission.pointsPerBlue} points`);
+    return true;
+  }
+  return false;
+}
+
+function processGreenAvoidRedMode(target) {
+  if (target.colorCode === 'g') {
+    console.log(`[STRIKELOOP] ✅ GREEN HIT! Circle ${target.elementId} +${activeMission.pointsPerGreen} points`);
+    return true;
+  }
+  return false;
+}
+
+function processBlueAvoidRedMode(target) {
+  if (target.colorCode === 'b') {
+    console.log(`[STRIKELOOP] ✅ BLUE HIT! Circle ${target.elementId} +${activeMission.pointsPerBlue} points`);
+    return true;
+  }
+  return false;
+}
+
+function processRotatingGreenMode(target) {
+  if (target.colorCode === 'g' && target.isActive) {
+    console.log(`[STRIKELOOP] ✅ GREEN HIT! Circle ${target.elementId} +${activeMission.pointsPerGreen} points`);
+    return true;
+  }
+  return false;
+}
+
+function processRotatingGreenBlueMode(target) {
+  if ((target.colorCode === 'g' || target.colorCode === 'b') && target.isActive) {
+    const points = target.colorCode === 'g' ? activeMission.pointsPerGreen : activeMission.pointsPerBlue;
+    console.log(`[STRIKELOOP] ✅ ${target.colorCode.toUpperCase()} HIT! Circle ${target.elementId} +${points} points`);
+    return true;
+  }
+  return false;
+}
+
+function processRotatingBlueMode(target) {
+  if (target.colorCode === 'b' && target.isActive) {
+    console.log(`[STRIKELOOP] ✅ BLUE HIT! Circle ${target.elementId} +${activeMission.pointsPerBlue} points`);
+    return true;
+  }
+  return false;
+}
+
+let multiHitTracker = {};
+
+function processMultiHitGreenMode(target) {
+  if (target.colorCode === 'g') {
+    const targetId = target.elementId;
+
+    if (!multiHitTracker[targetId]) {
+      multiHitTracker[targetId] = 0;
+    }
+    multiHitTracker[targetId]++;
+
+    console.log(`[STRIKELOOP] GREEN HIT ${multiHitTracker[targetId]}/${activeMission.requiredHits}! Circle ${targetId}`);
+
+    if (multiHitTracker[targetId] >= activeMission.requiredHits) {
+      console.log(`[STRIKELOOP] ✅ TARGET COMPLETED! ${activeMission.requiredHits}x hits on green ${targetId} +${activeMission.pointsPerCompletion} points`);
+      multiHitTracker[targetId] = 0;
+      return true;
+    }
+
+    Object.keys(multiHitTracker).forEach(id => {
+      if (id != targetId) {
+        multiHitTracker[id] = 0;
+      }
+    });
+
+    return false;
+  }
+  return false;
+}
+
+function processMultiHitBlueMode(target) {
+  if (target.colorCode === 'b') {
+    const targetId = target.elementId;
+
+    if (!multiHitTracker[targetId]) {
+      multiHitTracker[targetId] = 0;
+    }
+    multiHitTracker[targetId]++;
+
+    console.log(`[STRIKELOOP] BLUE HIT ${multiHitTracker[targetId]}/${activeMission.requiredHits}! Circle ${targetId}`);
+
+    if (multiHitTracker[targetId] >= activeMission.requiredHits) {
+      console.log(`[STRIKELOOP] ✅ TARGET COMPLETED! ${activeMission.requiredHits}x hits on blue ${targetId} +${activeMission.pointsPerCompletion} points`);
+      multiHitTracker[targetId] = 0;
+      return true;
+    }
+
+    Object.keys(multiHitTracker).forEach(id => {
+      if (id != targetId) {
+        multiHitTracker[id] = 0;
+      }
+    });
+
+    return false;
+  }
+  return false;
+}
+
 function processGreenOnlyMode(target) {
   if (target.colorCode === 'g') {
     console.log(`[STRIKELOOP] ✅ GREEN HIT! Circle ${target.elementId}`);
     return true;
   } else {
     console.log(`[STRIKELOOP] ⚪ NEUTRAL HIT: ${target.colorCode?.toUpperCase()} (ignored, no penalty)`);
-    
+
     return false;
   }
 }
@@ -1518,49 +1821,65 @@ function processComboSystemMode(target) {
 
 
 function calculatePoints(target) {
-  
-  if (activeMission.arcadeMode === 'sequence') {
-    let basePoints = activeMission.pointsPerHit || 60;
+  const mode = activeMission.arcadeMode;
 
-    
-    if (consecutiveValidHits >= 2) {
-      basePoints *= 2; 
-      console.log(`[STRIKELOOP] Sequence x2 multiplier applied! (${consecutiveValidHits} consecutive sequences)`);
-    }
-    if (consecutiveValidHits >= 3) {
-      basePoints = (activeMission.pointsPerHit || 60) * 3; 
-      console.log(`[STRIKELOOP] Sequence x3 multiplier applied! (${consecutiveValidHits} consecutive sequences)`);
-    }
-
-    return basePoints;
+  switch (mode) {
+    case 'green-blue-combo':
+      return target.colorCode === 'g' ? activeMission.pointsPerGreen : activeMission.pointsPerBlue;
+    case 'green-avoid-red':
+      return activeMission.pointsPerGreen;
+    case 'blue-avoid-red':
+      return activeMission.pointsPerBlue;
+    case 'rotating-green':
+      return activeMission.pointsPerGreen;
+    case 'rotating-green-blue':
+      return target.colorCode === 'g' ? activeMission.pointsPerGreen : activeMission.pointsPerBlue;
+    case 'rotating-blue':
+      return activeMission.pointsPerBlue;
+    case 'multi-hit-green':
+    case 'multi-hit-blue':
+      return activeMission.pointsPerCompletion;
+    case 'sequence':
+      let basePoints = activeMission.pointsPerHit || 60;
+      if (consecutiveValidHits >= 2) {
+        basePoints *= 2;
+        console.log(`[STRIKELOOP] Sequence x2 multiplier applied! (${consecutiveValidHits} consecutive sequences)`);
+      }
+      if (consecutiveValidHits >= 3) {
+        basePoints = (activeMission.pointsPerHit || 60) * 3;
+        console.log(`[STRIKELOOP] Sequence x3 multiplier applied! (${consecutiveValidHits} consecutive sequences)`);
+      }
+      return basePoints;
+    default:
+      let defaultPoints = activeMission.pointsPerHit || 50;
+      if (target.size === 'large') {
+        defaultPoints += 10;
+      }
+      return defaultPoints;
   }
-
-  
-  let basePoints = activeMission.pointsPerHit || 50;
-
-  
-  if (target.size === 'large') {
-    basePoints += 10;
-  }
-
-  return basePoints;
 }
 
 
 function cleanupArcadeGame() {
-  
+
   if (multiplierTimer) {
     clearTimeout(multiplierTimer);
     multiplierTimer = null;
   }
 
-  
+
   if (activeMission?.blinkIntervals) {
     activeMission.blinkIntervals.forEach(interval => clearInterval(interval));
     activeMission.blinkIntervals = [];
   }
 
-  
+
+  if (rotationInterval) {
+    clearInterval(rotationInterval);
+    rotationInterval = null;
+  }
+
+
   consecutiveValidHits = 0;
   currentMultiplier = 1;
   multiplierActive = false;
@@ -1569,6 +1888,7 @@ function cleanupArcadeGame() {
   comboProgress = 0;
   activationHits = 0;
   sequenceStep = 0;
+  multiHitTracker = {};
 }
 
 module.exports = {
