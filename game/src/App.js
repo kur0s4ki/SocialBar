@@ -33,9 +33,26 @@ function App() {
   const previousLevel = useRef(1);
   const lastScore = useRef(0); // Store last score before it gets reset
 
+  // Dynamic font sizing for mission text
+  const [missionFontSize, setMissionFontSize] = useState('text-7xl');
+
   useEffect(() => {
     document.title = 'Social Bar - Game In Progress';
   }, []);
+
+  // Adjust mission text font size based on length
+  useEffect(() => {
+    const textLength = currentRound.mission.length;
+    if (textLength > 100) {
+      setMissionFontSize('text-4xl');
+    } else if (textLength > 70) {
+      setMissionFontSize('text-5xl');
+    } else if (textLength > 50) {
+      setMissionFontSize('text-6xl');
+    } else {
+      setMissionFontSize('text-7xl');
+    }
+  }, [currentRound.mission]);
 
   useEffect(() => {
     const connect = () => {
@@ -206,14 +223,14 @@ function App() {
 
           {/* Right Panel - Score Number */}
           <div className="bg-slate-900 border-8 border-cyan-400 rounded-2xl p-10 flex items-center justify-center min-w-[250px]">
-            <span className="text-yellow-400 text-9xl font-bold">{gameData.score}</span>
+            <span className={`text-yellow-400 text-9xl font-bold ${gameData.score >= 1000 ? 'score-shine' : ''}`}>{gameData.score}</span>
           </div>
         </div>
 
         {/* Mission Section */}
-        <div className="bg-slate-900 border-8 border-cyan-400 rounded-2xl p-16 relative min-h-[35vh] flex items-center justify-center">
+        <div className="bg-slate-900 border-8 border-cyan-400 rounded-2xl p-16 relative mission-container flex items-center justify-center">
           {/* Mission Badge */}
-          <div className="absolute -top-8 left-half transform translate-x-neg-half">
+          <div className="absolute -top-8 left-half transform translate-x-neg-half z-50">
             <div className="bg-slate-900 border-8 border-yellow-400 rounded-2xl px-16 py-6">
               <span className="text-yellow-400 text-6xl font-bold">MISSION</span>
             </div>
@@ -231,7 +248,7 @@ function App() {
 
           {/* Mission Text */}
           <div className="text-center pr-80">
-            <p className="text-white text-7xl font-medium mt-8 uppercase">
+            <p className={`text-white ${missionFontSize} font-medium mt-8 uppercase`}>
               {currentRound.mission}
             </p>
           </div>
