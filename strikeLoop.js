@@ -72,7 +72,9 @@ const CENTRAL_CIRCLE_ID = 9;
 let roundInterval;
 let isRunning = false;
 let keyboardListenerActive = false;
-let currentLevelIndex = 0; 
+let currentLevelIndex = 0;
+let gameStartTime = null;
+let overallGameTimer = null; 
 
 
 let gameState = {
@@ -310,6 +312,63 @@ addTrackedGameListener(emitter, 'circleClick', (data) => {
   }
 });
 
+function startOverallGameTimer() {
+  if (overallGameTimer) {
+    clearInterval(overallGameTimer);
+  }
+
+  gameStartTime = Date.now();
+  const maxGameTimeMs = gameState.totalGameTimeMinutes * 60 * 1000; // 15 minutes in milliseconds
+
+  console.log(`[STRIKELOOP] Overall game timer started - Maximum game time: ${gameState.totalGameTimeMinutes} minutes`);
+
+  overallGameTimer = setInterval(() => {
+    const elapsedTime = Date.now() - gameStartTime;
+
+    if (elapsedTime >= maxGameTimeMs) {
+      console.log(`[STRIKELOOP] 15 minutes elapsed - resetting game to initial state`);
+      stopOverallGameTimer();
+      resetGameToInitialState();
+    }
+  }, 1000); // Check every second
+}
+
+function stopOverallGameTimer() {
+  if (overallGameTimer) {
+    clearInterval(overallGameTimer);
+    overallGameTimer = null;
+  }
+  gameStartTime = null;
+}
+
+function resetGameToInitialState() {
+  console.log('[STRIKELOOP] Resetting game to initial state...');
+
+  // Stop everything
+  isRunning = false;
+  disableKeyboardListener();
+  stopLevelTimer();
+  stopLEDRefresh();
+  stopOverallGameTimer();
+  activeMission = null;
+  currentLevelIndex = 0;
+  localScore = 0;
+  goalAchieved = false;
+
+  // Cleanup
+  cleanupArcadeGame();
+  cleanupGameEventListeners();
+  isGameCleanedUp = false;
+
+  // Reset game state
+  initializeGameState();
+
+  // Notify displays
+  emitter.emit('reset');
+
+  console.log('[STRIKELOOP] Game reset complete - ready to start new game');
+}
+
 function startRoundBasedGame() {
   if (isRunning) return;
 
@@ -317,12 +376,15 @@ function startRoundBasedGame() {
   currentLevelIndex = 0;
   console.log('[STRIKELOOP] Starting game: 3 rounds, 10 levels each');
 
-  
+
   initializeGameState();
+
+  // Start overall 15-minute game timer
+  startOverallGameTimer();
 
   emitter.emit('gameStarted');
 
-  
+
   startNextLevel();
 }
 
@@ -826,15 +888,16 @@ function finishGame() {
   isRunning = false;
   disableKeyboardListener();
   stopLevelTimer();
-  stopLEDRefresh(); 
-  activeMission = null; 
+  stopLEDRefresh();
+  stopOverallGameTimer(); // Stop the 15-minute timer
+  activeMission = null;
   console.log('[STRIKELOOP] All 30 levels (3 rounds × 10 levels) completed - game finished');
   emitter.emit('gameFinished');
 
-  
+
   cleanupArcadeGame();
 
-  
+
   cleanupGameEventListeners();
 }
 
