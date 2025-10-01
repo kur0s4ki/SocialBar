@@ -28,6 +28,10 @@ function App() {
     timeString: '00:00'
   });
 
+  // Cumulative score tracking
+  const [cumulativeScore, setCumulativeScore] = useState(0);
+  const previousLevel = useRef(1);
+
   useEffect(() => {
     document.title = 'Social Bar - Game In Progress';
   }, []);
@@ -71,6 +75,19 @@ function App() {
               break;
             case 'roundUpdate':
               console.log('[GAMEINPROGRESS] Round update received:', data);
+
+              // Check if level changed - accumulate score BEFORE updating state
+              if (data.level !== previousLevel.current) {
+                const scoreToAdd = gameData.score;
+                console.log(`[GAMEINPROGRESS] Level changed from ${previousLevel.current} to ${data.level}, adding ${scoreToAdd} to cumulative`);
+                setCumulativeScore(prev => {
+                  const newCumulative = prev + scoreToAdd;
+                  console.log(`[GAMEINPROGRESS] Cumulative score: ${prev} + ${scoreToAdd} = ${newCumulative}`);
+                  return newCumulative;
+                });
+                previousLevel.current = data.level;
+              }
+
               setCurrentRound(prev => ({
                 ...prev,
                 round: data.round,
@@ -133,6 +150,8 @@ function App() {
                 timeLeft: 0,
                 timeString: '00:00'
               });
+              setCumulativeScore(0);
+              previousLevel.current = 1;
               break;
             default:
               console.log('[GAMEINPROGRESS] Unknown message type:', data.type);
@@ -230,14 +249,10 @@ function App() {
             <span className="text-cyan-400 text-3xl font-bold">BONUS CENTRAL</span>
           </div>
 
-          {/* Buttons */}
-          <div className="bg-slate-900 border-8 border-cyan-400 rounded-2xl p-12 flex flex-col items-center justify-center space-y-5">
-            <div className="grid grid-cols-3 gap-3">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="w-10 h-10 bg-yellow-400 rounded-full"></div>
-              ))}
-            </div>
-            <span className="text-cyan-400 text-3xl font-bold">BOUTONS</span>
+          {/* Overall Score */}
+          <div className="bg-slate-900 border-8 border-cyan-400 rounded-2xl p-12 flex flex-col items-center justify-center space-y-4">
+            <span className="text-cyan-400 text-4xl font-bold">OVERALL SCORE</span>
+            <span className="text-yellow-400 text-7xl font-bold">{cumulativeScore}</span>
           </div>
             </div>
       </div>
