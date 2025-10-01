@@ -31,6 +31,7 @@ function App() {
   // Cumulative score tracking
   const [cumulativeScore, setCumulativeScore] = useState(0);
   const previousLevel = useRef(1);
+  const lastScore = useRef(0); // Store last score before it gets reset
 
   useEffect(() => {
     document.title = 'Social Bar - Game In Progress';
@@ -78,7 +79,7 @@ function App() {
 
               // Check if level changed - accumulate score BEFORE updating state
               if (data.level !== previousLevel.current) {
-                const scoreToAdd = gameData.score;
+                const scoreToAdd = lastScore.current;
                 console.log(`[GAMEINPROGRESS] Level changed from ${previousLevel.current} to ${data.level}, adding ${scoreToAdd} to cumulative`);
                 setCumulativeScore(prev => {
                   const newCumulative = prev + scoreToAdd;
@@ -121,6 +122,7 @@ function App() {
               break;
             case 'scoreUpdate':
               console.log('[GAMEINPROGRESS] Score update:', data.score);
+              lastScore.current = data.score; // Store score in ref
               setGameData(prevData => ({ ...prevData, score: data.score }));
               break;
             case 'timeUpdate':
@@ -152,6 +154,7 @@ function App() {
               });
               setCumulativeScore(0);
               previousLevel.current = 1;
+              lastScore.current = 0;
               break;
             default:
               console.log('[GAMEINPROGRESS] Unknown message type:', data.type);
