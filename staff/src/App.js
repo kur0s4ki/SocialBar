@@ -99,7 +99,7 @@ function App() {
   const handleStart = () => {
     if (teamName.trim()) {
       console.log('[FRONTEND] Starting game for team:', teamName);
-      
+
       // Send start message to server
       if (ws.current && ws.current.readyState === WebSocket.OPEN) {
         ws.current.send(JSON.stringify({
@@ -108,6 +108,9 @@ function App() {
         }));
         console.log('[FRONTEND] Start message sent to server');
       }
+
+      // Automatically show simulator
+      setShowSimulator(true);
     }
   };
 
