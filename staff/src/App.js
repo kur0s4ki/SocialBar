@@ -219,7 +219,7 @@ function App() {
         {!isStarted ? (
           <>
             <h1>Team Registration</h1>
-            
+
             <div className="status">
               Status: {isConnected ? '✔️ Connected' : '🔴 Disconnected'}
             </div>
@@ -235,9 +235,9 @@ function App() {
                   placeholder="Enter your team name"
                 />
               </div>
-              
-              <button 
-                type="button" 
+
+              <button
+                type="button"
                 onClick={handleStart}
                 className="start-button"
               >
@@ -246,234 +246,198 @@ function App() {
             </form>
           </>
         ) : (
-          <>
-            {!showSimulator && (
-              <>
-                <h1>Team: {teamName}</h1>
-                
-                <div className="status">
-                  Status: {isConnected ? '✔️ Connected' : '🔴 Disconnected'}
-                </div>
-              </>
-            )}
+          <div className="simulator-container">
+            <div className="simulator-panels">
+              <div className="left-panel">
+                <div className="control-buttons">
+                  {/* Randomly colored buttons */}
+                  <div
+                    className={`control-button green-button ${getButtonPulseClass(14)}`}
+                    style={{opacity: getButtonOpacity(14)}}
+                    onClick={() => handleCircleClick(14)}
+                    title={getElementTooltip(14)}
+                  ></div>
+                  <div
+                    className={`control-button yellow-button ${getButtonPulseClass(15)}`}
+                    style={{opacity: getButtonOpacity(15)}}
+                    onClick={() => handleCircleClick(15)}
+                    title={getElementTooltip(15)}
+                  ></div>
+                  <div
+                    className={`control-button blue-button ${getButtonPulseClass(16)}`}
+                    style={{opacity: getButtonOpacity(16)}}
+                    onClick={() => handleCircleClick(16)}
+                    title={getElementTooltip(16)}
+                  ></div>
 
-            {!showSimulator ? (
-              <>
-                <div className="countdown-container">
+                  <div
+                    className={`control-button yellow-button ${getButtonPulseClass(17)}`}
+                    style={{opacity: getButtonOpacity(17)}}
+                    onClick={() => handleCircleClick(17)}
+                    title={getElementTooltip(17)}
+                  ></div>
+                  <div
+                    className={`control-button blue-button ${getButtonPulseClass(18)}`}
+                    style={{opacity: getButtonOpacity(18)}}
+                    onClick={() => handleCircleClick(18)}
+                    title={getElementTooltip(18)}
+                  ></div>
+                  <div
+                    className={`control-button green-button ${getButtonPulseClass(19)}`}
+                    style={{opacity: getButtonOpacity(19)}}
+                    onClick={() => handleCircleClick(19)}
+                    title={getElementTooltip(19)}
+                  ></div>
 
+                  <div
+                    className={`control-button blue-button ${getButtonPulseClass(20)}`}
+                    style={{opacity: getButtonOpacity(20)}}
+                    onClick={() => handleCircleClick(20)}
+                    title={getElementTooltip(20)}
+                  ></div>
+                  <div
+                    className={`control-button green-button ${getButtonPulseClass(21)}`}
+                    style={{opacity: getButtonOpacity(21)}}
+                    onClick={() => handleCircleClick(21)}
+                    title={getElementTooltip(21)}
+                  ></div>
+                  <div
+                    className={`control-button yellow-button ${getButtonPulseClass(22)}`}
+                    style={{opacity: getButtonOpacity(22)}}
+                    onClick={() => handleCircleClick(22)}
+                    title={getElementTooltip(22)}
+                  ></div>
                 </div>
-                
-                <button 
-                  onClick={() => setShowSimulator(true)}
-                  className="simulator-button"
-                >
-                  Simulator
-                </button>
-              </>
-            ) : (
-              <div className="simulator-container">
-                <div className="simulator-header">
-                  <button 
-                    onClick={() => setShowSimulator(false)}
-                    className="return-button"
+              </div>
+
+              <div className="right-panel">
+                <div className="control-panel">
+                  {/* Large circles */}
+                  <div
+                    className="circle large circle-1"
+                    style={{
+                      top: '10%',
+                      left: '15%',
+                      borderColor: getCircleColor(1)
+                    }}
+                    onClick={() => handleCircleClick(1)}
+                    title={getElementTooltip(1)}
+                  ></div>
+                  <div
+                    className="circle large circle-2"
+                    style={{
+                      top: '20%',
+                      right: '20%',
+                      borderColor: getCircleColor(2)
+                    }}
+                    onClick={() => handleCircleClick(2)}
+                    title={getElementTooltip(2)}
+                  ></div>
+                  <div
+                    className="circle large circle-3"
+                    style={{
+                      bottom: '25%',
+                      left: '10%',
+                      borderColor: getCircleColor(3)
+                    }}
+                    onClick={() => handleCircleClick(3)}
+                    title={getElementTooltip(3)}
+                  ></div>
+                  <div
+                    className="circle large circle-4"
+                    style={{
+                      bottom: '15%',
+                      right: '15%',
+                      borderColor: getCircleColor(4)
+                    }}
+                    onClick={() => handleCircleClick(4)}
+                    title={getElementTooltip(4)}
+                  ></div>
+
+                  {/* Medium circles */}
+                  <div
+                    className="circle medium circle-5"
+                    style={{
+                      top: '35%',
+                      left: '5%',
+                      borderColor: getCircleColor(5)
+                    }}
+                    onClick={() => handleCircleClick(5)}
+                    title={getElementTooltip(5)}
+                  ></div>
+                  <div
+                    className="circle medium circle-6"
+                    style={{
+                      top: '45%',
+                      right: '10%',
+                      borderColor: getCircleColor(6)
+                    }}
+                    onClick={() => handleCircleClick(6)}
+                    title={getElementTooltip(6)}
+                  ></div>
+                  <div
+                    className="circle medium circle-7"
+                    style={{
+                      bottom: '40%',
+                      left: '25%',
+                      borderColor: getCircleColor(7)
+                    }}
+                    onClick={() => handleCircleClick(7)}
+                    title={getElementTooltip(7)}
+                  ></div>
+                  <div
+                    className="circle medium circle-8"
+                    style={{
+                      bottom: '35%',
+                      right: '5%',
+                      borderColor: getCircleColor(8)
+                    }}
+                    onClick={() => handleCircleClick(8)}
+                    title={getElementTooltip(8)}
+                  ></div>
+
+                  {/* Central large circle with 5 small circles inside */}
+                  <div
+                    className="circle central-circle"
+                    style={{
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      borderColor: getCentralCircleColor()
+                    }}
+                    key={`central-${ledStates[9]?.active ? 'active' : 'inactive'}`}
+                    title="Output ID: 9 (Central Circle)"
                   >
-                    Return to Countdown
-                  </button>
-                </div>
-                
-                <div className="simulator-panels">
-                  <div className="left-panel">
-                    <div className="control-buttons">
-                      {/* Randomly colored buttons */}
-                      <div 
-                        className={`control-button green-button ${getButtonPulseClass(14)}`} 
-                        style={{opacity: getButtonOpacity(14)}}
-                        onClick={() => handleCircleClick(14)}
-                        title={getElementTooltip(14)}
-                      ></div>
-                      <div 
-                        className={`control-button yellow-button ${getButtonPulseClass(15)}`} 
-                        style={{opacity: getButtonOpacity(15)}}
-                        onClick={() => handleCircleClick(15)}
-                        title={getElementTooltip(15)}
-                      ></div>
-                      <div 
-                        className={`control-button blue-button ${getButtonPulseClass(16)}`} 
-                        style={{opacity: getButtonOpacity(16)}}
-                        onClick={() => handleCircleClick(16)}
-                        title={getElementTooltip(16)}
-                      ></div>
-                      
-                      <div 
-                        className={`control-button yellow-button ${getButtonPulseClass(17)}`} 
-                        style={{opacity: getButtonOpacity(17)}}
-                        onClick={() => handleCircleClick(17)}
-                        title={getElementTooltip(17)}
-                      ></div>
-                      <div 
-                        className={`control-button blue-button ${getButtonPulseClass(18)}`} 
-                        style={{opacity: getButtonOpacity(18)}}
-                        onClick={() => handleCircleClick(18)}
-                        title={getElementTooltip(18)}
-                      ></div>
-                      <div 
-                        className={`control-button green-button ${getButtonPulseClass(19)}`} 
-                        style={{opacity: getButtonOpacity(19)}}
-                        onClick={() => handleCircleClick(19)}
-                        title={getElementTooltip(19)}
-                      ></div>
-                      
-                      <div 
-                        className={`control-button blue-button ${getButtonPulseClass(20)}`} 
-                        style={{opacity: getButtonOpacity(20)}}
-                        onClick={() => handleCircleClick(20)}
-                        title={getElementTooltip(20)}
-                      ></div>
-                      <div 
-                        className={`control-button green-button ${getButtonPulseClass(21)}`} 
-                        style={{opacity: getButtonOpacity(21)}}
-                        onClick={() => handleCircleClick(21)}
-                        title={getElementTooltip(21)}
-                      ></div>
-                      <div 
-                        className={`control-button yellow-button ${getButtonPulseClass(22)}`} 
-                        style={{opacity: getButtonOpacity(22)}}
-                        onClick={() => handleCircleClick(22)}
-                        title={getElementTooltip(22)}
-                      ></div>
-                    </div>
-                  </div>
-                  
-                  <div className="right-panel">
-                    <div className="control-panel">
-                      {/* Large circles */}
-                      <div 
-                        className="circle large circle-1" 
-                        style={{
-                          top: '10%', 
-                          left: '15%',
-                          borderColor: getCircleColor(1)
-                        }} 
-                        onClick={() => handleCircleClick(1)}
-                        title={getElementTooltip(1)}
-                      ></div>
-                      <div 
-                        className="circle large circle-2" 
-                        style={{
-                          top: '20%', 
-                          right: '20%',
-                          borderColor: getCircleColor(2)
-                        }} 
-                        onClick={() => handleCircleClick(2)}
-                        title={getElementTooltip(2)}
-                      ></div>
-                      <div 
-                        className="circle large circle-3" 
-                        style={{
-                          bottom: '25%', 
-                          left: '10%',
-                          borderColor: getCircleColor(3)
-                        }} 
-                        onClick={() => handleCircleClick(3)}
-                        title={getElementTooltip(3)}
-                      ></div>
-                      <div 
-                        className="circle large circle-4" 
-                        style={{
-                          bottom: '15%', 
-                          right: '15%',
-                          borderColor: getCircleColor(4)
-                        }} 
-                        onClick={() => handleCircleClick(4)}
-                        title={getElementTooltip(4)}
-                      ></div>
-                      
-                      {/* Medium circles */}
-                      <div 
-                        className="circle medium circle-5" 
-                        style={{
-                          top: '35%', 
-                          left: '5%',
-                          borderColor: getCircleColor(5)
-                        }} 
-                        onClick={() => handleCircleClick(5)}
-                        title={getElementTooltip(5)}
-                      ></div>
-                      <div 
-                        className="circle medium circle-6" 
-                        style={{
-                          top: '45%', 
-                          right: '10%',
-                          borderColor: getCircleColor(6)
-                        }} 
-                        onClick={() => handleCircleClick(6)}
-                        title={getElementTooltip(6)}
-                      ></div>
-                      <div 
-                        className="circle medium circle-7" 
-                        style={{
-                          bottom: '40%', 
-                          left: '25%',
-                          borderColor: getCircleColor(7)
-                        }} 
-                        onClick={() => handleCircleClick(7)}
-                        title={getElementTooltip(7)}
-                      ></div>
-                      <div 
-                        className="circle medium circle-8" 
-                        style={{
-                          bottom: '35%', 
-                          right: '5%',
-                          borderColor: getCircleColor(8)
-                        }} 
-                        onClick={() => handleCircleClick(8)}
-                        title={getElementTooltip(8)}
-                      ></div>
-                      
-                      {/* Central large circle with 5 small circles inside */}
-                      <div 
-                        className="circle central-circle" 
-                        style={{
-                          top: '50%', 
-                          left: '50%', 
-                          transform: 'translate(-50%, -50%)',
-                          borderColor: getCentralCircleColor()
-                        }}
-                        key={`central-${ledStates[9]?.active ? 'active' : 'inactive'}`}
-                        title="Output ID: 9 (Central Circle)"
-                      >
-                        <div 
-                          className="small-circle small-pos-1" 
-                          onClick={() => handleCircleClick(9)}
-                          title={getElementTooltip(9)}
-                        ></div>
-                        <div 
-                          className="small-circle small-pos-2" 
-                          onClick={() => handleCircleClick(10)}
-                          title={getElementTooltip(10)}
-                        ></div>
-                        <div 
-                          className="small-circle small-pos-3" 
-                          onClick={() => handleCircleClick(11)}
-                          title={getElementTooltip(11)}
-                        ></div>
-                        <div 
-                          className="small-circle small-pos-4" 
-                          onClick={() => handleCircleClick(12)}
-                          title={getElementTooltip(12)}
-                        ></div>
-                        <div 
-                          className="small-circle small-pos-5" 
-                          onClick={() => handleCircleClick(13)}
-                          title={getElementTooltip(13)}
-                        ></div>
-                      </div>
-                    </div>
+                    <div
+                      className="small-circle small-pos-1"
+                      onClick={() => handleCircleClick(9)}
+                      title={getElementTooltip(9)}
+                    ></div>
+                    <div
+                      className="small-circle small-pos-2"
+                      onClick={() => handleCircleClick(10)}
+                      title={getElementTooltip(10)}
+                    ></div>
+                    <div
+                      className="small-circle small-pos-3"
+                      onClick={() => handleCircleClick(11)}
+                      title={getElementTooltip(11)}
+                    ></div>
+                    <div
+                      className="small-circle small-pos-4"
+                      onClick={() => handleCircleClick(12)}
+                      title={getElementTooltip(12)}
+                    ></div>
+                    <div
+                      className="small-circle small-pos-5"
+                      onClick={() => handleCircleClick(13)}
+                      title={getElementTooltip(13)}
+                    ></div>
                   </div>
                 </div>
               </div>
-            )}
-          </>
+            </div>
+          </div>
         )}
       </div>
     </div>
