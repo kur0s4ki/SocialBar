@@ -248,22 +248,24 @@ function App() {
                 />
               </div>
 
-              <button
-                type="button"
-                onClick={handleStart}
-                className="start-button"
-                disabled={!teamName.trim() || isStarted}
-              >
-                Start
-              </button>
+              <div className="button-group">
+                <button
+                  type="button"
+                  onClick={handleStart}
+                  className="start-button"
+                  disabled={!teamName.trim() || isStarted}
+                >
+                  Start Game
+                </button>
 
-              <button
-                type="button"
-                onClick={handleHardReset}
-                className="reset-button"
-              >
-                Hard Reset
-              </button>
+                <button
+                  type="button"
+                  onClick={handleHardReset}
+                  className="reset-button"
+                >
+                  Reset
+                </button>
+              </div>
             </form>
           </>
         ) : (
@@ -274,7 +276,7 @@ function App() {
                 onClick={handleHardReset}
                 className="reset-button"
               >
-                Hard Reset
+                Reset Game
               </button>
             </div>
             <div className="simulator-panels">
