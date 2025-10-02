@@ -46,12 +46,12 @@ function App() {
       ws.current.onmessage = (event) => {
         const data = JSON.parse(event.data);
         console.log('[FRONTEND] Received from server:', data);
-        
+
         if (data.type === 'gameStarted') {
           console.log('[FRONTEND] Game started - waiting for time updates from server');
           setIsStarted(true);
         } else if (data.type === 'reset') {
-          console.log('[FRONTEND] Game reset received');
+          console.log('[FRONTEND] Game reset received - resetting UI');
           resetGame();
         } else if (data.type === 'ledControl') {
           console.log('[FRONTEND] LED control received:', data);
@@ -97,7 +97,7 @@ function App() {
   };
 
   const handleStart = () => {
-    if (teamName.trim()) {
+    if (teamName.trim() && !isStarted) {
       console.log('[FRONTEND] Starting game for team:', teamName);
 
       // Send start message to server
@@ -111,6 +111,18 @@ function App() {
 
       // Automatically show simulator
       setShowSimulator(true);
+    }
+  };
+
+  const handleHardReset = () => {
+    console.log('[FRONTEND] Hard reset requested');
+
+    // Send hard reset message to server
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      ws.current.send(JSON.stringify({
+        type: 'hardReset'
+      }));
+      console.log('[FRONTEND] Hard reset message sent to server');
     }
   };
 
@@ -240,13 +252,31 @@ function App() {
                 type="button"
                 onClick={handleStart}
                 className="start-button"
+                disabled={!teamName.trim() || isStarted}
               >
                 Start
+              </button>
+
+              <button
+                type="button"
+                onClick={handleHardReset}
+                className="reset-button"
+              >
+                Hard Reset
               </button>
             </form>
           </>
         ) : (
           <div className="simulator-container">
+            <div className="simulator-header">
+              <button
+                type="button"
+                onClick={handleHardReset}
+                className="reset-button"
+              >
+                Hard Reset
+              </button>
+            </div>
             <div className="simulator-panels">
               <div className="left-panel">
                 <div className="control-buttons">

@@ -282,30 +282,33 @@ function addTrackedGameListener(emitter, event, handler) {
 }
 
 
-addTrackedGameListener(emitter, 'start', (teamData) => {
+// Permanent event listeners - these should NEVER be removed
+emitter.on('start', (teamData) => {
   console.log('[STRIKELOOP] Game start received for team:', teamData.teamName);
   startRoundBasedGame();
   setupKeyboardListener();
 });
 
+// Handle reset command from staff interface
+emitter.on('hardReset', () => {
+  console.log('[STRIKELOOP] Hard reset received from staff interface');
+  resetGameToInitialState();
+});
 
-
-
-addTrackedGameListener(emitter, 'EventInput', (message, value) => {
+emitter.on('EventInput', (message, value) => {
   if (isRunning) {
     console.log('[STRIKELOOP] Arduino input received during game:', message, 'Value:', value);
-    
+
     processGameInput(message, 'arduino');
   } else {
     console.log('[STRIKELOOP] Arduino input received but no game running');
   }
 });
 
-
-addTrackedGameListener(emitter, 'circleClick', (data) => {
+emitter.on('circleClick', (data) => {
   if (isRunning) {
     console.log('[STRIKELOOP] Circle clicked - ID:', data.circleId);
-    
+
     processGameInput(data.circleId, 'simulator');
   } else {
     console.log('[STRIKELOOP] Circle clicked but no game running');
@@ -1958,20 +1961,21 @@ module.exports = {
   emitter,
   startRoundBasedGame,
   stopGame,
+  resetGameToInitialState,
   controlOutput,
   isRunning: () => isRunning,
-  
+
   updateScore,
   updateMission,
   updateRound,
   updateMultiplier,
   gameState: () => gameState,
-  
+
   setGameRounds,
   getCurrentLevel,
   getTotalRemainingTime,
   formatTime,
-  
+
   gameRounds: () => gameRounds,
   currentLevelIndex: () => currentLevelIndex
 };

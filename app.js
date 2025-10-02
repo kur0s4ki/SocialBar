@@ -59,6 +59,11 @@ staffWss.on('connection', (ws) => {
           }
           break;
 
+        case 'hardReset':
+          console.log(`[STAFF-WS] Hard reset request from ${clientId}`);
+          strikeLoop.emitter.emit('hardReset');
+          break;
+
         default:
           console.log(`[STAFF-WS] Unknown message type from ${clientId}: ${data.type}`);
       }
@@ -219,6 +224,19 @@ addTrackedListener(strikeLoop.emitter, 'ledControl', (data) => {
 
 addTrackedListener(strikeLoop.emitter, 'gameFinished', () => {
   console.log('[APP] Game finished, resetting frontend');
+
+  // Send reset message to both client types
+  broadcastToStaff({
+    type: 'reset'
+  });
+
+  broadcastToDisplay({
+    type: 'reset'
+  });
+});
+
+addTrackedListener(strikeLoop.emitter, 'reset', () => {
+  console.log('[APP] Hard reset triggered, resetting frontend');
 
   // Send reset message to both client types
   broadcastToStaff({
