@@ -25,13 +25,17 @@ function App() {
     mission: 'Waiting for game to start...',
     duration: 0,
     timeLeft: 0,
-    timeString: '00:00'
+    timeString: '00:00',
+    goalScore: 1000
   });
 
   // Cumulative score tracking
   const [cumulativeScore, setCumulativeScore] = useState(0);
   const previousLevel = useRef(1);
   const lastScore = useRef(0); // Store last score before it gets reset
+
+  // Bonus section state
+  const [bonusActive, setBonusActive] = useState(false);
 
   // Dynamic font sizing for mission text
   const [missionFontSize, setMissionFontSize] = useState('text-7xl');
@@ -110,7 +114,8 @@ function App() {
                 ...prev,
                 round: data.round,
                 level: data.level,
-                duration: data.duration || prev.duration
+                duration: data.duration || prev.duration,
+                goalScore: data.goalScore || prev.goalScore
               }));
               setGameData(prevData => ({
                 ...prevData,
@@ -150,6 +155,10 @@ function App() {
                 timeString: data.timeString
               }));
               break;
+            case 'bonusActive':
+              console.log('[GAMEINPROGRESS] Bonus active update:', data.active);
+              setBonusActive(data.active);
+              break;
             case 'reset':
               console.log('[GAMEINPROGRESS] Game reset received');
               // Reset to default values
@@ -167,11 +176,13 @@ function App() {
                 mission: 'Waiting for game to start...',
                 duration: 0,
                 timeLeft: 0,
-                timeString: '00:00'
+                timeString: '00:00',
+                goalScore: 1000
               });
               setCumulativeScore(0);
               previousLevel.current = 1;
               lastScore.current = 0;
+              setBonusActive(false);
               break;
             default:
               console.log('[GAMEINPROGRESS] Unknown message type:', data.type);
@@ -223,7 +234,7 @@ function App() {
 
           {/* Right Panel - Score Number */}
           <div className="bg-slate-900 border-8 border-cyan-400 rounded-2xl p-10 flex items-center justify-center min-w-[250px]">
-            <span className={`text-yellow-400 text-9xl font-bold ${gameData.score >= 1000 ? 'score-shine' : ''}`}>{gameData.score}</span>
+            <span className={`text-yellow-400 text-9xl font-bold ${gameData.score >= currentRound.goalScore ? 'score-shine' : ''}`}>{gameData.score}</span>
           </div>
         </div>
 
@@ -263,8 +274,8 @@ function App() {
 
           {/* Bonus Central */}
           <div className="bg-slate-900 border-8 border-cyan-400 rounded-2xl p-12 flex flex-col items-center justify-center space-y-4">
-            <div className="w-20 h-20 border-8 border-white rounded-full flex items-center justify-center">
-              <div className="w-5 h-5 bg-white rounded-full"></div>
+            <div className={`w-20 h-20 border-8 ${bonusActive ? 'border-yellow-400' : 'border-white'} rounded-full flex items-center justify-center`}>
+              <div className={`w-5 h-5 ${bonusActive ? 'bg-yellow-400' : 'bg-white'} rounded-full`}></div>
             </div>
             <span className="text-cyan-400 text-3xl font-bold">BONUS CENTRAL</span>
           </div>

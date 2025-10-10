@@ -595,7 +595,8 @@ function startNextLevel(isRetry = false) {
   emitter.emit('roundUpdate', {
     round: currentLevel.round,
     level: currentLevel.level,
-    duration: currentLevel.duration
+    duration: currentLevel.duration,
+    goalScore: currentLevel.goalScore
   });
 
   emitter.emit('missionUpdate', {
@@ -662,6 +663,9 @@ function initializeMission(levelConfig) {
 
   // Clear blink states
   blinkStates = {};
+
+  // Deactivate bonus indicator
+  emitter.emit('bonusActive', false);
 
   // Turn off all LEDs before starting new level
   for (let i = 1; i <= 13; i++) {
@@ -1968,6 +1972,10 @@ function activateBonusSection() {
       activeTargets.push(bonus);
       controlLED(pos, 'y');
     });
+
+    // Emit bonus active event to frontend
+    console.log('[STRIKELOOP] Bonus section activated');
+    emitter.emit('bonusActive', true);
   }
 }
 

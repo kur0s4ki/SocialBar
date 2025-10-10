@@ -293,6 +293,14 @@ addTrackedListener(strikeLoop.emitter, 'timeUpdate', (timeData) => {
   broadcastToDisplay(message);
 });
 
+addTrackedListener(strikeLoop.emitter, 'bonusActive', (isActive) => {
+  console.log('[APP] Bonus active update:', isActive);
+  broadcastToDisplay({
+    type: 'bonusActive',
+    active: isActive
+  });
+});
+
 // Start the servers
 const STAFF_PORT = 8080;
 const DISPLAY_PORT = 8081;
