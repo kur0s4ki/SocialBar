@@ -227,9 +227,8 @@ function App() {
           {/* Left Panel - Round and Score */}
           <div className="flex-1 bg-slate-900 border-8 border-cyan-400 rounded-2xl p-10">
             <h2 className="text-yellow-400 text-6xl font-bold text-center">
-              ROUND {currentRound.round} - LEVEL {currentRound.level}
+              MANCHE {currentRound.round} - NIVEAU {currentRound.level}
             </h2>
-            <h2 className="text-yellow-400 text-6xl font-bold text-center mt-2">SCORE</h2>
           </div>
 
           {/* Right Panel - Score Number */}
@@ -282,7 +281,7 @@ function App() {
 
           {/* Overall Score */}
           <div className="bg-slate-900 border-8 border-cyan-400 rounded-2xl p-12 flex flex-col items-center justify-center space-y-4">
-            <span className="text-cyan-400 text-4xl font-bold">OVERALL SCORE</span>
+            <span className="text-cyan-400 text-4xl font-bold">SCORE GLOBAL</span>
             <span className="text-yellow-400 text-7xl font-bold">{cumulativeScore}</span>
           </div>
             </div>
