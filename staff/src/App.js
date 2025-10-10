@@ -189,15 +189,12 @@ function App() {
     return '#ffffff'; // Default white for circles
   };
 
-  const getCentralCircleColor = () => {
-    const ledState = ledStates[9];
-    console.log('[FRONTEND] Central circle LED state:', ledState);
+  const getSmallCircleColor = (elementId) => {
+    const ledState = ledStates[elementId];
     if (ledState && ledState.active) {
-      console.log('[FRONTEND] Central circle active, color:', ledState.colorValue);
       return ledState.colorValue;
     }
-    console.log('[FRONTEND] Central circle inactive, using white');
-    return '#ffffff'; // Default white for central circle
+    return '#ffffff'; // Default white for small circles
   };
 
   const getButtonPulseClass = (elementId) => {
@@ -435,33 +432,37 @@ function App() {
                       top: '50%',
                       left: '50%',
                       transform: 'translate(-50%, -50%)',
-                      borderColor: getCentralCircleColor()
+                      borderColor: '#ffffff'
                     }}
-                    key={`central-${ledStates[9]?.active ? 'active' : 'inactive'}`}
-                    title="Output ID: 9 (Central Circle)"
+                    title="Output ID: 9-13 (Central Circle with 5 small circles)"
                   >
                     <div
                       className="small-circle small-pos-1"
+                      style={{ backgroundColor: getSmallCircleColor(9) }}
                       onClick={() => handleCircleClick(9)}
                       title={getElementTooltip(9)}
                     ></div>
                     <div
                       className="small-circle small-pos-2"
+                      style={{ backgroundColor: getSmallCircleColor(10) }}
                       onClick={() => handleCircleClick(10)}
                       title={getElementTooltip(10)}
                     ></div>
                     <div
                       className="small-circle small-pos-3"
+                      style={{ backgroundColor: getSmallCircleColor(11) }}
                       onClick={() => handleCircleClick(11)}
                       title={getElementTooltip(11)}
                     ></div>
                     <div
                       className="small-circle small-pos-4"
+                      style={{ backgroundColor: getSmallCircleColor(12) }}
                       onClick={() => handleCircleClick(12)}
                       title={getElementTooltip(12)}
                     ></div>
                     <div
                       className="small-circle small-pos-5"
+                      style={{ backgroundColor: getSmallCircleColor(13) }}
                       onClick={() => handleCircleClick(13)}
                       title={getElementTooltip(13)}
                     ></div>

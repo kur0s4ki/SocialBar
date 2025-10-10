@@ -3,6 +3,9 @@ const arduino = require('./arduino.js');
 const readline = require('readline');
 const emitter = new events.EventEmitter();
 
+// ⚠️ TESTING FLAG: Set to true to play Round 2 first (for testing)
+// Set to false for normal game flow (Round 1 → Round 2 → Round 3)
+const TESTING_MODE_SWAP_ROUNDS = true;
 
 const INPUT_IDS = {
   
@@ -36,7 +39,7 @@ const INPUT_IDS = {
 
 
 const OUTPUT_IDS = {
-  
+
   OUTER_CIRCLE_1: 1,
   OUTER_CIRCLE_2: 2,
   OUTER_CIRCLE_3: 3,
@@ -45,11 +48,15 @@ const OUTPUT_IDS = {
   OUTER_CIRCLE_6: 6,
   OUTER_CIRCLE_7: 7,
   OUTER_CIRCLE_8: 8,
-  
-  
+
+
   CENTRAL_CIRCLE: 9,
-  
-  
+  INNER_CIRCLE_2: 10,
+  INNER_CIRCLE_3: 11,
+  INNER_CIRCLE_4: 12,
+  INNER_CIRCLE_5: 13,
+
+
   CONTROL_BUTTON_1: 14,
   CONTROL_BUTTON_2: 15,
   CONTROL_BUTTON_3: 16,
@@ -207,6 +214,155 @@ let gameRounds = [
     requiredHits: 3,
     pointsPerCompletion: 130,
     penaltyRed: -100
+  },
+  // ROUND 2 - 10 Levels
+  {
+    round: 2, level: 1,
+    mission: 'Touchez uniquement les verts. Évitez les rouges !',
+    duration: 30,
+    goalScore: 2900,
+    arcadeMode: 'blinking-green-bonus',
+    greenTargets: [1, 2, 3, 4],
+    redTraps: [5, 6, 7, 8],
+    bonusTargets: [9, 10, 11, 12, 13],
+    pointsPerGreen: 140,
+    pointsPerBonus: 50,
+    penaltyRed: -100
+  },
+  {
+    round: 2, level: 2,
+    mission: 'Touchez uniquement les bleus. Évitez les rouges !',
+    duration: 30,
+    goalScore: 2900,
+    arcadeMode: 'blinking-blue-bonus',
+    blueTargets: [5, 6, 7, 8],
+    redTraps: [1, 2, 3, 4],
+    bonusTargets: [9, 10, 11, 12, 13],
+    pointsPerBlue: 140,
+    pointsPerBonus: 50,
+    penaltyRed: -100
+  },
+  {
+    round: 2, level: 3,
+    mission: 'Touchez les cibles vertes. Évitez les rouges !',
+    duration: 30,
+    goalScore: 3100,
+    arcadeMode: 'snake-green-3',
+    greenTargets: [1, 2, 3, 4],
+    redTraps: [5, 6, 7, 8],
+    bonusTargets: [9, 10, 11, 12, 13],
+    snakeCount: 3,
+    snakePattern: [[1,2,4], [2,4,3], [4,3,1], [3,1,2]],
+    rotationDelay: 3000,
+    pointsPerGreen: 150,
+    pointsPerBonus: 50,
+    penaltyRed: -100
+  },
+  {
+    round: 2, level: 4,
+    mission: 'Touchez les cibles bleus. Évitez les rouges !',
+    duration: 30,
+    goalScore: 3300,
+    arcadeMode: 'snake-blue-3',
+    blueTargets: [5, 6, 7, 8],
+    redTraps: [1, 2, 3, 4],
+    bonusTargets: [9, 10, 11, 12, 13],
+    snakeCount: 3,
+    snakePattern: [[5,6,8], [6,8,7], [8,7,5], [7,5,6]],
+    rotationDelay: 3000,
+    pointsPerBlue: 160,
+    pointsPerBonus: 50,
+    penaltyRed: -100
+  },
+  {
+    round: 2, level: 5,
+    mission: 'Touchez les cibles vertes. Évitez les rouges !',
+    duration: 30,
+    goalScore: 3500,
+    arcadeMode: 'snake-green-2',
+    greenTargets: [1, 2, 3, 4],
+    redTraps: [5, 6, 7, 8],
+    bonusTargets: [9, 10, 11, 12, 13],
+    snakeCount: 2,
+    snakePattern: [[1,2], [2,4], [4,3], [3,1]],
+    rotationDelay: 3000,
+    pointsPerGreen: 160,
+    pointsPerBonus: 50,
+    penaltyRed: -100
+  },
+  {
+    round: 2, level: 6,
+    mission: 'Touchez les cibles bleus. Évitez les rouges !',
+    duration: 30,
+    goalScore: 3700,
+    arcadeMode: 'snake-blue-2',
+    blueTargets: [5, 6, 7, 8],
+    redTraps: [1, 2, 3, 4],
+    bonusTargets: [9, 10, 11, 12, 13],
+    snakeCount: 2,
+    snakePattern: [[5,6], [6,8], [8,7], [7,5]],
+    rotationDelay: 3000,
+    pointsPerBlue: 170,
+    pointsPerBonus: 50,
+    penaltyRed: -100
+  },
+  {
+    round: 2, level: 7,
+    mission: 'Reconstituez la séquence. Évitez les rouges !',
+    duration: 30,
+    goalScore: 3900,
+    arcadeMode: 'memory-sequence-4-green',
+    sequenceTargets: [1, 2, 3, 4],
+    sequenceLength: 4,
+    sequenceColor: 'g',
+    redTraps: [5, 6, 7, 8],
+    bonusTargets: [9, 10, 11, 12, 13],
+    displayDuration: 8,
+    pointsForComplete: 3900,
+    pointsPerBonus: 50,
+    penaltyRed: -100
+  },
+  {
+    round: 2, level: 8,
+    mission: 'Reconstituez la séquence. Évitez les rouges !',
+    duration: 30,
+    goalScore: 4100,
+    arcadeMode: 'memory-sequence-4-blue',
+    sequenceTargets: [5, 6, 7, 8],
+    sequenceLength: 4,
+    sequenceColor: 'b',
+    redTraps: [1, 2, 3, 4],
+    bonusTargets: [9, 10, 11, 12, 13],
+    displayDuration: 8,
+    pointsForComplete: 4100,
+    pointsPerBonus: 50,
+    penaltyRed: -100
+  },
+  {
+    round: 2, level: 9,
+    mission: 'Reconstituez la séquence. Évitez les rouges !',
+    duration: 30,
+    goalScore: 4300,
+    arcadeMode: 'memory-sequence-6-mixed',
+    sequenceTargets: [1, 2, 3, 4, 5, 6, 7, 8],
+    sequenceLength: 6,
+    bonusTargets: [9, 10, 11, 12, 13],
+    displayDuration: 12,
+    pointsForComplete: 4300,
+    pointsPerBonus: 50
+  },
+  {
+    round: 2, level: 10,
+    mission: 'Reconstituez la séquence. Évitez les rouges !',
+    duration: 30,
+    goalScore: 4400,
+    arcadeMode: 'memory-sequence-7-mixed',
+    sequenceTargets: [1, 2, 3, 4, 5, 6, 7, 8],
+    sequenceLength: 7,
+    bonusTargets: [9, 10, 11, 12, 13],
+    displayDuration: 14,
+    pointsForComplete: 4400,
+    pointsPerBonus: 50
   }
 ];
 
@@ -377,7 +533,17 @@ function startRoundBasedGame() {
 
   isRunning = true;
   currentLevelIndex = 0;
-  console.log('[STRIKELOOP] Starting game: 3 rounds, 10 levels each');
+
+  // ⚠️ TESTING MODE: Swap rounds if flag is enabled
+  if (TESTING_MODE_SWAP_ROUNDS) {
+    console.log('[STRIKELOOP] ⚠️  TESTING MODE: Swapping rounds - Round 2 will play first!');
+    const round1Levels = gameRounds.filter(level => level.round === 1);
+    const round2Levels = gameRounds.filter(level => level.round === 2);
+    const otherLevels = gameRounds.filter(level => level.round !== 1 && level.round !== 2);
+    gameRounds = [...round2Levels, ...round1Levels, ...otherLevels];
+  } else {
+    console.log('[STRIKELOOP] Starting game: 3 rounds, 10 levels each');
+  }
 
 
   initializeGameState();
@@ -452,6 +618,26 @@ function startNextLevel(isRetry = false) {
 
 
 function initializeMission(levelConfig) {
+  // Clear any blinking intervals from PREVIOUS level BEFORE overwriting activeMission
+  if (activeMission?.blinkIntervals) {
+    console.log(`[STRIKELOOP] Clearing ${activeMission.blinkIntervals.length} blink intervals from previous level`);
+    activeMission.blinkIntervals.forEach(interval => clearInterval(interval));
+    activeMission.blinkIntervals = [];
+  }
+
+  // Clear rotation interval
+  if (rotationInterval) {
+    clearInterval(rotationInterval);
+    rotationInterval = null;
+  }
+
+  // Clear multiplier timer
+  if (multiplierTimer) {
+    clearTimeout(multiplierTimer);
+    multiplierTimer = null;
+  }
+
+  // Now set the new mission
   activeMission = levelConfig;
   activeTargets = [];
   missionTargetsHit = 0;
@@ -469,16 +655,17 @@ function initializeMission(levelConfig) {
   sequenceStep = 0;
   multiHitTracker = {};
 
+  // Clear memory sequence state
+  memorySequence = [];
+  memorySequenceIndex = 0;
+  memorySequenceDisplayed = false;
 
-  if (multiplierTimer) {
-    clearTimeout(multiplierTimer);
-    multiplierTimer = null;
-  }
+  // Clear blink states
+  blinkStates = {};
 
-
-  if (rotationInterval) {
-    clearInterval(rotationInterval);
-    rotationInterval = null;
+  // Turn off all LEDs before starting new level
+  for (let i = 1; i <= 13; i++) {
+    controlLED(i, 'o');
   }
 
   console.log(`[STRIKELOOP] Mission initialized:`, {
@@ -512,7 +699,17 @@ function startLEDRefresh() {
     'rotating-green-blue',
     'rotating-blue',
     'multi-hit-green',
-    'multi-hit-blue'
+    'multi-hit-blue',
+    'blinking-green-bonus',
+    'blinking-blue-bonus',
+    'snake-green-3',
+    'snake-blue-3',
+    'snake-green-2',
+    'snake-blue-2',
+    'memory-sequence-4-green',
+    'memory-sequence-4-blue',
+    'memory-sequence-6-mixed',
+    'memory-sequence-7-mixed'
   ];
 
   if (activeMission && !noRefreshModes.includes(activeMission.arcadeMode)) {
@@ -1209,6 +1406,30 @@ function activateArcadeLEDs() {
     case 'multi-hit-blue':
       activateModeMultiHitBlue();
       break;
+    case 'blinking-green-bonus':
+      activateModeBlinkingGreenBonus();
+      break;
+    case 'blinking-blue-bonus':
+      activateModeBlinkingBlueBonus();
+      break;
+    case 'snake-green-3':
+      activateModeSnakeGreen3();
+      break;
+    case 'snake-blue-3':
+      activateModeSnakeBlue3();
+      break;
+    case 'snake-green-2':
+      activateModeSnakeGreen2();
+      break;
+    case 'snake-blue-2':
+      activateModeSnakeBlue2();
+      break;
+    case 'memory-sequence-4-green':
+    case 'memory-sequence-4-blue':
+    case 'memory-sequence-6-mixed':
+    case 'memory-sequence-7-mixed':
+      activateModeMemorySequence();
+      break;
     default:
       activateLegacyArcadeMode();
       break;
@@ -1389,6 +1610,365 @@ function activateModeMultiHitBlue() {
     trapPositions.push(trap);
     controlLED(pos, 'r');
   });
+}
+
+// ROUND 2 MODE IMPLEMENTATIONS
+
+function activateModeBlinkingGreenBonus() {
+  // Green targets (1-4) blink at 1 sec on/off
+  activeMission.greenTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'g', isValid: true };
+    activeTargets.push(target);
+  });
+  startBlinkingTargets(activeMission.greenTargets, 'g', 1000);
+
+  // Red traps (5-8) solid
+  activeMission.redTraps.forEach(pos => {
+    const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
+    activeTargets.push(trap);
+    trapPositions.push(trap);
+    controlLED(pos, 'r');
+  });
+
+  // Bonus section (9-13) solid yellow
+  activateBonusSection();
+}
+
+function activateModeBlinkingBlueBonus() {
+  console.log('[STRIKELOOP] Activating Blinking Blue Bonus mode');
+
+  // Red traps (1-4) solid
+  console.log('[STRIKELOOP] Setting red traps (1-4) to SOLID RED');
+  activeMission.redTraps.forEach(pos => {
+    const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
+    activeTargets.push(trap);
+    trapPositions.push(trap);
+    controlLED(pos, 'r');
+  });
+
+  // Blue targets (5-8) blink at 1 sec on/off
+  console.log('[STRIKELOOP] Setting blue targets (5-8) to BLINKING BLUE');
+  activeMission.blueTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'b', isValid: true };
+    activeTargets.push(target);
+  });
+  startBlinkingTargets(activeMission.blueTargets, 'b', 1000);
+
+  // Bonus section (9-13) solid yellow
+  console.log('[STRIKELOOP] Setting bonus section (9-13) to SOLID YELLOW');
+  activateBonusSection();
+}
+
+function activateModeSnakeGreen3() {
+  if (rotationInterval) clearInterval(rotationInterval);
+
+  let patternIndex = 0;
+  const pattern = activeMission.snakePattern;
+
+  const rotateSnake = () => {
+    activeTargets = [];
+    trapPositions = [];
+
+    const activePositions = pattern[patternIndex];
+
+    // Set active green positions
+    activePositions.forEach(pos => {
+      const target = { elementId: pos, colorCode: 'g', isValid: true, isActive: true };
+      activeTargets.push(target);
+      controlLED(pos, 'g');
+    });
+
+    // Set inactive positions from greenTargets as red
+    activeMission.greenTargets.forEach(pos => {
+      if (!activePositions.includes(pos)) {
+        const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
+        activeTargets.push(trap);
+        trapPositions.push(trap);
+        controlLED(pos, 'r');
+      }
+    });
+
+    // Red traps (5-8) solid
+    activeMission.redTraps.forEach(pos => {
+      const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
+      activeTargets.push(trap);
+      trapPositions.push(trap);
+      controlLED(pos, 'r');
+    });
+
+    // Bonus section
+    activateBonusSection();
+
+    console.log(`[STRIKELOOP] Snake green-3: pattern ${patternIndex}: ${activePositions.join(',')}`);
+    patternIndex = (patternIndex + 1) % pattern.length;
+  };
+
+  rotateSnake();
+  rotationInterval = setInterval(rotateSnake, activeMission.rotationDelay || 3000);
+}
+
+function activateModeSnakeBlue3() {
+  if (rotationInterval) clearInterval(rotationInterval);
+
+  let patternIndex = 0;
+  const pattern = activeMission.snakePattern;
+
+  const rotateSnake = () => {
+    activeTargets = [];
+    trapPositions = [];
+
+    // Red traps (1-4) solid
+    activeMission.redTraps.forEach(pos => {
+      const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
+      activeTargets.push(trap);
+      trapPositions.push(trap);
+      controlLED(pos, 'r');
+    });
+
+    const activePositions = pattern[patternIndex];
+
+    // Set active blue positions
+    activePositions.forEach(pos => {
+      const target = { elementId: pos, colorCode: 'b', isValid: true, isActive: true };
+      activeTargets.push(target);
+      controlLED(pos, 'b');
+    });
+
+    // Set inactive positions from blueTargets as red
+    activeMission.blueTargets.forEach(pos => {
+      if (!activePositions.includes(pos)) {
+        const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
+        activeTargets.push(trap);
+        trapPositions.push(trap);
+        controlLED(pos, 'r');
+      }
+    });
+
+    // Bonus section
+    activateBonusSection();
+
+    console.log(`[STRIKELOOP] Snake blue-3: pattern ${patternIndex}: ${activePositions.join(',')}`);
+    patternIndex = (patternIndex + 1) % pattern.length;
+  };
+
+  rotateSnake();
+  rotationInterval = setInterval(rotateSnake, activeMission.rotationDelay || 3000);
+}
+
+function activateModeSnakeGreen2() {
+  if (rotationInterval) clearInterval(rotationInterval);
+
+  let patternIndex = 0;
+  const pattern = activeMission.snakePattern;
+
+  const rotateSnake = () => {
+    activeTargets = [];
+    trapPositions = [];
+
+    const activePositions = pattern[patternIndex];
+
+    // Set active green positions
+    activePositions.forEach(pos => {
+      const target = { elementId: pos, colorCode: 'g', isValid: true, isActive: true };
+      activeTargets.push(target);
+      controlLED(pos, 'g');
+    });
+
+    // Set inactive positions from greenTargets as red
+    activeMission.greenTargets.forEach(pos => {
+      if (!activePositions.includes(pos)) {
+        const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
+        activeTargets.push(trap);
+        trapPositions.push(trap);
+        controlLED(pos, 'r');
+      }
+    });
+
+    // Red traps (5-8) solid
+    activeMission.redTraps.forEach(pos => {
+      const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
+      activeTargets.push(trap);
+      trapPositions.push(trap);
+      controlLED(pos, 'r');
+    });
+
+    // Bonus section
+    activateBonusSection();
+
+    console.log(`[STRIKELOOP] Snake green-2: pattern ${patternIndex}: ${activePositions.join(',')}`);
+    patternIndex = (patternIndex + 1) % pattern.length;
+  };
+
+  rotateSnake();
+  rotationInterval = setInterval(rotateSnake, activeMission.rotationDelay || 3000);
+}
+
+function activateModeSnakeBlue2() {
+  if (rotationInterval) clearInterval(rotationInterval);
+
+  let patternIndex = 0;
+  const pattern = activeMission.snakePattern;
+
+  const rotateSnake = () => {
+    activeTargets = [];
+    trapPositions = [];
+
+    // Red traps (1-4) solid
+    activeMission.redTraps.forEach(pos => {
+      const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
+      activeTargets.push(trap);
+      trapPositions.push(trap);
+      controlLED(pos, 'r');
+    });
+
+    const activePositions = pattern[patternIndex];
+
+    // Set active blue positions
+    activePositions.forEach(pos => {
+      const target = { elementId: pos, colorCode: 'b', isValid: true, isActive: true };
+      activeTargets.push(target);
+      controlLED(pos, 'b');
+    });
+
+    // Set inactive positions from blueTargets as red
+    activeMission.blueTargets.forEach(pos => {
+      if (!activePositions.includes(pos)) {
+        const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
+        activeTargets.push(trap);
+        trapPositions.push(trap);
+        controlLED(pos, 'r');
+      }
+    });
+
+    // Bonus section
+    activateBonusSection();
+
+    console.log(`[STRIKELOOP] Snake blue-2: pattern ${patternIndex}: ${activePositions.join(',')}`);
+    patternIndex = (patternIndex + 1) % pattern.length;
+  };
+
+  rotateSnake();
+  rotationInterval = setInterval(rotateSnake, activeMission.rotationDelay || 3000);
+}
+
+// Memory sequence state
+let memorySequence = [];
+let memorySequenceDisplayed = false;
+let memoryReproductionStep = 0;
+
+// Track which targets are currently "on" in blinking modes
+let blinkStates = {}; // { elementId: true/false }
+
+function activateModeMemorySequence() {
+  if (!memorySequenceDisplayed) {
+    // Generate random sequence
+    memorySequence = generateRandomSequence();
+    console.log(`[STRIKELOOP] Generated memory sequence:`, memorySequence);
+
+    // Display sequence
+    displayMemorySequence();
+  } else {
+    // During reproduction phase - all targets are off, user must remember
+    // Turn all LEDs off (for targets)
+    for (let i = 1; i <= 8; i++) {
+      controlLED(i, 'o');
+      // Add targets as available but not lit
+      const color = i <= 4 ? 'g' : 'b';
+      const target = { elementId: i, colorCode: color, isValid: true, isReproducing: true };
+      activeTargets.push(target);
+    }
+
+    // Bonus section still active
+    activateBonusSection();
+
+    console.log(`[STRIKELOOP] Memory sequence reproduction phase - waiting for user input`);
+  }
+}
+
+function generateRandomSequence() {
+  const targets = [...activeMission.sequenceTargets];
+  const sequenceLength = activeMission.sequenceLength;
+  const sequence = [];
+
+  for (let i = 0; i < sequenceLength; i++) {
+    const randomIndex = Math.floor(Math.random() * targets.length);
+    sequence.push(targets[randomIndex]);
+  }
+
+  return sequence;
+}
+
+function displayMemorySequence() {
+  console.log(`[STRIKELOOP] Displaying memory sequence: ${memorySequence.join(' -> ')}`);
+
+  let currentIndex = 0;
+
+  const showNext = () => {
+    if (currentIndex < memorySequence.length) {
+      const targetId = memorySequence[currentIndex];
+      const color = activeMission.sequenceColor || (targetId <= 4 ? 'g' : 'b');
+
+      // Flash target
+      controlLED(targetId, color);
+      console.log(`[STRIKELOOP] Showing sequence step ${currentIndex + 1}/${memorySequence.length}: Target ${targetId} (${color.toUpperCase()})`);
+
+      // Turn off after 1 sec
+      setTimeout(() => {
+        controlLED(targetId, 'o');
+
+        // Wait 1 sec before next
+        setTimeout(() => {
+          currentIndex++;
+          showNext();
+        }, 1000);
+      }, 1000);
+    } else {
+      // Sequence display complete - start reproduction phase
+      console.log(`[STRIKELOOP] Sequence display complete - starting reproduction phase`);
+      memorySequenceDisplayed = true;
+      memoryReproductionStep = 0;
+
+      // Re-activate LEDs for reproduction
+      activateArcadeLEDs();
+    }
+  };
+
+  showNext();
+}
+
+function startBlinkingTargets(positions, color, interval) {
+  let isOn = true;
+
+  // Initialize blink states to "on" and turn on LEDs immediately
+  positions.forEach(pos => {
+    blinkStates[pos] = true;
+    controlLED(pos, color);
+  });
+
+  const blinkInterval = setInterval(() => {
+    isOn = !isOn;
+    positions.forEach(pos => {
+      blinkStates[pos] = isOn; // Track blink state
+      if (isOn) {
+        controlLED(pos, color);
+      } else {
+        controlLED(pos, 'o');
+      }
+    });
+  }, interval);
+
+  if (!activeMission.blinkIntervals) activeMission.blinkIntervals = [];
+  activeMission.blinkIntervals.push(blinkInterval);
+}
+
+function activateBonusSection() {
+  if (activeMission.bonusTargets) {
+    activeMission.bonusTargets.forEach(pos => {
+      const bonus = { elementId: pos, colorCode: 'y', isBonus: true, isValid: true };
+      activeTargets.push(bonus);
+      controlLED(pos, 'y');
+    });
+  }
 }
 
 function activateLegacyArcadeMode() {
@@ -1659,6 +2239,23 @@ function processArcadeMode(target, timestamp) {
       return processCumulativeBonusMode(target);
     case 'combo-system':
       return processComboSystemMode(target);
+    case 'blinking-green-bonus':
+      return processBlinkingGreenBonusMode(target);
+    case 'blinking-blue-bonus':
+      return processBlinkingBlueBonusMode(target);
+    case 'snake-green-3':
+      return processSnakeGreen3Mode(target);
+    case 'snake-blue-3':
+      return processSnakeBlue3Mode(target);
+    case 'snake-green-2':
+      return processSnakeGreen2Mode(target);
+    case 'snake-blue-2':
+      return processSnakeBlue2Mode(target);
+    case 'memory-sequence-4-green':
+    case 'memory-sequence-4-blue':
+    case 'memory-sequence-6-mixed':
+    case 'memory-sequence-7-mixed':
+      return processMemorySequenceMode(target);
     default:
       console.log(`[STRIKELOOP] Unknown arcade mode: ${mode}`);
       return false;
@@ -1885,6 +2482,203 @@ function processComboSystemMode(target) {
   }
 }
 
+// ============================================
+// ROUND 2 PROCESSOR FUNCTIONS
+// ============================================
+
+function processBlinkingGreenBonusMode(target) {
+  // Green targets: valid hits only if currently lit (blinking)
+  if (target.colorCode === 'g' && target.isValid) {
+    // Check if the LED is currently "on" in the blink cycle
+    if (blinkStates[target.elementId]) {
+      console.log(`[STRIKELOOP] ✅ GREEN HIT! Circle ${target.elementId} +${activeMission.pointsPerGreen} points`);
+      return true;
+    } else {
+      console.log(`[STRIKELOOP] ⚪ GREEN MISS! Circle ${target.elementId} was off (no points)`);
+      return false;
+    }
+  }
+  // Yellow bonus: valid hits (always on, not blinking)
+  if (target.isBonus && target.colorCode === 'y') {
+    console.log(`[STRIKELOOP] ✅ BONUS HIT! Circle ${target.elementId} +${activeMission.pointsPerBonus} points`);
+    return true;
+  }
+  // Red traps: penalty (always on, not blinking)
+  if (target.colorCode === 'r') {
+    console.log(`[STRIKELOOP] ❌ RED TRAP! Circle ${target.elementId} ${activeMission.penaltyRed} points`);
+  }
+  return false;
+}
+
+function processBlinkingBlueBonusMode(target) {
+  // Blue targets: valid hits only if currently lit (blinking)
+  if (target.colorCode === 'b' && target.isValid) {
+    // Check if the LED is currently "on" in the blink cycle
+    if (blinkStates[target.elementId]) {
+      console.log(`[STRIKELOOP] ✅ BLUE HIT! Circle ${target.elementId} +${activeMission.pointsPerBlue} points`);
+      return true;
+    } else {
+      console.log(`[STRIKELOOP] ⚪ BLUE MISS! Circle ${target.elementId} was off (no points)`);
+      return false;
+    }
+  }
+  // Yellow bonus: valid hits (always on, not blinking)
+  if (target.isBonus && target.colorCode === 'y') {
+    console.log(`[STRIKELOOP] ✅ BONUS HIT! Circle ${target.elementId} +${activeMission.pointsPerBonus} points`);
+    return true;
+  }
+  // Red traps: penalty (always on, not blinking)
+  if (target.colorCode === 'r') {
+    console.log(`[STRIKELOOP] ❌ RED TRAP! Circle ${target.elementId} ${activeMission.penaltyRed} points`);
+  }
+  return false;
+}
+
+function processSnakeGreen3Mode(target) {
+  // Yellow bonus: valid hits
+  if (target.isBonus && target.colorCode === 'y') {
+    console.log(`[STRIKELOOP] ✅ BONUS HIT! Circle ${target.elementId} +${activeMission.pointsPerBonus} points`);
+    return true;
+  }
+
+  // Check if target is one of the currently active snake positions (green and isActive)
+  if (target.colorCode === 'g' && target.isActive) {
+    console.log(`[STRIKELOOP] ✅ SNAKE GREEN HIT! Circle ${target.elementId} +${activeMission.pointsPerGreen} points`);
+    return true;
+  }
+
+  // Red traps (fixed or inactive positions): penalty
+  if (target.colorCode === 'r') {
+    console.log(`[STRIKELOOP] ❌ RED TRAP HIT! Circle ${target.elementId} ${activeMission.penaltyRed} points`);
+    return false; // Still return false to apply penalty through calculatePoints
+  }
+
+  console.log(`[STRIKELOOP] ⚪ Target ${target.elementId} ignored`);
+  return false;
+}
+
+function processSnakeBlue3Mode(target) {
+  // Yellow bonus: valid hits
+  if (target.isBonus && target.colorCode === 'y') {
+    console.log(`[STRIKELOOP] ✅ BONUS HIT! Circle ${target.elementId} +${activeMission.pointsPerBonus} points`);
+    return true;
+  }
+
+  // Check if target is one of the currently active snake positions (blue and isActive)
+  if (target.colorCode === 'b' && target.isActive) {
+    console.log(`[STRIKELOOP] ✅ SNAKE BLUE HIT! Circle ${target.elementId} +${activeMission.pointsPerBlue} points`);
+    return true;
+  }
+
+  // Red traps (fixed or inactive positions): penalty
+  if (target.colorCode === 'r') {
+    console.log(`[STRIKELOOP] ❌ RED TRAP HIT! Circle ${target.elementId} ${activeMission.penaltyRed} points`);
+    return false; // Still return false to apply penalty through calculatePoints
+  }
+
+  console.log(`[STRIKELOOP] ⚪ Target ${target.elementId} ignored`);
+  return false;
+}
+
+function processSnakeGreen2Mode(target) {
+  // Yellow bonus: valid hits
+  if (target.isBonus && target.colorCode === 'y') {
+    console.log(`[STRIKELOOP] ✅ BONUS HIT! Circle ${target.elementId} +${activeMission.pointsPerBonus} points`);
+    return true;
+  }
+
+  // Check if target is one of the currently active snake positions (green and isActive)
+  if (target.colorCode === 'g' && target.isActive) {
+    console.log(`[STRIKELOOP] ✅ SNAKE GREEN HIT! Circle ${target.elementId} +${activeMission.pointsPerGreen} points`);
+    return true;
+  }
+
+  // Red traps (fixed or inactive positions): penalty
+  if (target.colorCode === 'r') {
+    console.log(`[STRIKELOOP] ❌ RED TRAP HIT! Circle ${target.elementId} ${activeMission.penaltyRed} points`);
+    return false; // Still return false to apply penalty through calculatePoints
+  }
+
+  console.log(`[STRIKELOOP] ⚪ Target ${target.elementId} ignored`);
+  return false;
+}
+
+function processSnakeBlue2Mode(target) {
+  // Yellow bonus: valid hits
+  if (target.isBonus && target.colorCode === 'y') {
+    console.log(`[STRIKELOOP] ✅ BONUS HIT! Circle ${target.elementId} +${activeMission.pointsPerBonus} points`);
+    return true;
+  }
+
+  // Check if target is one of the currently active snake positions (blue and isActive)
+  if (target.colorCode === 'b' && target.isActive) {
+    console.log(`[STRIKELOOP] ✅ SNAKE BLUE HIT! Circle ${target.elementId} +${activeMission.pointsPerBlue} points`);
+    return true;
+  }
+
+  // Red traps (fixed or inactive positions): penalty
+  if (target.colorCode === 'r') {
+    console.log(`[STRIKELOOP] ❌ RED TRAP HIT! Circle ${target.elementId} ${activeMission.penaltyRed} points`);
+    return false; // Still return false to apply penalty through calculatePoints
+  }
+
+  console.log(`[STRIKELOOP] ⚪ Target ${target.elementId} ignored`);
+  return false;
+}
+
+function processMemorySequenceMode(target) {
+  // During display phase, ignore all hits
+  if (!memorySequenceDisplayed) {
+    console.log(`[STRIKELOOP] ⏸️ Sequence display in progress - hit ignored`);
+    return false;
+  }
+
+  const elementId = target.elementId;
+
+  // Check if it's a bonus target (yellow) - always valid during reproduction
+  if (target.isBonus && target.colorCode === 'y') {
+    console.log(`[STRIKELOOP] ✅ BONUS HIT! Circle ${elementId} +${activeMission.pointsPerBonus} points`);
+    return true;
+  }
+
+  // Check if it's part of the sequence (not a red trap)
+  const isSequenceTarget = memorySequence.includes(elementId);
+
+  // If it's not in the sequence at all, ignore it (no penalty)
+  if (!isSequenceTarget) {
+    console.log(`[STRIKELOOP] ⚪ Non-sequence target hit - ignored`);
+    return false;
+  }
+
+  // Check if this is the next expected hit in the sequence
+  const expectedId = memorySequence[memorySequenceIndex];
+
+  if (elementId === expectedId) {
+    // Correct hit!
+    memorySequenceIndex++;
+    console.log(`[STRIKELOOP] ✅ CORRECT! Position ${memorySequenceIndex}/${memorySequence.length}`);
+
+    // Check if sequence is complete
+    if (memorySequenceIndex >= memorySequence.length) {
+      console.log(`[STRIKELOOP] 🎉 SEQUENCE COMPLETED! +${activeMission.goalScore} points`);
+      // Mark completion for scoring
+      target.sequenceCompleted = true;
+      // Reset for potential next sequence
+      memorySequenceIndex = 0;
+      memorySequenceDisplayed = false;
+      return true; // Full points awarded
+    }
+    return false; // Partial completion, no points yet
+  } else {
+    // Wrong hit! Penalty and reset
+    console.log(`[STRIKELOOP] ❌ WRONG! Expected ${expectedId}, got ${elementId}. ${activeMission.penaltyRed} points. Sequence reset.`);
+    // Mark as wrong for penalty scoring
+    target.sequenceWrong = true;
+    memorySequenceIndex = 0;
+    return true; // Return true so penalty is calculated
+  }
+}
+
 
 function calculatePoints(target) {
   const mode = activeMission.arcadeMode;
@@ -1916,6 +2710,69 @@ function calculatePoints(target) {
         console.log(`[STRIKELOOP] Sequence x3 multiplier applied! (${consecutiveValidHits} consecutive sequences)`);
       }
       return basePoints;
+    case 'blinking-green-bonus':
+      // Bonus targets give pointsPerBonus, green targets give pointsPerGreen, red traps give penalty
+      if (target.isBonus && target.colorCode === 'y') {
+        return activeMission.pointsPerBonus;
+      }
+      if (target.colorCode === 'g') {
+        return activeMission.pointsPerGreen;
+      }
+      if (target.colorCode === 'r') {
+        return activeMission.penaltyRed;
+      }
+      return 0;
+    case 'blinking-blue-bonus':
+      // Bonus targets give pointsPerBonus, blue targets give pointsPerBlue, red traps give penalty
+      if (target.isBonus && target.colorCode === 'y') {
+        return activeMission.pointsPerBonus;
+      }
+      if (target.colorCode === 'b') {
+        return activeMission.pointsPerBlue;
+      }
+      if (target.colorCode === 'r') {
+        return activeMission.penaltyRed;
+      }
+      return 0;
+    case 'snake-green-3':
+    case 'snake-green-2':
+      // Bonus targets give pointsPerBonus, active green targets give pointsPerGreen, others give penalty
+      if (target.isBonus && target.colorCode === 'y') {
+        return activeMission.pointsPerBonus;
+      }
+      if (target.colorCode === 'g' && target.isActive) {
+        return activeMission.pointsPerGreen;
+      }
+      // Inactive or red trap
+      return activeMission.penaltyRed;
+    case 'snake-blue-3':
+    case 'snake-blue-2':
+      // Bonus targets give pointsPerBonus, active blue targets give pointsPerBlue, others give penalty
+      if (target.isBonus && target.colorCode === 'y') {
+        return activeMission.pointsPerBonus;
+      }
+      if (target.colorCode === 'b' && target.isActive) {
+        return activeMission.pointsPerBlue;
+      }
+      // Inactive or red trap
+      return activeMission.penaltyRed;
+    case 'memory-sequence-4-green':
+    case 'memory-sequence-4-blue':
+    case 'memory-sequence-6-mixed':
+    case 'memory-sequence-7-mixed':
+      // Bonus targets give pointsPerBonus
+      if (target.isBonus && target.colorCode === 'y') {
+        return activeMission.pointsPerBonus;
+      }
+      // Full sequence completion gives goalScore
+      if (target.sequenceCompleted) {
+        return activeMission.goalScore;
+      }
+      // Wrong sequence hit gives penalty
+      if (target.sequenceWrong) {
+        return activeMission.penaltyRed;
+      }
+      return 0;
     default:
       let defaultPoints = activeMission.pointsPerHit || 50;
       if (target.size === 'large') {
@@ -1955,6 +2812,14 @@ function cleanupArcadeGame() {
   activationHits = 0;
   sequenceStep = 0;
   multiHitTracker = {};
+
+  // Round 2: Clear memory sequence state
+  memorySequence = [];
+  memorySequenceIndex = 0;
+  memorySequenceDisplayed = false;
+
+  // Clear blink states
+  blinkStates = {};
 }
 
 module.exports = {
