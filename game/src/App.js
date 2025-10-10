@@ -229,6 +229,17 @@ function App() {
             <h2 className="text-yellow-400 text-6xl font-bold text-center">
               MANCHE {currentRound.round} - NIVEAU {currentRound.level}
             </h2>
+
+            {/* Progress Bar */}
+            <div className="mt-6 w-full bg-slate-700 rounded-full h-6 overflow-hidden">
+              <div
+                className="h-full transition-all duration-300 ease-out rounded-full"
+                style={{
+                  width: `${Math.min((gameData.score / currentRound.goalScore) * 100, 100)}%`,
+                  backgroundColor: '#FACC15'
+                }}
+              ></div>
+            </div>
           </div>
 
           {/* Right Panel - Score Number */}
