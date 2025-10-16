@@ -349,7 +349,8 @@ let gameRounds = [
     bonusTargets: [9, 10, 11, 12, 13],
     displayDuration: 12,
     pointsForComplete: 4300,
-    pointsPerBonus: 50
+    pointsPerBonus: 50,
+    penaltyRed: -100
   },
   {
     round: 2, level: 10,
@@ -362,7 +363,8 @@ let gameRounds = [
     bonusTargets: [9, 10, 11, 12, 13],
     displayDuration: 14,
     pointsForComplete: 4400,
-    pointsPerBonus: 50
+    pointsPerBonus: 50,
+    penaltyRed: -100
   }
 ];
 
@@ -1891,9 +1893,11 @@ let blinkStates = {}; // { elementId: true/false }
 
 function activateModeMemorySequence() {
   if (!memorySequenceDisplayed) {
-    // Generate random sequence
-    memorySequence = generateRandomSequence();
-    console.log(`[STRIKELOOP] Generated memory sequence:`, memorySequence);
+    // Generate random sequence only once per level
+    if (memorySequence.length === 0) {
+      memorySequence = generateRandomSequence();
+      console.log(`[STRIKELOOP] Generated memory sequence:`, memorySequence);
+    }
 
     // Display sequence
     displayMemorySequence();
@@ -1908,7 +1912,7 @@ function activateModeMemorySequence() {
       activeTargets.push(target);
     }
 
-    // Bonus section still active
+    // Bonus section still active and always valid
     activateBonusSection();
 
     console.log(`[STRIKELOOP] Memory sequence reproduction phase - waiting for user input`);
@@ -1919,10 +1923,14 @@ function generateRandomSequence() {
   const targets = [...activeMission.sequenceTargets];
   const sequenceLength = activeMission.sequenceLength;
   const sequence = [];
+  const availableTargets = [...targets];
 
-  for (let i = 0; i < sequenceLength; i++) {
-    const randomIndex = Math.floor(Math.random() * targets.length);
-    sequence.push(targets[randomIndex]);
+  // Generate sequence with unique values only
+  for (let i = 0; i < sequenceLength && availableTargets.length > 0; i++) {
+    const randomIndex = Math.floor(Math.random() * availableTargets.length);
+    sequence.push(availableTargets[randomIndex]);
+    // Remove the selected target to prevent duplicates
+    availableTargets.splice(randomIndex, 1);
   }
 
   return sequence;
@@ -1932,6 +1940,9 @@ function displayMemorySequence() {
   console.log(`[STRIKELOOP] Displaying memory sequence: ${memorySequence.join(' -> ')}`);
 
   let currentIndex = 0;
+
+  // Ensure bonus section is active during display
+  activateBonusSection();
 
   const showNext = () => {
     if (currentIndex < memorySequence.length) {
@@ -1958,7 +1969,7 @@ function displayMemorySequence() {
       memorySequenceDisplayed = true;
       memoryReproductionStep = 0;
 
-      // Re-activate LEDs for reproduction
+      // Re-activate LEDs for reproduction (including bonus section)
       activateArcadeLEDs();
     }
   };
@@ -2680,7 +2691,7 @@ function processMemorySequenceMode(target) {
   const elementId = target.elementId;
 
   // Check if it's a bonus target (yellow) - always valid during reproduction
-  if (target.isBonus && target.colorCode === 'y') {
+  if (target.colorCode === 'y') {
     console.log(`[STRIKELOOP] ✅ BONUS HIT! Circle ${elementId} +${activeMission.pointsPerBonus} points`);
     return true;
   }
@@ -2707,15 +2718,16 @@ function processMemorySequenceMode(target) {
       console.log(`[STRIKELOOP] 🎉 SEQUENCE COMPLETED! +${activeMission.goalScore} points`);
       // Mark completion for scoring
       target.sequenceCompleted = true;
-      // Reset for potential next sequence
+      // Reset index but keep sequence displayed (don't generate a new one)
       memorySequenceIndex = 0;
-      memorySequenceDisplayed = false;
+      // Keep memorySequenceDisplayed = true to prevent new sequence generation
       return true; // Full points awarded
     }
     return false; // Partial completion, no points yet
   } else {
     // Wrong hit! Penalty and reset
-    console.log(`[STRIKELOOP] ❌ WRONG! Expected ${expectedId}, got ${elementId}. ${activeMission.penaltyRed} points. Sequence reset.`);
+    const penalty = activeMission.penaltyRed || -100;
+    console.log(`[STRIKELOOP] ❌ WRONG! Expected ${expectedId}, got ${elementId}. ${penalty} points. Sequence reset.`);
     // Mark as wrong for penalty scoring
     target.sequenceWrong = true;
     memorySequenceIndex = 0;
@@ -2805,8 +2817,8 @@ function calculatePoints(target) {
     case 'memory-sequence-6-mixed':
     case 'memory-sequence-7-mixed':
       // Bonus targets give pointsPerBonus
-      if (target.isBonus && target.colorCode === 'y') {
-        return activeMission.pointsPerBonus;
+      if (target.colorCode === 'y') {
+        return activeMission.pointsPerBonus || 50;
       }
       // Full sequence completion gives goalScore
       if (target.sequenceCompleted) {
@@ -2814,7 +2826,7 @@ function calculatePoints(target) {
       }
       // Wrong sequence hit gives penalty
       if (target.sequenceWrong) {
-        return activeMission.penaltyRed;
+        return activeMission.penaltyRed || -100;
       }
       return 0;
     default:
