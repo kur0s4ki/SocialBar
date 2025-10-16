@@ -102,7 +102,7 @@ let goalAchieved = false;
 let gameRounds = [
   // ROUND 3 (TWO-STEP VALIDATION) - Temporarily as Round 1
   {
-    round: 1, level: 1,
+    round: 3, level: 1,
     mission: 'Touchez les cibles vertes puis appuyez sur un bouton VERT!',
     duration: 30,
     goalScore: 4400,
@@ -118,7 +118,7 @@ let gameRounds = [
     penaltyRed: -100
   },
   {
-    round: 1, level: 2,
+    round: 3, level: 2,
     mission: 'Touchez les cibles bleues puis appuyez sur un bouton BLEU!',
     duration: 30,
     goalScore: 4600,
@@ -134,7 +134,7 @@ let gameRounds = [
     penaltyRed: -100
   },
   {
-    round: 1, level: 3,
+    round: 3, level: 3,
     mission: 'Touchez les cibles vertes mobiles puis appuyez sur un bouton VERT!',
     duration: 30,
     goalScore: 4800,
@@ -152,7 +152,7 @@ let gameRounds = [
     penaltyRed: -100
   },
   {
-    round: 1, level: 4,
+    round: 3, level: 4,
     mission: 'Touchez les cibles bleues mobiles puis appuyez sur un bouton BLEU!',
     duration: 30,
     goalScore: 5000,
@@ -170,7 +170,7 @@ let gameRounds = [
     penaltyRed: -100
   },
   {
-    round: 1, level: 5,
+    round: 3, level: 5,
     mission: 'Touchez les vertes puis trouvez et appuyez sur le bouton VERT allumé!',
     duration: 30,
     goalScore: 5200,
@@ -185,7 +185,7 @@ let gameRounds = [
     penaltyRed: -100
   },
   {
-    round: 1, level: 6,
+    round: 3, level: 6,
     mission: 'Touchez les bleues puis trouvez et appuyez sur le bouton BLEU allumé!',
     duration: 30,
     goalScore: 5400,
@@ -200,7 +200,7 @@ let gameRounds = [
     penaltyRed: -100
   },
   {
-    round: 1, level: 7,
+    round: 3, level: 7,
     mission: 'Cibles vertes aléatoires! Touchez-les et validez avec les boutons!',
     duration: 30,
     goalScore: 5600,
@@ -217,7 +217,7 @@ let gameRounds = [
     penaltyRed: -100
   },
   {
-    round: 1, level: 8,
+    round: 3, level: 8,
     mission: 'Vert et bleu ensemble! Appuyez sur le bouton de la MÊME couleur!',
     duration: 30,
     goalScore: 5800,
@@ -233,7 +233,7 @@ let gameRounds = [
     pointsPerBonus: 50
   },
   {
-    round: 1, level: 9,
+    round: 3, level: 9,
     mission: 'Cibles tournantes! Validez avec N\'IMPORTE quel bouton allumé!',
     duration: 30,
     goalScore: 6000,
@@ -249,7 +249,7 @@ let gameRounds = [
     penaltyRed: -100
   },
   {
-    round: 1, level: 10,
+    round: 3, level: 10,
     mission: 'Chaos total! Touchez et validez RAPIDEMENT avant extinction!',
     duration: 30,
     goalScore: 6200,
@@ -1453,9 +1453,24 @@ function setupKeyboardListener() {
 function activateArcadeLEDs() {
   if (!activeMission) return;
 
+  // Clear ALL intervals before setting up new level
   if (activeMission.blinkIntervals) {
     activeMission.blinkIntervals.forEach(interval => clearInterval(interval));
     activeMission.blinkIntervals = [];
+  }
+  
+  // Clear two-step mode intervals
+  if (alternateInterval) {
+    clearInterval(alternateInterval);
+    alternateInterval = null;
+  }
+  if (randomTargetInterval) {
+    clearInterval(randomTargetInterval);
+    randomTargetInterval = null;
+  }
+  if (buttonRotationInterval) {
+    clearInterval(buttonRotationInterval);
+    buttonRotationInterval = null;
   }
 
   activeTargets = [];
@@ -2002,6 +2017,7 @@ let activeButtonColors = []; // Current button colors for validation
 let alternatePatternIndex = 0; // For alternating patterns
 let alternateInterval = null; // For pattern switching
 let randomTargetInterval = null; // For random target changes
+let buttonRotationInterval = null; // For rotating button positions
 let currentActiveTargets = []; // Track which targets are currently active in patterns
 
 function activateModeMemorySequence() {
@@ -2269,13 +2285,9 @@ function handleTwoStepValidation(hitColor) {
   switch (buttonMode) {
     case 'fixed-green':
     case 'fixed-blue':
-      // Buttons already lit in fixed modes, just wait for press
-      break;
     case 'random-green':
-      lightRandomButton('g');
-      break;
     case 'random-blue':
-      lightRandomButton('b');
+      // Buttons already lit and rotating, just wait for press
       break;
     case 'color-matched':
       lightRandomButton(hitColor);
@@ -2294,10 +2306,8 @@ function handleTwoStepValidation(hitColor) {
     validationPending = false;
     validationHitColor = null;
     
-    // Clear random buttons if they were lit
-    if (buttonMode !== 'fixed-green' && buttonMode !== 'fixed-blue') {
-      clearAllButtons();
-    }
+    // Don't clear buttons in modes where they stay lit
+    // (fixed and rotating modes keep buttons lit)
   }, window);
 
   return true; // Indicate hit was registered but needs validation
@@ -2335,11 +2345,8 @@ function validateButtonPress(buttonIndex) {
   updateScore(newScore);
   console.log(`[STRIKELOOP] ✅ VALIDATED! +${points} points`);
 
-  // Clear random buttons if they were lit
-  const buttonMode = activeMission.buttonMode;
-  if (buttonMode !== 'fixed-green' && buttonMode !== 'fixed-blue') {
-    clearAllButtons();
-  }
+  // Don't clear buttons - they stay lit in all modes
+  // (fixed and rotating modes keep buttons lit)
 
   validationHitColor = null;
   return true;
@@ -2479,7 +2486,7 @@ function activateModeTwoStepAlternatingBlue() {
 }
 
 function activateModeTwoStepRandomButtonGreen() {
-  // Level 5: Fixed green targets, random green button
+  // Level 5: Fixed green targets, buttons rotate positions every 5 seconds
   activeMission.greenTargets.forEach(pos => {
     const target = { elementId: pos, colorCode: 'g', isValid: true, needsValidation: true };
     activeTargets.push(target);
@@ -2497,6 +2504,13 @@ function activateModeTwoStepRandomButtonGreen() {
   
   // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
   setAllButtonsRandomColors();
+  
+  // Rotate button positions every 5 seconds
+  if (buttonRotationInterval) clearInterval(buttonRotationInterval);
+  buttonRotationInterval = setInterval(() => {
+    console.log('[STRIKELOOP] Rotating button positions...');
+    setAllButtonsRandomColors();
+  }, 5000);
 }
 
 function activateModeTwoStepRandomButtonBlue() {
@@ -2516,8 +2530,15 @@ function activateModeTwoStepRandomButtonBlue() {
 
   activateBonusSection();
   
-  // Set all buttons to random colors
+  // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
   setAllButtonsRandomColors();
+  
+  // Rotate button positions every 5 seconds
+  if (buttonRotationInterval) clearInterval(buttonRotationInterval);
+  buttonRotationInterval = setInterval(() => {
+    console.log('[STRIKELOOP] Rotating button positions...');
+    setAllButtonsRandomColors();
+  }, 5000);
 }
 
 function activateModeTwoStepRandomGreen() {
@@ -3668,6 +3689,10 @@ function cleanupArcadeGame() {
   if (randomTargetInterval) {
     clearInterval(randomTargetInterval);
     randomTargetInterval = null;
+  }
+  if (buttonRotationInterval) {
+    clearInterval(buttonRotationInterval);
+    buttonRotationInterval = null;
   }
   validationPending = false;
   validationHitColor = null;
