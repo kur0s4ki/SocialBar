@@ -111,7 +111,7 @@ let gameRounds = [
     redTraps: [5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
     buttonMode: 'fixed-green',
-    buttonColors: ['g', 'g', 'g', 'o', 'o', 'o', 'o', 'o', 'o'], // buttons 14-22
+    buttonColors: ['g', 'o', 'g', 'o', 'o', 'o', 'o', 'o', 'o'], // Buttons 14 and 16 are green
     validationWindow: 3000,
     pointsPerValidated: 100,
     pointsPerBonus: 50,
@@ -127,7 +127,7 @@ let gameRounds = [
     redTraps: [1, 2, 3, 4],
     bonusTargets: [9, 10, 11, 12, 13],
     buttonMode: 'fixed-blue',
-    buttonColors: ['o', 'o', 'o', 'b', 'b', 'b', 'o', 'o', 'o'],
+    buttonColors: ['o', 'o', 'o', 'o', 'b', 'o', 'b', 'o', 'o'], // Buttons 18 and 20 are blue
     validationWindow: 3000,
     pointsPerValidated: 100,
     pointsPerBonus: 50,
@@ -145,7 +145,7 @@ let gameRounds = [
     alternatePattern: [[1, 3], [2, 4]],
     alternateInterval: 3000,
     buttonMode: 'fixed-green',
-    buttonColors: ['g', 'g', 'g', 'o', 'o', 'o', 'o', 'o', 'o'],
+    buttonColors: ['g', 'o', 'g', 'o', 'o', 'o', 'o', 'o', 'o'], // Buttons 14 and 16 are green
     validationWindow: 3000,
     pointsPerValidated: 100,
     pointsPerBonus: 50,
@@ -163,7 +163,7 @@ let gameRounds = [
     alternatePattern: [[5, 7], [6, 8]],
     alternateInterval: 3000,
     buttonMode: 'fixed-blue',
-    buttonColors: ['o', 'o', 'o', 'b', 'b', 'b', 'o', 'o', 'o'],
+    buttonColors: ['o', 'o', 'o', 'o', 'b', 'o', 'b', 'o', 'o'], // Buttons 18 and 20 are blue
     validationWindow: 3000,
     pointsPerValidated: 100,
     pointsPerBonus: 50,
@@ -780,7 +780,18 @@ function startLEDRefresh() {
     'memory-sequence-4-green',
     'memory-sequence-4-blue',
     'memory-sequence-6-mixed',
-    'memory-sequence-7-mixed'
+    'memory-sequence-7-mixed',
+    // Two-step modes manage their own patterns
+    'two-step-fixed-green',
+    'two-step-fixed-blue',
+    'two-step-alternating-green',
+    'two-step-alternating-blue',
+    'two-step-random-button-green',
+    'two-step-random-button-blue',
+    'two-step-random-green',
+    'two-step-mixed-colors',
+    'two-step-rotating-green',
+    'two-step-ultimate'
   ];
 
   if (activeMission && !noRefreshModes.includes(activeMission.arcadeMode)) {
@@ -2137,25 +2148,108 @@ function setButtonColors(colors) {
   });
 }
 
+function setAllButtonsRandomColors() {
+  // Light all 9 buttons with exactly 3 green, 3 blue, 3 yellow
+  // Ensure no adjacent buttons have the same color
+  // Button layout:
+  // 14 15 16
+  // 17 18 19  
+  // 20 21 22
+  
+  const adjacencyMap = {
+    0: [1, 3],       // 14 -> 15, 17
+    1: [0, 2, 4],    // 15 -> 14, 16, 18
+    2: [1, 5],       // 16 -> 15, 19
+    3: [0, 4, 6],    // 17 -> 14, 18, 20
+    4: [1, 3, 5, 7], // 18 -> 15, 17, 19, 21
+    5: [2, 4, 8],    // 19 -> 16, 18, 22
+    6: [3, 7],       // 20 -> 17, 21
+    7: [4, 6, 8],    // 21 -> 18, 20, 22
+    8: [5, 7]        // 22 -> 19, 21
+  };
+  
+  let buttonColors = [];
+  let attempts = 0;
+  const maxAttempts = 100;
+  
+  // Keep trying until we get a valid configuration
+  while (attempts < maxAttempts) {
+    buttonColors = [];
+    const availableColors = ['g', 'g', 'g', 'b', 'b', 'b', 'y', 'y', 'y'];
+    let valid = true;
+    
+    // Try to place colors one by one
+    for (let i = 0; i < 9; i++) {
+      // Shuffle available colors for randomness
+      const shuffled = availableColors.sort(() => Math.random() - 0.5);
+      let colorPlaced = false;
+      
+      for (const color of shuffled) {
+        // Check if this color conflicts with adjacent buttons
+        let canPlace = true;
+        for (const adjacentIndex of adjacencyMap[i]) {
+          if (adjacentIndex < i && buttonColors[adjacentIndex] === color) {
+            canPlace = false;
+            break;
+          }
+        }
+        
+        if (canPlace) {
+          buttonColors.push(color);
+          availableColors.splice(availableColors.indexOf(color), 1);
+          colorPlaced = true;
+          break;
+        }
+      }
+      
+      if (!colorPlaced) {
+        valid = false;
+        break;
+      }
+    }
+    
+    if (valid) {
+      // Successfully placed all colors
+      break;
+    }
+    
+    attempts++;
+  }
+  
+  // If we couldn't find a valid pattern, use a fallback pattern
+  if (buttonColors.length !== 9) {
+    // Guaranteed valid pattern: checkerboard-like
+    buttonColors = ['g', 'b', 'y', 'b', 'y', 'g', 'y', 'g', 'b'];
+  }
+  
+  // Apply the colors to buttons
+  buttonColors.forEach((color, index) => {
+    const buttonId = CONTROL_BUTTONS_RANGE.min + index;
+    controlLED(buttonId, color);
+  });
+  
+  activeButtonColors = buttonColors;
+}
+
 function lightRandomButton(color) {
-  // Light up a random button with the specified color
-  clearAllButtons();
+  // Change one random button to the specified color (among all lit buttons)
   const randomIndex = Math.floor(Math.random() * 9);
   const buttonId = CONTROL_BUTTONS_RANGE.min + randomIndex;
   controlLED(buttonId, color);
-  activeButtonColors = Array(9).fill('o');
+  
+  // Update the color in our tracking array
   activeButtonColors[randomIndex] = color;
 }
 
 function lightRandomAnyColorButton() {
-  // Light up a random button with a random color
-  clearAllButtons();
+  // Change one random button to a random color (among all lit buttons)
   const colors = ['g', 'b', 'y'];
   const randomColor = colors[Math.floor(Math.random() * colors.length)];
   const randomIndex = Math.floor(Math.random() * 9);
   const buttonId = CONTROL_BUTTONS_RANGE.min + randomIndex;
   controlLED(buttonId, randomColor);
-  activeButtonColors = Array(9).fill('o');
+  
+  // Update the color in our tracking array
   activeButtonColors[randomIndex] = randomColor;
 }
 
@@ -2219,8 +2313,15 @@ function validateButtonPress(buttonIndex) {
   // Check if the pressed button is lit
   const buttonColor = activeButtonColors[buttonIndex];
   if (buttonColor === 'o' || !buttonColor) {
-    // Wrong button pressed
+    // Wrong button pressed - not lit
     console.log('[STRIKELOOP] Wrong button pressed - not lit');
+    return false;
+  }
+
+  // Check if the button color matches the required color
+  if (buttonColor !== validationHitColor) {
+    // Wrong color pressed
+    console.log(`[STRIKELOOP] ❌ Wrong button color - expected ${validationHitColor.toUpperCase()}, got ${buttonColor.toUpperCase()}`);
     return false;
   }
 
@@ -2262,11 +2363,8 @@ function activateModeTwoStepFixedGreen() {
     startBlinkingLED(pos, 'r', 500); // Blink red every 500ms
   });
 
-  // Set fixed green buttons
-  if (activeMission.buttonColors) {
-    setButtonColors(activeMission.buttonColors);
-  }
-
+  // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
+  setAllButtonsRandomColors();
   activateBonusSection();
 }
 
@@ -2286,11 +2384,8 @@ function activateModeTwoStepFixedBlue() {
     startBlinkingLED(pos, 'r', 500); // Blink red every 500ms
   });
 
-  // Set fixed blue buttons
-  if (activeMission.buttonColors) {
-    setButtonColors(activeMission.buttonColors);
-  }
-
+  // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
+  setAllButtonsRandomColors();
   activateBonusSection();
 }
 
@@ -2337,10 +2432,8 @@ function activateModeTwoStepAlternatingGreen() {
   updatePattern();
   alternateInterval = setInterval(updatePattern, activeMission.alternateInterval || 3000);
 
-  // Set fixed green buttons
-  if (activeMission.buttonColors) {
-    setButtonColors(activeMission.buttonColors);
-  }
+  // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
+  setAllButtonsRandomColors();
 }
 
 function activateModeTwoStepAlternatingBlue() {
@@ -2381,23 +2474,50 @@ function activateModeTwoStepAlternatingBlue() {
   updatePattern();
   alternateInterval = setInterval(updatePattern, activeMission.alternateInterval || 3000);
 
-  if (activeMission.buttonColors) {
-    setButtonColors(activeMission.buttonColors);
-  }
+  // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
+  setAllButtonsRandomColors();
 }
 
 function activateModeTwoStepRandomButtonGreen() {
   // Level 5: Fixed green targets, random green button
-  activateModeTwoStepFixedGreen();
-  // Don't set fixed buttons - they'll be randomly lit on each hit
-  clearAllButtons();
+  activeMission.greenTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'g', isValid: true, needsValidation: true };
+    activeTargets.push(target);
+    controlLED(pos, 'g');
+  });
+
+  activeMission.redTraps.forEach(pos => {
+    const trap = { elementId: pos, colorCode: 'r', isTrap: true };
+    activeTargets.push(trap);
+    trapPositions.push(trap);
+    startBlinkingLED(pos, 'r', 500);
+  });
+
+  activateBonusSection();
+  
+  // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
+  setAllButtonsRandomColors();
 }
 
 function activateModeTwoStepRandomButtonBlue() {
   // Level 6: Fixed blue targets, random blue button
-  activateModeTwoStepFixedBlue();
-  // Don't set fixed buttons
-  clearAllButtons();
+  activeMission.blueTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'b', isValid: true, needsValidation: true };
+    activeTargets.push(target);
+    controlLED(pos, 'b');
+  });
+
+  activeMission.redTraps.forEach(pos => {
+    const trap = { elementId: pos, colorCode: 'r', isTrap: true };
+    activeTargets.push(trap);
+    trapPositions.push(trap);
+    startBlinkingLED(pos, 'r', 500);
+  });
+
+  activateBonusSection();
+  
+  // Set all buttons to random colors
+  setAllButtonsRandomColors();
 }
 
 function activateModeTwoStepRandomGreen() {
@@ -2447,7 +2567,8 @@ function activateModeTwoStepRandomGreen() {
   updateRandomTargets();
   randomTargetInterval = setInterval(updateRandomTargets, activeMission.randomChangeInterval || 4000);
   
-  clearAllButtons();
+  // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
+  setAllButtonsRandomColors();
 }
 
 function activateModeTwoStepMixedColors() {
@@ -2484,7 +2605,8 @@ function activateModeTwoStepMixedColors() {
   updatePattern();
   alternateInterval = setInterval(updatePattern, activeMission.alternateInterval || 3000);
   
-  clearAllButtons();
+  // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
+  setAllButtonsRandomColors();
 }
 
 function activateModeTwoStepRotatingGreen() {
@@ -2526,7 +2648,8 @@ function activateModeTwoStepRotatingGreen() {
   rotateTargets();
   rotationInterval = setInterval(rotateTargets, activeMission.rotationDelay || 2000);
   
-  clearAllButtons();
+  // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
+  setAllButtonsRandomColors();
 }
 
 function activateModeTwoStepUltimate() {
@@ -2590,7 +2713,9 @@ function activateModeTwoStepUltimate() {
   }
 
   activateBonusSection();
-  clearAllButtons();
+  
+  // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
+  setAllButtonsRandomColors();
 }
 
 function activateLegacyArcadeMode() {
