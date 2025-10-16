@@ -664,6 +664,10 @@ function initializeMission(levelConfig) {
   // Clear blink states
   blinkStates = {};
 
+  // Clear snake mode tracking
+  lastSnakeMode = null;
+  snakePatternIndex = 0;
+
   // Deactivate bonus indicator
   emitter.emit('bonusActive', false);
 
@@ -1488,6 +1492,8 @@ function activateModeBlueAvoidRed() {
 
 let rotationInterval;
 let currentRotatingTargets = { green: null, blue: null };
+let snakePatternIndex = 0; // Module-level variable to track snake pattern position
+let lastSnakeMode = null; // Track the last snake mode to know when to reset pattern
 
 function activateModeRotatingGreen() {
   if (rotationInterval) clearInterval(rotationInterval);
@@ -1666,14 +1672,19 @@ function activateModeBlinkingBlueBonus() {
 function activateModeSnakeGreen3() {
   if (rotationInterval) clearInterval(rotationInterval);
 
-  let patternIndex = 0;
+  // Only reset pattern index if switching from a different mode or starting fresh
+  if (lastSnakeMode !== 'snake-green-3') {
+    snakePatternIndex = 0;
+    lastSnakeMode = 'snake-green-3';
+  }
+
   const pattern = activeMission.snakePattern;
 
   const rotateSnake = () => {
     activeTargets = [];
     trapPositions = [];
 
-    const activePositions = pattern[patternIndex];
+    const activePositions = pattern[snakePatternIndex];
 
     // Set active green positions
     activePositions.forEach(pos => {
@@ -1703,8 +1714,8 @@ function activateModeSnakeGreen3() {
     // Bonus section
     activateBonusSection();
 
-    console.log(`[STRIKELOOP] Snake green-3: pattern ${patternIndex}: ${activePositions.join(',')}`);
-    patternIndex = (patternIndex + 1) % pattern.length;
+    console.log(`[STRIKELOOP] Snake green-3: pattern ${snakePatternIndex}: ${activePositions.join(',')}`);
+    snakePatternIndex = (snakePatternIndex + 1) % pattern.length;
   };
 
   rotateSnake();
@@ -1714,7 +1725,12 @@ function activateModeSnakeGreen3() {
 function activateModeSnakeBlue3() {
   if (rotationInterval) clearInterval(rotationInterval);
 
-  let patternIndex = 0;
+  // Only reset pattern index if switching from a different mode or starting fresh
+  if (lastSnakeMode !== 'snake-blue-3') {
+    snakePatternIndex = 0;
+    lastSnakeMode = 'snake-blue-3';
+  }
+
   const pattern = activeMission.snakePattern;
 
   const rotateSnake = () => {
@@ -1729,7 +1745,7 @@ function activateModeSnakeBlue3() {
       controlLED(pos, 'r');
     });
 
-    const activePositions = pattern[patternIndex];
+    const activePositions = pattern[snakePatternIndex];
 
     // Set active blue positions
     activePositions.forEach(pos => {
@@ -1751,8 +1767,8 @@ function activateModeSnakeBlue3() {
     // Bonus section
     activateBonusSection();
 
-    console.log(`[STRIKELOOP] Snake blue-3: pattern ${patternIndex}: ${activePositions.join(',')}`);
-    patternIndex = (patternIndex + 1) % pattern.length;
+    console.log(`[STRIKELOOP] Snake blue-3: pattern ${snakePatternIndex}: ${activePositions.join(',')}`);
+    snakePatternIndex = (snakePatternIndex + 1) % pattern.length;
   };
 
   rotateSnake();
@@ -1762,14 +1778,19 @@ function activateModeSnakeBlue3() {
 function activateModeSnakeGreen2() {
   if (rotationInterval) clearInterval(rotationInterval);
 
-  let patternIndex = 0;
+  // Only reset pattern index if switching from a different mode or starting fresh
+  if (lastSnakeMode !== 'snake-green-2') {
+    snakePatternIndex = 0;
+    lastSnakeMode = 'snake-green-2';
+  }
+
   const pattern = activeMission.snakePattern;
 
   const rotateSnake = () => {
     activeTargets = [];
     trapPositions = [];
 
-    const activePositions = pattern[patternIndex];
+    const activePositions = pattern[snakePatternIndex];
 
     // Set active green positions
     activePositions.forEach(pos => {
@@ -1799,8 +1820,8 @@ function activateModeSnakeGreen2() {
     // Bonus section
     activateBonusSection();
 
-    console.log(`[STRIKELOOP] Snake green-2: pattern ${patternIndex}: ${activePositions.join(',')}`);
-    patternIndex = (patternIndex + 1) % pattern.length;
+    console.log(`[STRIKELOOP] Snake green-2: pattern ${snakePatternIndex}: ${activePositions.join(',')}`);
+    snakePatternIndex = (snakePatternIndex + 1) % pattern.length;
   };
 
   rotateSnake();
@@ -1810,7 +1831,12 @@ function activateModeSnakeGreen2() {
 function activateModeSnakeBlue2() {
   if (rotationInterval) clearInterval(rotationInterval);
 
-  let patternIndex = 0;
+  // Only reset pattern index if switching from a different mode or starting fresh
+  if (lastSnakeMode !== 'snake-blue-2') {
+    snakePatternIndex = 0;
+    lastSnakeMode = 'snake-blue-2';
+  }
+
   const pattern = activeMission.snakePattern;
 
   const rotateSnake = () => {
@@ -1825,7 +1851,7 @@ function activateModeSnakeBlue2() {
       controlLED(pos, 'r');
     });
 
-    const activePositions = pattern[patternIndex];
+    const activePositions = pattern[snakePatternIndex];
 
     // Set active blue positions
     activePositions.forEach(pos => {
@@ -1847,8 +1873,8 @@ function activateModeSnakeBlue2() {
     // Bonus section
     activateBonusSection();
 
-    console.log(`[STRIKELOOP] Snake blue-2: pattern ${patternIndex}: ${activePositions.join(',')}`);
-    patternIndex = (patternIndex + 1) % pattern.length;
+    console.log(`[STRIKELOOP] Snake blue-2: pattern ${snakePatternIndex}: ${activePositions.join(',')}`);
+    snakePatternIndex = (snakePatternIndex + 1) % pattern.length;
   };
 
   rotateSnake();
@@ -2207,7 +2233,17 @@ function validateArcadeInput(target, timestamp) {
   }
 
 
-  const noRefreshModes = ['sequence', 'green-only', 'rotating-green', 'rotating-green-blue', 'rotating-blue'];
+  const noRefreshModes = [
+    'sequence',
+    'green-only',
+    'rotating-green',
+    'rotating-green-blue',
+    'rotating-blue',
+    'snake-green-3',
+    'snake-blue-3',
+    'snake-green-2',
+    'snake-blue-2'
+  ];
   if (!noRefreshModes.includes(activeMission.arcadeMode)) {
     setTimeout(() => {
       activateArcadeLEDs();
@@ -2828,6 +2864,10 @@ function cleanupArcadeGame() {
 
   // Clear blink states
   blinkStates = {};
+
+  // Clear snake pattern tracking
+  lastSnakeMode = null;
+  snakePatternIndex = 0;
 }
 
 module.exports = {
