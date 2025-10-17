@@ -37,8 +37,31 @@ function App() {
   // Bonus section state
   const [bonusActive, setBonusActive] = useState(false);
 
+  // Team name state
+  const [teamName, setTeamName] = useState('TEST');
+
   // Dynamic font sizing for mission text
   const [missionFontSize, setMissionFontSize] = useState('text-7xl');
+
+  // Convert number to Roman numerals
+  const toRoman = (num) => {
+    const romanNumerals = [
+      { value: 10, numeral: 'X' },
+      { value: 9, numeral: 'IX' },
+      { value: 5, numeral: 'V' },
+      { value: 4, numeral: 'IV' },
+      { value: 1, numeral: 'I' }
+    ];
+
+    let result = '';
+    for (let i = 0; i < romanNumerals.length; i++) {
+      while (num >= romanNumerals[i].value) {
+        result += romanNumerals[i].numeral;
+        num -= romanNumerals[i].value;
+      }
+    }
+    return result;
+  };
 
   useEffect(() => {
     document.title = 'Social Bar - Game In Progress';
@@ -159,6 +182,10 @@ function App() {
               console.log('[GAMEINPROGRESS] Bonus active update:', data.active);
               setBonusActive(data.active);
               break;
+            case 'teamName':
+              console.log('[GAMEINPROGRESS] Team name update:', data.name);
+              setTeamName(data.name || 'TEST');
+              break;
             case 'reset':
               console.log('[GAMEINPROGRESS] Game reset received');
               // Reset to default values
@@ -183,6 +210,7 @@ function App() {
               previousLevel.current = 1;
               lastScore.current = 0;
               setBonusActive(false);
+              setTeamName('TEST');
               break;
             default:
               console.log('[GAMEINPROGRESS] Unknown message type:', data.type);
@@ -222,29 +250,30 @@ function App() {
   return (
     <div className="min-h-screen bg-slate-900 px-8 py-2 font-sans flex items-center justify-center">
       <div className="max-w-[90vw] w-full space-y-12">
-        {/* Top Row - Score Section */}
-        <div className="flex gap-8">
-          {/* Left Panel - Round and Score */}
-          <div className="flex-1 bg-slate-900 border-8 border-cyan-400 rounded-2xl p-10">
-            <h2 className="text-yellow-400 text-6xl font-bold text-center">
-              MANCHE {currentRound.round} - NIVEAU {currentRound.level}
-            </h2>
+        {/* Top Row - Three Separate Rectangles */}
+        <div className="grid grid-cols-3 gap-8">
+          {/* Left Rectangle - Team Name */}
+          <div className="bg-slate-900 border-8 border-cyan-400 rounded-2xl p-10 flex flex-col items-center justify-center space-y-4">
+            <span className="text-white text-6xl font-bold">ÉQUIPE</span>
+            <span className="text-yellow-400 text-6xl font-bold uppercase">{teamName}</span>
+          </div>
 
-            {/* Progress Bar */}
-            <div className="mt-6 w-full bg-slate-700 rounded-full h-6 overflow-hidden">
-              <div
-                className="h-full transition-all duration-300 ease-out rounded-full"
-                style={{
-                  width: `${Math.min((gameData.score / currentRound.goalScore) * 100, 100)}%`,
-                  backgroundColor: '#FACC15'
-                }}
-              ></div>
+          {/* Middle Rectangle - Round and Level */}
+          <div className="bg-slate-900 border-8 border-cyan-400 rounded-2xl p-10 flex flex-col items-center justify-center space-y-4">
+            <div className="flex items-center gap-4">
+              <span className="text-white text-6xl font-bold">MANCHE</span>
+              <span className="text-yellow-400 text-6xl font-bold">{toRoman(currentRound.round)}</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="text-white text-6xl font-bold">NIVEAU</span>
+              <span className="text-yellow-400 text-6xl font-bold">{currentRound.level}</span>
             </div>
           </div>
 
-          {/* Right Panel - Score Number */}
-          <div className="bg-slate-900 border-8 border-cyan-400 rounded-2xl p-10 flex items-center justify-center min-w-[250px]">
-            <span className={`text-yellow-400 text-9xl font-bold ${gameData.score >= currentRound.goalScore ? 'score-shine' : ''}`}>{gameData.score}</span>
+          {/* Right Rectangle - Score */}
+          <div className="bg-slate-900 border-8 border-cyan-400 rounded-2xl p-10 flex flex-col items-center justify-center space-y-4">
+            <span className="text-white text-6xl font-bold">SCORE</span>
+            <span className={`${gameData.score >= currentRound.goalScore ? 'text-green score-shine' : 'text-yellow-400'} text-6xl font-bold`}>{gameData.score}</span>
           </div>
         </div>
 
@@ -272,6 +301,19 @@ function App() {
             <p className={`text-white ${missionFontSize} font-medium mt-8 uppercase`}>
               {currentRound.mission}
             </p>
+          </div>
+
+          {/* Progress Bar - moved under mission */}
+          <div className="absolute bottom-6 left-16 right-16 pr-80">
+            <div className="w-full bg-slate-700 h-8">
+              <div
+                className="h-full transition-all duration-300 ease-out progress-glow"
+                style={{
+                  width: `${Math.min((gameData.score / currentRound.goalScore) * 100, 100)}%`,
+                  backgroundColor: '#22c55e'
+                }}
+              ></div>
+            </div>
           </div>
         </div>
 

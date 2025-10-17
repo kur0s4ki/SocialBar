@@ -48,6 +48,11 @@ staffWss.on('connection', (ws) => {
         case 'start':
           if (data.teamName) {
             console.log(`[STAFF-WS] Game start request from ${clientId} for team: ${data.teamName}`);
+            // Broadcast team name to display clients immediately
+            broadcastToDisplay({
+              type: 'teamName',
+              name: data.teamName
+            });
             strikeLoop.emitter.emit('start', data);
           }
           break;

@@ -437,19 +437,37 @@ html, body, #root, .App {
   line-height: 1;
 }
 
-/* Shining animation for score */
+/* Shining animation for score - Green */
 @keyframes shine {
   0% {
-    text-shadow: 0 0 10px #facc15, 0 0 20px #facc15, 0 0 30px #facc15;
+    text-shadow: 0 0 10px #22c55e, 0 0 20px #22c55e, 0 0 30px #22c55e;
   }
   50% {
-    text-shadow: 0 0 20px #facc15, 0 0 30px #facc15, 0 0 40px #facc15, 0 0 50px #f59e0b;
+    text-shadow: 0 0 20px #22c55e, 0 0 30px #22c55e, 0 0 40px #22c55e, 0 0 50px #16a34a;
   }
   100% {
-    text-shadow: 0 0 10px #facc15, 0 0 20px #facc15, 0 0 30px #facc15;
+    text-shadow: 0 0 10px #22c55e, 0 0 20px #22c55e, 0 0 30px #22c55e;
   }
 }
 
 .score-shine {
   animation: shine 1.5s ease-in-out infinite;
+}
+
+/* Green color classes */
+.text-green {
+  color: #22c55e;
+}
+
+.bg-green {
+  background-color: #22c55e;
+}
+
+.border-green {
+  border-color: #22c55e;
+}
+
+/* Progress bar glow effect */
+.progress-glow {
+  box-shadow: 0 0 10px #22c55e, 0 0 20px #22c55e, 0 0 30px #22c55e;
 }
