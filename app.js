@@ -1,6 +1,7 @@
 const WebSocket = require('ws');
 const http = require('http');
 const arduino = require('./arduino.js');
+const HAL = require('./hardwareAbstraction.js');
 const strikeLoop = require('./strikeLoop.js');
 
 // Create HTTP servers for both staff and display clients
@@ -215,8 +216,8 @@ addTrackedListener(strikeLoop.emitter, 'gameStarted', () => {
   });
 });
 
-// Listen for LED control events from strikeLoop
-addTrackedListener(strikeLoop.emitter, 'ledControl', (data) => {
+// Listen for LED control events from HAL (Hardware Abstraction Layer)
+addTrackedListener(HAL.emitter, 'ledControl', (data) => {
   // LED control is primarily for staff clients
   broadcastToStaff({
     type: 'ledControl',
@@ -305,6 +306,25 @@ addTrackedListener(strikeLoop.emitter, 'bonusActive', (isActive) => {
     active: isActive
   });
 });
+
+// Configure Hardware Abstraction Layer mode
+// Check command line arguments first, then environment variable, default to 'simulation'
+let hardwareMode = 'simulation';
+const modeArg = process.argv.find(arg => arg.startsWith('--mode='));
+if (modeArg) {
+  hardwareMode = modeArg.split('=')[1];
+} else if (process.argv.includes('--hardware')) {
+  hardwareMode = 'hardware';
+} else if (process.argv.includes('--both')) {
+  hardwareMode = 'both';
+} else if (process.env.HARDWARE_MODE) {
+  hardwareMode = process.env.HARDWARE_MODE;
+}
+
+HAL.setMode(hardwareMode);
+console.log(`[APP] Hardware Abstraction Layer mode: ${hardwareMode}`);
+console.log(`[APP] Available modes: simulation (default), hardware, both`);
+console.log(`[APP] Change mode with: node app.js --mode=hardware or --hardware or --both`);
 
 // Start the servers
 const STAFF_PORT = 8080;

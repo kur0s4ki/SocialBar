@@ -259,11 +259,14 @@ function powerOffCell(val) {
   sendCmd1(`O` + OUTPUT_POWER_CELL + OUT_OFF);
 }
 
-function set_output(num, val) {
+function set_output(num, val, color = 'w') {
   var n = num.toString();
   var v = val.toString();
+  var c = color.toString()[0]; // Take first character of color
   if (n.length == 1) n = `0` + n;
-  sendCmd1(`O` + n + v);
+  // New protocol: O{NN}{0|1}{color}
+  // Example: O101g = output 10 ON green, O100w = output 10 OFF (color irrelevant)
+  sendCmd1(`O` + n + v + c);
 }
 
 async function get_input1() {

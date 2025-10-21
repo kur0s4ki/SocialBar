@@ -1,5 +1,6 @@
 const events = require('events');
 const arduino = require('./arduino.js');
+const HAL = require('./hardwareAbstraction.js');
 const readline = require('readline');
 const emitter = new events.EventEmitter();
 
@@ -1433,30 +1434,15 @@ function disableKeyboardListener() {
 
 function controlOutput(outputNum, value) {
   console.log('[STRIKELOOP] Setting output', outputNum, 'to', value);
-  arduino.set_output(outputNum, value);
+  // Now using HAL instead of direct arduino call
+  HAL.setOutput(outputNum, value, '1');
 }
 
 
 function controlLED(elementId, colorCode) {
-  
-  
-
-  
-  let colorValue;
-  if (colorCode === '1') {
-    
-    colorValue = getControlButtonColor(elementId);
-  } else {
-    colorValue = COLORS[colorCode] || '#ffffff';
-  }
-
-  
-  emitter.emit('ledControl', {
-    elementId: elementId,
-    colorCode: colorCode,
-    colorValue: colorValue,
-    timestamp: Date.now()
-  });
+  console.log('[STRIKELOOP] Control LED', elementId, 'color', colorCode);
+  // Now using HAL for unified simulation and hardware control
+  HAL.controlLED(elementId, colorCode);
 }
 
 
