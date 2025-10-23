@@ -50,14 +50,11 @@ const OUTPUT_IDS = {
   OUTER_CIRCLE_7: 7,
   OUTER_CIRCLE_8: 8,
 
-
+  // Central circle (9) - controls the border/ring around the 5 small holes
+  // Note: Holes 10-13 have NO output control (input only)
   CENTRAL_CIRCLE: 9,
-  INNER_CIRCLE_2: 10,
-  INNER_CIRCLE_3: 11,
-  INNER_CIRCLE_4: 12,
-  INNER_CIRCLE_5: 13,
 
-
+  // Control buttons (14-22)
   CONTROL_BUTTON_1: 14,
   CONTROL_BUTTON_2: 15,
   CONTROL_BUTTON_3: 16,
@@ -853,9 +850,12 @@ function initializeMission(levelConfig) {
   emitter.emit('bonusActive', false);
 
   // Turn off all LEDs before starting new level
-  for (let i = 1; i <= 13; i++) {
+  // Note: Skip 10-13 as they have no LEDs (input only)
+  for (let i = 1; i <= 8; i++) {
     controlLED(i, 'o');
   }
+  // Turn off central circle (9)
+  controlLED(9, 'o');
 
   console.log(`[STRIKELOOP] Mission initialized:`, {
     arcadeMode: levelConfig.arcadeMode,
@@ -1439,6 +1439,12 @@ function controlOutput(outputNum, value) {
 
 
 function controlLED(elementId, colorCode) {
+  // Filter out LED control for holes 10-13 (they have no LEDs, input only)
+  if (elementId >= 10 && elementId <= 13) {
+    console.log(`[STRIKELOOP] Ignoring LED control for element ${elementId} (input-only hole)`);
+    return;
+  }
+
   // Logging disabled - reduces log noise, HAL will log serial commands
   HAL.controlLED(elementId, colorCode);
 }

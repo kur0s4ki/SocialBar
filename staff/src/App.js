@@ -179,11 +179,18 @@ function App() {
   };
 
   const getSmallCircleColor = (elementId) => {
-    const ledState = ledStates[elementId];
+    // Small circles (9-13) are input-only, they have no LEDs
+    // Always return a neutral gray color to indicate they're just holes
+    return '#666666'; // Gray for input-only holes
+  };
+
+  const getCentralCircleBorderColor = () => {
+    // Central circle border is controlled by output ID 9
+    const ledState = ledStates[9];
     if (ledState && ledState.active) {
       return ledState.colorValue;
     }
-    return '#ffffff'; // Default white for small circles
+    return '#ffffff'; // Default white when not active
   };
 
   const getButtonPulseClass = (elementId) => {
@@ -204,7 +211,7 @@ function App() {
     if (elementId >= 1 && elementId <= 8) {
       return `Input ID: ${elementId} | Output ID: ${elementId}`;
     } else if (elementId >= 9 && elementId <= 13) {
-      return `Input ID: ${elementId} | Output ID: 9 (Central Circle)`;
+      return `Input ID: ${elementId} | No LED (input only)`;
     } else if (elementId >= 14 && elementId <= 22) {
       return `Input ID: ${elementId} | Output ID: ${elementId}`;
     }
@@ -415,15 +422,16 @@ function App() {
                   ></div>
 
                   {/* Central large circle with 5 small circles inside */}
+                  {/* Border controlled by Output ID 9 - NOT clickable (output only) */}
                   <div
                     className="circle central-circle"
                     style={{
                       top: '50%',
                       left: '50%',
                       transform: 'translate(-50%, -50%)',
-                      borderColor: '#ffffff'
+                      borderColor: getCentralCircleBorderColor()
                     }}
-                    title="Output ID: 9-13 (Central Circle with 5 small circles)"
+                    title="Output ID: 9 (Central Circle Border - Output Only)"
                   >
                     <div
                       className="small-circle small-pos-1"
