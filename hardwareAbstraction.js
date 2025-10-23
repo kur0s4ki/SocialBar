@@ -14,6 +14,24 @@ const CONFIG = {
   enableLogging: false // Disabled for cleaner logs - serial writes are logged in arduino.js
 };
 
+// Hardware ID Mapping
+// Maps logical IDs (used in code/UI) to physical hardware IDs (actual wiring)
+// This compensates for wiring errors without changing the game logic or UI
+const HARDWARE_ID_MAP = {
+  1: 1,   // Logical 1 → Hardware 1
+  2: 4,   // Logical 2 → Hardware 4
+  3: 6,   // Logical 3 → Hardware 6
+  4: 7,   // Logical 4 → Hardware 7
+  5: 2,   // Logical 5 → Hardware 2
+  6: 3,   // Logical 6 → Hardware 3
+  7: 5,   // Logical 7 → Hardware 5
+  8: 8,   // Logical 8 → Hardware 8
+  // IDs 9-22 are correctly wired (no remapping needed)
+  9: 9, 10: 10, 11: 11, 12: 12, 13: 13,
+  14: 14, 15: 15, 16: 16, 17: 17, 18: 18,
+  19: 19, 20: 20, 21: 21, 22: 22
+};
+
 // Color mapping for simulation display
 const COLORS = {
   'o': '#ffffff',     // OFF - white
@@ -176,14 +194,37 @@ function flashOutput(outputId, colorCode, duration) {
 // ============================================================================
 
 /**
+ * Translate logical ID to physical hardware ID
+ * @private
+ * @param {number} logicalId - Logical ID used in code/UI
+ * @returns {number} Physical hardware ID based on actual wiring
+ */
+function _translateToHardwareId(logicalId) {
+  const hardwareId = HARDWARE_ID_MAP[logicalId];
+
+  if (hardwareId === undefined) {
+    console.warn(`[HAL] No hardware mapping for logical ID ${logicalId}, using as-is`);
+    return logicalId;
+  }
+
+  // Log mapping only when IDs differ (to show remapping in action)
+  if (CONFIG.enableLogging && hardwareId !== logicalId) {
+    console.log(`[HAL] ID Translation: Logical ${logicalId} → Hardware ${hardwareId}`);
+  }
+
+  return hardwareId;
+}
+
+/**
  * Send output command to simulation (WebSocket)
+ * Uses LOGICAL IDs - no translation needed
  * @private
  */
 function _sendToSimulation(outputId, colorCode, state) {
   const colorValue = _getColorValue(outputId, colorCode);
 
   emitter.emit('ledControl', {
-    elementId: outputId,
+    elementId: outputId,  // Uses logical ID for UI display
     colorCode: colorCode,
     colorValue: colorValue,
     timestamp: Date.now()
@@ -192,11 +233,17 @@ function _sendToSimulation(outputId, colorCode, state) {
 
 /**
  * Send output command to hardware (Serial)
+ * Translates logical ID to physical hardware ID
  * @private
  */
-function _sendToHardware(outputId, state, colorChar) {
-  log(`Hardware: Output ${outputId} → state ${state}, color ${colorChar}`);
-  arduino.set_output(outputId, state, colorChar);
+function _sendToHardware(logicalId, state, colorChar) {
+  // Translate logical ID to physical hardware ID
+  const hardwareId = _translateToHardwareId(logicalId);
+
+  log(`Hardware: Logical ${logicalId} → Hardware ${hardwareId}, state ${state}, color ${colorChar}`);
+
+  // Send to Arduino using the PHYSICAL hardware ID
+  arduino.set_output(hardwareId, state, colorChar);
 }
 
 /**
