@@ -11,7 +11,7 @@ const emitter = new events.EventEmitter();
 // Configuration
 const CONFIG = {
   mode: process.env.HARDWARE_MODE || 'simulation', // 'simulation' | 'hardware' | 'both'
-  enableLogging: true
+  enableLogging: false // Disabled for cleaner logs - serial writes are logged in arduino.js
 };
 
 // Color mapping for simulation display
@@ -47,7 +47,8 @@ const CONTROL_BUTTON_COLORS = {
 function setMode(mode) {
   if (['simulation', 'hardware', 'both'].includes(mode)) {
     CONFIG.mode = mode;
-    log(`Mode set to: ${mode}`);
+    // Always log mode changes (important)
+    console.log(`[HAL] Mode set to: ${mode}`);
   } else {
     console.error(`[HAL] Invalid mode: ${mode}. Must be 'simulation', 'hardware', or 'both'`);
   }

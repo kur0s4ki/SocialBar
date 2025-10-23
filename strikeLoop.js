@@ -1433,15 +1433,13 @@ function disableKeyboardListener() {
 
 
 function controlOutput(outputNum, value) {
-  console.log('[STRIKELOOP] Setting output', outputNum, 'to', value);
-  // Now using HAL instead of direct arduino call
+  // Logging disabled - HAL will log serial commands
   HAL.setOutput(outputNum, value, '1');
 }
 
 
 function controlLED(elementId, colorCode) {
-  console.log('[STRIKELOOP] Control LED', elementId, 'color', colorCode);
-  // Now using HAL for unified simulation and hardware control
+  // Logging disabled - reduces log noise, HAL will log serial commands
   HAL.controlLED(elementId, colorCode);
 }
 

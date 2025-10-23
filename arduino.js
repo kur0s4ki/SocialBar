@@ -103,6 +103,11 @@ async function sendCmd1(mes) {
   let promise = new Promise((resolve, reject) => {
     //    setTimeout(() => , 1000)
     if (ControllinoSerialPort) {
+      // ═══════════════════════════════════════════════════════════════
+      console.log(`\x1b[36m╔════════════════════════════════════════╗\x1b[0m`);
+      console.log(`\x1b[36m║\x1b[0m \x1b[1m\x1b[33mSERIAL WRITE → Controllino:\x1b[0m \x1b[1m\x1b[32m${mes}\x1b[0m`);
+      console.log(`\x1b[36m╚════════════════════════════════════════╝\x1b[0m`);
+      // ═══════════════════════════════════════════════════════════════
       ControllinoSerialPort.write(mes);
     } else {
       emitter.emit(`cmdFailedEvent`, `no serial port 1`);
@@ -264,8 +269,13 @@ function set_output(num, val, color = 'w') {
   var v = val.toString();
   var c = color.toString()[0]; // Take first character of color
   if (n.length == 1) n = `0` + n;
+
+  // Human-readable description
+  const stateDesc = val == 1 ? 'ON' : 'OFF';
+  const colorDesc = val == 1 ? ` (${c})` : '';
+  console.log(`[ARDUINO] Output ${num} → ${stateDesc}${colorDesc}`);
+
   // New protocol: O{NN}{0|1}{color}
-  // Example: O101g = output 10 ON green, O100w = output 10 OFF (color irrelevant)
   sendCmd1(`O` + n + v + c);
 }
 
@@ -286,6 +296,7 @@ async function get_input2() {
 //Power led bar from 0% to 100%
 function setBarled(val) {
   if (val == 0) val = 1;
+  console.log(`[ARDUINO] Bar LED → ${val}%`);
   sendCmd1(`L01` + String.fromCharCode(val));
 }
 
