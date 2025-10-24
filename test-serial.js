@@ -139,7 +139,7 @@ function sendSerialCommand(command) {
 }
 
 function sendBatchedCommands(commands) {
-  console.log(`[${getCurrentTime()}] 📦 Sending ${commands.length} commands with 100ms delay between each...`);
+  console.log(`[${getCurrentTime()}] 📦 Sending ${commands.length} commands with 30ms delay between each...`);
 
   let index = 0;
 
@@ -151,7 +151,7 @@ function sendBatchedCommands(commands) {
       index++;
 
       // Wait 100ms before sending next command
-      setTimeout(sendNext, 100);
+      setTimeout(sendNext, 30);
     } else {
       console.log(`[${getCurrentTime()}] ✅ All ${commands.length} commands sent!`);
     }
