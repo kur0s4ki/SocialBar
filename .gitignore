@@ -4,6 +4,10 @@
 /node_modules
 /staff/node_modules
 /game/node_modules
+
+/game/build
+/staff/build
+
 /.pnp
 .pnp.js
 

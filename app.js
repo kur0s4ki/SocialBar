@@ -2,7 +2,7 @@ const WebSocket = require('ws');
 const http = require('http');
 const arduino = require('./arduino.js');
 const HAL = require('./hardwareAbstraction.js');
-const strikeLoop = require('./strikeLoop.js');
+const strikeLoop = require('./strikeloop.js');
 
 // Create HTTP servers for both staff and display clients
 const staffServer = http.createServer();
