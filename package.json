@@ -8,6 +8,7 @@
     "dev": "nodemon app.js"
   },
   "dependencies": {
+    "async-lock": "^1.4.1",
     "serialport": "^9.2.3",
     "ws": "^8.14.2"
   },

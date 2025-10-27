@@ -21,6 +21,8 @@
 // get the reference of EventEmitter class of events module
 var events = require(`events`);
 let SerialPort = require(`serialport`);
+const asyncLock = require(`async-lock`);
+const lock = new asyncLock();
 
 //MAPING OUTPUTS
 const OUTPUT_POWER_CELL = `99`;
@@ -36,6 +38,7 @@ let ControllinoSerialPort;
 let tempBuffer1 = ``;
 let statusCmd1 = ``;
 let input1 = 0;
+let SerialComBusy = false;
 
 //timer timeout output command ID
 let timeoutId;
@@ -91,8 +94,41 @@ function initControllinoSerialPort(portPath) {
 
   ControllinoSerialPort.open();
   ControllinoSerialPort.on(`data`, function (data) {
-    tempBuffer1 += data;
+    // Ensure we append ASCII, not a Buffer object
+    const s = data.toString('utf8');
+    tempBuffer1 += s;
+    // Uncomment for debug: console.error(`[RX] ` + s);
     manageSerialPort1();
+  });
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+//cut message in 2 parts
+async function sendIn2Parts(mes) {
+
+  await lock.acquire('exampleLock', async () => {
+    if (SerialComBusy === true) {
+      return;
+    }
+
+    SerialComBusy = true;
+    ControllinoSerialPort.write(mes.slice(0, 1));
+    await sleep(110);
+    ControllinoSerialPort.write(mes.slice(1));
+    SerialComBusy = false;
+  });
+}
+
+//send serial in loop
+async function sendSerial(count) {
+
+  await lock.acquire('loopLock', async () => {
+    do {
+      await sendIn2Parts(count);
+    } while (SerialComBusy === true);
   });
 }
 
@@ -108,7 +144,7 @@ async function sendCmd1(mes) {
       console.log(`\x1b[36m║\x1b[0m \x1b[1m\x1b[33mSERIAL WRITE → Controllino:\x1b[0m \x1b[1m\x1b[32m${mes}\x1b[0m`);
       console.log(`\x1b[36m╚════════════════════════════════════════╝\x1b[0m`);
       // ═══════════════════════════════════════════════════════════════
-      ControllinoSerialPort.write(mes);
+      sendSerial(mes);
     } else {
       emitter.emit(`cmdFailedEvent`, `no serial port 1`);
       return;
@@ -131,8 +167,9 @@ async function sendCmd1(mes) {
 
     timeoutId = setTimeout(() => {
       emitter.emit(`cmdFailedEvent`, `no answer from arduino1`);
+      comptCmd1--;
       reject;
-    }, 1000);
+    }, 2000);
     timeoutIdTab1[comptCmd1++] = timeoutId;
   });
 
@@ -264,11 +301,15 @@ function powerOffCell(val) {
   sendCmd1(`O` + OUTPUT_POWER_CELL + OUT_OFF);
 }
 
+// protocol 0xxY xx= output Y=color, W if state =0
 function set_output(num, val, color = 'w') {
   var n = num.toString();
   var v = val.toString();
   var c = color.toString()[0]; // Take first character of color
   if (n.length == 1) n = `0` + n;
+
+  if (v=='0') //power off led = W 
+   c = 'w';
 
   // Human-readable description
   const stateDesc = val == 1 ? 'ON' : 'OFF';
@@ -276,7 +317,7 @@ function set_output(num, val, color = 'w') {
   console.log(`[ARDUINO] Output ${num} → ${stateDesc}${colorDesc}`);
 
   // New protocol: O{NN}{0|1}{color}
-  sendCmd1(`O` + n + v + c);
+  sendCmd1(`O` + n + c);
 }
 
 async function get_input1() {
