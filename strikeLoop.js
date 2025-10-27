@@ -767,7 +767,7 @@ function startNextLevel(isRetry = false) {
   gameState.score = localScore;
 
 
-  initializeMission(currentLevel);
+  initializeMission(currentLevel, isRetry);
 
 
   emitter.emit('roundUpdate', {
@@ -796,7 +796,7 @@ function startNextLevel(isRetry = false) {
 }
 
 
-function initializeMission(levelConfig) {
+function initializeMission(levelConfig, isRetry = false) {
   // Clear any blinking intervals from PREVIOUS level BEFORE overwriting activeMission
   if (activeMission?.blinkIntervals) {
     console.log(`[STRIKELOOP] Clearing ${activeMission.blinkIntervals.length} blink intervals from previous level`);
@@ -849,13 +849,20 @@ function initializeMission(levelConfig) {
   // Deactivate bonus indicator
   emitter.emit('bonusActive', false);
 
-  // Turn off all LEDs before starting new level
-  // Note: Skip 10-13 as they have no LEDs (input only)
-  for (let i = 1; i <= 8; i++) {
-    controlLED(i, 'o');
+  // OPTIMIZATION: Only reset LEDs when starting a NEW level, not on retry
+  // On retry, the same level pattern will be reactivated, so we save ~17 serial writes
+  if (!isRetry) {
+    console.log('[STRIKELOOP] New level - resetting all LEDs');
+    // Turn off all LEDs before starting new level
+    // Note: Skip 10-13 as they have no LEDs (input only)
+    for (let i = 1; i <= 8; i++) {
+      controlLED(i, 'o');
+    }
+    // Turn off central circle (9)
+    controlLED(9, 'o');
+  } else {
+    console.log('[STRIKELOOP] Retry mode - keeping existing LED pattern (will be refreshed by startArcadeLEDs)');
   }
-  // Turn off central circle (9)
-  controlLED(9, 'o');
 
   console.log(`[STRIKELOOP] Mission initialized:`, {
     arcadeMode: levelConfig.arcadeMode,
@@ -1725,6 +1732,8 @@ let lastSnakeMode = null; // Track the last snake mode to know when to reset pat
 function activateModeRotatingGreen() {
   if (rotationInterval) clearInterval(rotationInterval);
 
+  let previousGreenPos = null;
+
   const activateOne = () => {
     activeTargets = [];
     trapPositions = [];
@@ -1733,21 +1742,39 @@ function activateModeRotatingGreen() {
     const greenPos = activeMission.greenTargets[Math.floor(Math.random() * activeMission.greenTargets.length)];
     const target = { elementId: greenPos, colorCode: 'g', isValid: true, isActive: true };
     activeTargets.push(target);
-    controlLED(greenPos, 'g');
-    currentRotatingTargets.green = greenPos;
 
-    // All OTHER positions (1-4 that aren't green, and all of 5-8) become RED
+    // OPTIMIZATION: Only update LEDs that changed
+    if (previousGreenPos === null) {
+      // FIRST TIME: Set all positions
+      console.log(`[STRIKELOOP] Rotating green: Initial setup - position ${greenPos} active`);
+      controlLED(greenPos, 'g');
+      const allPositions = [1, 2, 3, 4, 5, 6, 7, 8];
+      allPositions.forEach(pos => {
+        if (pos !== greenPos) {
+          controlLED(pos, 'r');
+        }
+      });
+    } else if (greenPos !== previousGreenPos) {
+      // SUBSEQUENT ROTATIONS: Only update changed positions (2 serial writes instead of 8)
+      console.log(`[STRIKELOOP] Rotating green: ${previousGreenPos} → ${greenPos} (optimized: 2 writes)`);
+      controlLED(previousGreenPos, 'r');  // Old green → red
+      controlLED(greenPos, 'g');          // New position → green
+    } else {
+      console.log(`[STRIKELOOP] Rotating green: Same position ${greenPos}, no LED changes needed`);
+    }
+
+    currentRotatingTargets.green = greenPos;
+    previousGreenPos = greenPos;
+
+    // Update activeTargets array (for game logic, not LEDs)
     const allPositions = [1, 2, 3, 4, 5, 6, 7, 8];
     allPositions.forEach(pos => {
       if (pos !== greenPos) {
         const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
         activeTargets.push(trap);
         trapPositions.push(trap);
-        controlLED(pos, 'r');
       }
     });
-
-    console.log(`[STRIKELOOP] Rotating green: position ${greenPos} active, all others RED`);
   };
 
   activateOne();
@@ -1756,6 +1783,9 @@ function activateModeRotatingGreen() {
 
 function activateModeRotatingGreenBlue() {
   if (rotationInterval) clearInterval(rotationInterval);
+
+  let previousGreenPos = null;
+  let previousBluePos = null;
 
   const activateTwo = () => {
     activeTargets = [];
@@ -1768,21 +1798,53 @@ function activateModeRotatingGreenBlue() {
     const blueTarget = { elementId: bluePos, colorCode: 'b', isValid: true, isActive: true };
 
     activeTargets.push(greenTarget, blueTarget);
-    controlLED(greenPos, 'g');
-    controlLED(bluePos, 'b');
+
+    // OPTIMIZATION: Only update LEDs that changed
+    if (previousGreenPos === null || previousBluePos === null) {
+      // FIRST TIME: Set all positions
+      console.log(`[STRIKELOOP] Rotating green-blue: Initial setup - green ${greenPos}, blue ${bluePos}`);
+      controlLED(greenPos, 'g');
+      controlLED(bluePos, 'b');
+      const otherPositions = [1, 2, 3, 4, 5, 6, 7, 8].filter(p => p !== greenPos && p !== bluePos);
+      otherPositions.forEach(pos => {
+        controlLED(pos, 'r');
+      });
+    } else {
+      // SUBSEQUENT ROTATIONS: Only update changed positions
+      const changes = [];
+
+      // Track which positions need updates
+      if (greenPos !== previousGreenPos) {
+        controlLED(previousGreenPos, 'r');  // Old green → red
+        controlLED(greenPos, 'g');          // New green
+        changes.push(`green ${previousGreenPos}→${greenPos}`);
+      }
+
+      if (bluePos !== previousBluePos) {
+        controlLED(previousBluePos, 'r');   // Old blue → red
+        controlLED(bluePos, 'b');           // New blue
+        changes.push(`blue ${previousBluePos}→${bluePos}`);
+      }
+
+      if (changes.length > 0) {
+        console.log(`[STRIKELOOP] Rotating green-blue: ${changes.join(', ')} (optimized: ${changes.length * 2} writes)`);
+      } else {
+        console.log(`[STRIKELOOP] Rotating green-blue: Same positions, no LED changes needed`);
+      }
+    }
 
     currentRotatingTargets.green = greenPos;
     currentRotatingTargets.blue = bluePos;
+    previousGreenPos = greenPos;
+    previousBluePos = bluePos;
 
+    // Update activeTargets array (for game logic, not LEDs)
     const otherPositions = [1, 2, 3, 4, 5, 6, 7, 8].filter(p => p !== greenPos && p !== bluePos);
     otherPositions.forEach(pos => {
       const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
       activeTargets.push(trap);
       trapPositions.push(trap);
-      controlLED(pos, 'r');
     });
-
-    console.log(`[STRIKELOOP] Rotating green-blue: green ${greenPos}, blue ${bluePos} active`);
   };
 
   activateTwo();
@@ -1792,6 +1854,8 @@ function activateModeRotatingGreenBlue() {
 function activateModeRotatingBlue() {
   if (rotationInterval) clearInterval(rotationInterval);
 
+  let previousBluePos = null;
+
   const activateOne = () => {
     activeTargets = [];
     trapPositions = [];
@@ -1800,21 +1864,39 @@ function activateModeRotatingBlue() {
     const bluePos = activeMission.blueTargets[Math.floor(Math.random() * activeMission.blueTargets.length)];
     const target = { elementId: bluePos, colorCode: 'b', isValid: true, isActive: true };
     activeTargets.push(target);
-    controlLED(bluePos, 'b');
-    currentRotatingTargets.blue = bluePos;
 
-    // All OTHER positions (all of 1-4, and 5-8 that aren't blue) become RED
+    // OPTIMIZATION: Only update LEDs that changed
+    if (previousBluePos === null) {
+      // FIRST TIME: Set all positions
+      console.log(`[STRIKELOOP] Rotating blue: Initial setup - position ${bluePos} active`);
+      controlLED(bluePos, 'b');
+      const allPositions = [1, 2, 3, 4, 5, 6, 7, 8];
+      allPositions.forEach(pos => {
+        if (pos !== bluePos) {
+          controlLED(pos, 'r');
+        }
+      });
+    } else if (bluePos !== previousBluePos) {
+      // SUBSEQUENT ROTATIONS: Only update changed positions (2 serial writes instead of 8)
+      console.log(`[STRIKELOOP] Rotating blue: ${previousBluePos} → ${bluePos} (optimized: 2 writes)`);
+      controlLED(previousBluePos, 'r');  // Old blue → red
+      controlLED(bluePos, 'b');          // New position → blue
+    } else {
+      console.log(`[STRIKELOOP] Rotating blue: Same position ${bluePos}, no LED changes needed`);
+    }
+
+    currentRotatingTargets.blue = bluePos;
+    previousBluePos = bluePos;
+
+    // Update activeTargets array (for game logic, not LEDs)
     const allPositions = [1, 2, 3, 4, 5, 6, 7, 8];
     allPositions.forEach(pos => {
       if (pos !== bluePos) {
         const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
         activeTargets.push(trap);
         trapPositions.push(trap);
-        controlLED(pos, 'r');
       }
     });
-
-    console.log(`[STRIKELOOP] Rotating blue: position ${bluePos} active, all others RED`);
   };
 
   activateOne();

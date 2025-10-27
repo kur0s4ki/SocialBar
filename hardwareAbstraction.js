@@ -14,6 +14,10 @@ const CONFIG = {
   enableLogging: false // Disabled for cleaner logs - serial writes are logged in arduino.js
 };
 
+// Hardware state cache to prevent redundant serial writes
+// Tracks current state of each output: { state: 0|1, color: 'r'|'g'|'b'|... }
+const hardwareStateCache = {};
+
 // Hardware ID Mapping
 // Maps logical IDs (used in code/UI) to physical hardware IDs (actual wiring)
 // This compensates for wiring errors without changing the game logic or UI
@@ -86,9 +90,25 @@ function getMode() {
  * @param {string} colorCode - Color code ('r', 'g', 'b', 'y', 'p', 'w', 'c', or '1' for element-specific)
  */
 function turnOnOutput(outputId, colorCode = '1') {
+  const state = 1;
+  const hardwareColor = _translateColorCode(colorCode, outputId);
+
+  // Check cache to avoid redundant writes
+  const cached = hardwareStateCache[outputId];
+  if (cached && cached.state === state && cached.color === hardwareColor) {
+    log(`Output ${outputId} already ON with color ${hardwareColor}, skipping hardware write`);
+
+    // Still send to simulation for UI sync
+    if (CONFIG.mode === 'simulation' || CONFIG.mode === 'both') {
+      _sendToSimulation(outputId, colorCode, state);
+    }
+    return;
+  }
+
   log(`Turn ON output ${outputId} with color ${colorCode}`);
 
-  const state = 1;
+  // Update cache
+  hardwareStateCache[outputId] = { state, color: hardwareColor };
 
   // Send to simulation
   if (CONFIG.mode === 'simulation' || CONFIG.mode === 'both') {
@@ -97,7 +117,6 @@ function turnOnOutput(outputId, colorCode = '1') {
 
   // Send to hardware
   if (CONFIG.mode === 'hardware' || CONFIG.mode === 'both') {
-    const hardwareColor = _translateColorCode(colorCode, outputId);
     _sendToHardware(outputId, state, hardwareColor);
   }
 }
@@ -107,9 +126,25 @@ function turnOnOutput(outputId, colorCode = '1') {
  * @param {number} outputId - Output identifier (1-22)
  */
 function turnOffOutput(outputId) {
+  const state = 0;
+  const hardwareColor = 'w'; // OFF uses 'w' as placeholder
+
+  // Check cache to avoid redundant writes
+  const cached = hardwareStateCache[outputId];
+  if (cached && cached.state === state) {
+    log(`Output ${outputId} already OFF, skipping hardware write`);
+
+    // Still send to simulation for UI sync
+    if (CONFIG.mode === 'simulation' || CONFIG.mode === 'both') {
+      _sendToSimulation(outputId, 'o', state);
+    }
+    return;
+  }
+
   log(`Turn OFF output ${outputId}`);
 
-  const state = 0;
+  // Update cache
+  hardwareStateCache[outputId] = { state, color: hardwareColor };
 
   // Send to simulation
   if (CONFIG.mode === 'simulation' || CONFIG.mode === 'both') {
@@ -312,6 +347,22 @@ function setLogging(enabled) {
   CONFIG.enableLogging = enabled;
 }
 
+/**
+ * Clear hardware state cache
+ * Use this when hardware state might be out of sync (e.g., after hardware reset)
+ */
+function clearStateCache() {
+  Object.keys(hardwareStateCache).forEach(key => delete hardwareStateCache[key]);
+  console.log('[HAL] Hardware state cache cleared');
+}
+
+/**
+ * Get current cached state for debugging
+ */
+function getStateCache() {
+  return { ...hardwareStateCache };
+}
+
 // ============================================================================
 // Module Exports
 // ============================================================================
@@ -331,6 +382,10 @@ module.exports = {
   setOutput,
   setBarLED,
   flashOutput,
+
+  // State management
+  clearStateCache,
+  getStateCache,
 
   // Legacy compatibility
   controlLED,
