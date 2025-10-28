@@ -314,7 +314,7 @@ function set_output(num, val, color = 'w') {
   // Human-readable description
   const stateDesc = val == 1 ? 'ON' : 'OFF';
   const colorDesc = val == 1 ? ` (${c})` : '';
-  console.log(`[ARDUINO] Output ${num} → ${stateDesc}${colorDesc}`);
+  //console.log(`[ARDUINO] Output ${num} → ${stateDesc}${colorDesc}`);
 
   // New protocol: O{NN}{0|1}{color}
   sendCmd1(`O` + n + c);

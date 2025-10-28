@@ -5,7 +5,7 @@ const emitter = new events.EventEmitter();
 
 // ⚠️ TESTING FLAG: Set to true to play Round 2 first (for testing)
 // Set to false for normal game flow (Round 1 → Round 2 → Round 3)
-const TESTING_MODE_SWAP_ROUNDS = false;
+const TESTING_MODE_SWAP_ROUNDS = true
 
 
 const OUTPUT_IDS = {
@@ -23,7 +23,7 @@ const OUTPUT_IDS = {
   // Note: Holes 10-13 have NO output control (input only)
   CENTRAL_CIRCLE: 9,
 
-  // Control buttons (14-22)
+  // Control buttons (14-28) - Extended hardware
   CONTROL_BUTTON_1: 14,
   CONTROL_BUTTON_2: 15,
   CONTROL_BUTTON_3: 16,
@@ -32,13 +32,19 @@ const OUTPUT_IDS = {
   CONTROL_BUTTON_6: 19,
   CONTROL_BUTTON_7: 20,
   CONTROL_BUTTON_8: 21,
-  CONTROL_BUTTON_9: 22
+  CONTROL_BUTTON_9: 22,
+  CONTROL_BUTTON_10: 23,
+  CONTROL_BUTTON_11: 24,
+  CONTROL_BUTTON_12: 25,
+  CONTROL_BUTTON_13: 26,
+  CONTROL_BUTTON_14: 27,
+  CONTROL_BUTTON_15: 28
 };
 
 
 const OUTER_CIRCLES_RANGE = { min: 1, max: 8 };
 const INNER_CIRCLES_RANGE = { min: 9, max: 13 };
-const CONTROL_BUTTONS_RANGE = { min: 14, max: 22 };
+const CONTROL_BUTTONS_RANGE = { min: 14, max: 28 }; // Extended to 15 buttons
 const CENTRAL_CIRCLE_ID = 9;
 
 
@@ -335,18 +341,17 @@ let gameRounds = [
     pointsPerBonus: 50,
     penaltyRed: -100
   },
-  // ROUND 3 (TWO-STEP VALIDATION) - 10 Levels
+  // ROUND 3 (TWO-STEP VALIDATION) - 10 Levels - NEW IMPLEMENTATION
   {
     round: 3, level: 1,
-    mission: 'Touchez les cibles vertes puis appuyez sur un bouton VERT!',
+    mission: 'Touchez les cibles vertes puis appuyez sur les 4 boutons VERT!',
     duration: 30,
     goalScore: 4400,
-    arcadeMode: 'two-step-fixed-green',
-    greenTargets: [1, 2, 3, 4],
+    arcadeMode: 'two-step-all-buttons-green',
+    greenTargets: [1, 2, 3, 4],  // Fixed green circles
     redTraps: [5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
-    buttonMode: 'fixed-green',
-    buttonColors: ['g', 'o', 'g', 'o', 'o', 'o', 'o', 'o', 'o'], // Buttons 14 and 16 are green
+    buttonMode: 'all-green',  // All 4 green buttons must be pressed
     validationWindow: 3000,
     pointsPerValidated: 100,
     pointsPerBonus: 50,
@@ -354,15 +359,14 @@ let gameRounds = [
   },
   {
     round: 3, level: 2,
-    mission: 'Touchez les cibles bleues puis appuyez sur un bouton BLEU!',
+    mission: 'Touchez les cibles bleues puis appuyez sur les 4 boutons BLEU!',
     duration: 30,
-    goalScore: 4600,
-    arcadeMode: 'two-step-fixed-blue',
-    blueTargets: [5, 6, 7, 8],
+    goalScore: 4400,
+    arcadeMode: 'two-step-all-buttons-blue',
+    blueTargets: [5, 6, 7, 8],  // Fixed blue circles
     redTraps: [1, 2, 3, 4],
     bonusTargets: [9, 10, 11, 12, 13],
-    buttonMode: 'fixed-blue',
-    buttonColors: ['o', 'o', 'o', 'o', 'b', 'o', 'b', 'o', 'o'], // Buttons 18 and 20 are blue
+    buttonMode: 'all-blue',  // All 4 blue buttons must be pressed
     validationWindow: 3000,
     pointsPerValidated: 100,
     pointsPerBonus: 50,
@@ -370,17 +374,16 @@ let gameRounds = [
   },
   {
     round: 3, level: 3,
-    mission: 'Touchez les cibles vertes mobiles puis appuyez sur un bouton VERT!',
+    mission: 'Touchez les cibles vertes mobiles puis appuyez sur les 4 boutons VERT!',
     duration: 30,
     goalScore: 4800,
-    arcadeMode: 'two-step-alternating-green',
+    arcadeMode: 'two-step-alternating-all-buttons-green',
     greenTargets: [1, 2, 3, 4],
     redTraps: [5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
-    alternatePattern: [[1, 3], [2, 4]],
+    alternatePattern: [[1, 3], [2, 4]],  // Alternating pattern
     alternateInterval: 3000,
-    buttonMode: 'fixed-green',
-    buttonColors: ['g', 'o', 'g', 'o', 'o', 'o', 'o', 'o', 'o'], // Buttons 14 and 16 are green
+    buttonMode: 'all-green',
     validationWindow: 3000,
     pointsPerValidated: 100,
     pointsPerBonus: 50,
@@ -388,17 +391,16 @@ let gameRounds = [
   },
   {
     round: 3, level: 4,
-    mission: 'Touchez les cibles bleues mobiles puis appuyez sur un bouton BLEU!',
+    mission: 'Touchez les cibles bleues mobiles puis appuyez sur les 4 boutons BLEU!',
     duration: 30,
-    goalScore: 5000,
-    arcadeMode: 'two-step-alternating-blue',
+    goalScore: 4800,
+    arcadeMode: 'two-step-alternating-all-buttons-blue',
     blueTargets: [5, 6, 7, 8],
     redTraps: [1, 2, 3, 4],
     bonusTargets: [9, 10, 11, 12, 13],
-    alternatePattern: [[5, 7], [6, 8]],
+    alternatePattern: [[5, 7], [6, 8]],  // Alternating pattern
     alternateInterval: 3000,
-    buttonMode: 'fixed-blue',
-    buttonColors: ['o', 'o', 'o', 'o', 'b', 'o', 'b', 'o', 'o'], // Buttons 18 and 20 are blue
+    buttonMode: 'all-blue',
     validationWindow: 3000,
     pointsPerValidated: 100,
     pointsPerBonus: 50,
@@ -406,14 +408,17 @@ let gameRounds = [
   },
   {
     round: 3, level: 5,
-    mission: 'Touchez les vertes puis trouvez et appuyez sur le bouton VERT allumé!',
+    mission: 'Mémorisez et reproduisez la séquence VERTE!',
     duration: 30,
     goalScore: 5200,
-    arcadeMode: 'two-step-random-button-green',
-    greenTargets: [1, 2, 3, 4],
+    arcadeMode: 'two-step-sequence-green',
+    greenTargets: [1, 2, 3, 4],  // Fixed green circles
     redTraps: [5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
-    buttonMode: 'random-green',
+    buttonMode: 'sequence-green',  // Sequence reproduction mode
+    sequenceLength: 3,  // 3 buttons out of 4
+    sequenceDisplayTime: 1000,  // 1 sec on
+    sequenceOffTime: 1000,  // 1 sec off
     validationWindow: 3000,
     pointsPerValidated: 100,
     pointsPerBonus: 50,
@@ -421,14 +426,17 @@ let gameRounds = [
   },
   {
     round: 3, level: 6,
-    mission: 'Touchez les bleues puis trouvez et appuyez sur le bouton BLEU allumé!',
+    mission: 'Mémorisez et reproduisez la séquence BLEUE!',
     duration: 30,
-    goalScore: 5400,
-    arcadeMode: 'two-step-random-button-blue',
-    blueTargets: [5, 6, 7, 8],
+    goalScore: 5200,
+    arcadeMode: 'two-step-sequence-blue',
+    blueTargets: [5, 6, 7, 8],  // Fixed blue circles
     redTraps: [1, 2, 3, 4],
     bonusTargets: [9, 10, 11, 12, 13],
-    buttonMode: 'random-blue',
+    buttonMode: 'sequence-blue',  // Sequence reproduction mode
+    sequenceLength: 3,  // 3 buttons out of 4
+    sequenceDisplayTime: 1000,
+    sequenceOffTime: 1000,
     validationWindow: 3000,
     pointsPerValidated: 100,
     pointsPerBonus: 50,
@@ -439,13 +447,13 @@ let gameRounds = [
     mission: 'Cibles vertes aléatoires! Touchez-les et validez avec les boutons!',
     duration: 30,
     goalScore: 5600,
-    arcadeMode: 'two-step-random-green',
+    arcadeMode: 'two-step-random-all-buttons-green',
     greenTargets: [1, 2, 3, 4],
     redTraps: [5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
-    randomTargetCount: 2,
+    randomTargetCount: 2,  // Keep existing random logic
     randomChangeInterval: 4000,
-    buttonMode: 'random-green',
+    buttonMode: 'all-green',
     validationWindow: 3000,
     pointsPerValidated: 100,
     pointsPerBonus: 50,
@@ -453,31 +461,32 @@ let gameRounds = [
   },
   {
     round: 3, level: 8,
-    mission: 'Vert et bleu ensemble! Appuyez sur le bouton de la MÊME couleur!',
+    mission: 'Vert et bleu ensemble! Appuyez sur les 4 boutons BLEU!',
     duration: 30,
     goalScore: 5800,
-    arcadeMode: 'two-step-mixed-colors',
+    arcadeMode: 'two-step-mixed-all-buttons-blue',
     greenTargets: [1, 2, 3, 4],
     blueTargets: [5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
-    alternatePattern: [[1, 3, 5, 7], [2, 4, 6, 8]],
+    alternatePattern: [[1, 3, 5, 7], [2, 4, 6, 8]],  // Keep existing mixed pattern
     alternateInterval: 3000,
-    buttonMode: 'color-matched',
+    buttonMode: 'all-blue',
     validationWindow: 3000,
     pointsPerValidated: 100,
     pointsPerBonus: 50
   },
   {
     round: 3, level: 9,
-    mission: 'Cibles tournantes! Validez avec N\'IMPORTE quel bouton allumé!',
+    mission: 'Cibles tournantes multicolores! Validez avec la MÊME couleur!',
     duration: 30,
     goalScore: 6000,
-    arcadeMode: 'two-step-rotating-green',
-    greenTargets: [1, 2, 3, 4],
+    arcadeMode: 'two-step-color-rotation-1-4',
+    circleTargets: [1, 2, 3, 4],  // Circles 1-4
     redTraps: [5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
-    rotationDelay: 2000,
-    buttonMode: 'random-all-colors',
+    rotationSequence: ['b', 'y', 'g', 'd'],  // Blue, Yellow, Green, White
+    rotationDelay: 2000,  // 2 seconds per color
+    buttonMode: 'all-colors-match',  // All buttons lit, match hit color
     validationWindow: 3000,
     pointsPerValidated: 100,
     pointsPerBonus: 50,
@@ -485,18 +494,17 @@ let gameRounds = [
   },
   {
     round: 3, level: 10,
-    mission: 'Chaos total! Touchez et validez RAPIDEMENT avant extinction!',
+    mission: 'Chaos de couleurs! Trouvez et validez le bon bouton!',
     duration: 30,
     goalScore: 6200,
-    arcadeMode: 'two-step-ultimate',
-    greenTargets: [1, 2, 3, 4],
-    blueTargets: [5, 6, 7, 8],
+    arcadeMode: 'two-step-color-rotation-5-8',
+    circleTargets: [5, 6, 7, 8],  // Circles 5-8
+    redTraps: [1, 2, 3, 4],
     bonusTargets: [9, 10, 11, 12, 13],
-    rotationDelay: 2000,
-    randomBurstInterval: 3000,
-    buttonMode: 'random-all-colors-timed',
-    validationWindow: 2000,
-    bonusActivationHits: 7,
+    rotationSequence: ['b', 'y', 'g', 'd'],  // Blue, Yellow, Green, White
+    rotationDelay: 2000,  // 2 seconds per color
+    buttonMode: 'random-one-per-color',  // One random button per color
+    validationWindow: 3000,
     pointsPerValidated: 100,
     pointsPerBonus: 50,
     penaltyRed: -100
@@ -537,25 +545,59 @@ let ledRefreshInterval;
 
 
 const COLORS = {
-  'r': '#e74c3c', 
-  'g': '#27ae60', 
-  'b': '#3498db', 
-  'y': '#f1c40f', 
-  'o': '#ffffff'  
+  'r': '#e74c3c',  // Red
+  'g': '#27ae60',  // Green
+  'b': '#3498db',  // Blue
+  'y': '#f1c40f',  // Yellow
+  'd': '#ffffff',  // White (new protocol for white ON state)
+  'o': '#ffffff'   // OFF state (kept for compatibility)
 };
 
 
 const CONTROL_BUTTONS = [
-  OUTPUT_IDS.CONTROL_BUTTON_1,
-  OUTPUT_IDS.CONTROL_BUTTON_2,
-  OUTPUT_IDS.CONTROL_BUTTON_3,
-  OUTPUT_IDS.CONTROL_BUTTON_4,
-  OUTPUT_IDS.CONTROL_BUTTON_5,
-  OUTPUT_IDS.CONTROL_BUTTON_6,
-  OUTPUT_IDS.CONTROL_BUTTON_7,
-  OUTPUT_IDS.CONTROL_BUTTON_8,
-  OUTPUT_IDS.CONTROL_BUTTON_9
+  OUTPUT_IDS.CONTROL_BUTTON_1,   // 14
+  OUTPUT_IDS.CONTROL_BUTTON_2,   // 15
+  OUTPUT_IDS.CONTROL_BUTTON_3,   // 16
+  OUTPUT_IDS.CONTROL_BUTTON_4,   // 17
+  OUTPUT_IDS.CONTROL_BUTTON_5,   // 18
+  OUTPUT_IDS.CONTROL_BUTTON_6,   // 19
+  OUTPUT_IDS.CONTROL_BUTTON_7,   // 20
+  OUTPUT_IDS.CONTROL_BUTTON_8,   // 21
+  OUTPUT_IDS.CONTROL_BUTTON_9,   // 22
+  OUTPUT_IDS.CONTROL_BUTTON_10,  // 23
+  OUTPUT_IDS.CONTROL_BUTTON_11,  // 24
+  OUTPUT_IDS.CONTROL_BUTTON_12,  // 25
+  OUTPUT_IDS.CONTROL_BUTTON_13,  // 26
+  OUTPUT_IDS.CONTROL_BUTTON_14,  // 27
+  OUTPUT_IDS.CONTROL_BUTTON_15   // 28
 ];
+
+// Fixed button color mapping (hardware-defined)
+const BUTTON_COLORS = {
+  14: 'y',  // Yellow
+  15: 'g',  // Green
+  16: 'b',  // Blue
+  17: 'b',  // Blue
+  18: 'd',  // White
+  19: 'd',  // White
+  20: 'y',  // Yellow
+  21: 'g',  // Green
+  22: 'g',  // Green
+  23: 'y',  // Yellow
+  24: 'b',  // Blue
+  25: 'd',  // White
+  26: 'g',  // Green
+  27: 'b',  // Blue
+  28: 'y'   // Yellow
+};
+
+// Buttons grouped by color for easy access
+const BUTTONS_BY_COLOR = {
+  green: [15, 21, 22, 26],      // 4 green buttons
+  blue: [16, 17, 24, 27],       // 4 blue buttons (note: 5 total but we use 4)
+  yellow: [14, 20, 23, 28],     // 4 yellow buttons
+  white: [18, 19, 25]           // 3 white buttons
+};
 
 
 const rl = readline.createInterface({
@@ -683,11 +725,11 @@ function startRoundBasedGame() {
 
   // ⚠️ TESTING MODE: Swap rounds if flag is enabled
   if (TESTING_MODE_SWAP_ROUNDS) {
-    console.log('[STRIKELOOP] ⚠️  TESTING MODE: Swapping rounds - Round 2 will play first!');
+    console.log('[STRIKELOOP] ⚠️  TESTING MODE: Swapping rounds - Round 3 will play first!');
     const round1Levels = gameRounds.filter(level => level.round === 1);
-    const round2Levels = gameRounds.filter(level => level.round === 2);
-    const otherLevels = gameRounds.filter(level => level.round !== 1 && level.round !== 2);
-    gameRounds = [...round2Levels, ...round1Levels, ...otherLevels];
+    const round3Levels = gameRounds.filter(level => level.round === 3);
+    const otherLevels = gameRounds.filter(level => level.round !== 1 && level.round !== 3);
+    gameRounds = [...round3Levels, ...round1Levels, ...otherLevels];
   } else {
     console.log('[STRIKELOOP] Starting game: 3 rounds, 10 levels each');
   }
@@ -1610,36 +1652,36 @@ function activateArcadeLEDs() {
     case 'memory-sequence-7-mixed':
       activateModeMemorySequence();
       break;
-    // Two-step validation modes (Round 3)
-    case 'two-step-fixed-green':
-      activateModeTwoStepFixedGreen();
+    // Two-step validation modes (Round 3) - NEW IMPLEMENTATION
+    case 'two-step-all-buttons-green':
+      activateModeTwoStepAllButtonsGreen();
       break;
-    case 'two-step-fixed-blue':
-      activateModeTwoStepFixedBlue();
+    case 'two-step-all-buttons-blue':
+      activateModeTwoStepAllButtonsBlue();
       break;
-    case 'two-step-alternating-green':
-      activateModeTwoStepAlternatingGreen();
+    case 'two-step-alternating-all-buttons-green':
+      activateModeTwoStepAlternatingAllButtonsGreen();
       break;
-    case 'two-step-alternating-blue':
-      activateModeTwoStepAlternatingBlue();
+    case 'two-step-alternating-all-buttons-blue':
+      activateModeTwoStepAlternatingAllButtonsBlue();
       break;
-    case 'two-step-random-button-green':
-      activateModeTwoStepRandomButtonGreen();
+    case 'two-step-sequence-green':
+      activateModeTwoStepSequenceGreen();
       break;
-    case 'two-step-random-button-blue':
-      activateModeTwoStepRandomButtonBlue();
+    case 'two-step-sequence-blue':
+      activateModeTwoStepSequenceBlue();
       break;
-    case 'two-step-random-green':
-      activateModeTwoStepRandomGreen();
+    case 'two-step-random-all-buttons-green':
+      activateModeTwoStepRandomAllButtonsGreen();
       break;
-    case 'two-step-mixed-colors':
-      activateModeTwoStepMixedColors();
+    case 'two-step-mixed-all-buttons-blue':
+      activateModeTwoStepMixedAllButtonsBlue();
       break;
-    case 'two-step-rotating-green':
-      activateModeTwoStepRotatingGreen();
+    case 'two-step-color-rotation-1-4':
+      activateModeTwoStepColorRotation1To4();
       break;
-    case 'two-step-ultimate':
-      activateModeTwoStepUltimate();
+    case 'two-step-color-rotation-5-8':
+      activateModeTwoStepColorRotation5To8();
       break;
     default:
       activateLegacyArcadeMode();
@@ -2167,16 +2209,28 @@ let memoryReproductionStep = 0;
 // Track which targets are currently "on" in blinking modes
 let blinkStates = {}; // { elementId: true/false }
 
-// Two-step validation state (Round 3)
+// Two-step validation state (Round 3) - NEW IMPLEMENTATION
 let validationPending = false;
-let validationHitColor = null; // 'g' or 'b' - color of the circle that was hit
+let validationHitColor = null; // Color of the circle that was hit ('g', 'b', 'y', 'd')
 let validationTimeout = null;
-let activeButtonColors = []; // Current button colors for validation
+let activeButtonColors = []; // Current button colors for validation (array indexed by button position 0-14)
 let alternatePatternIndex = 0; // For alternating patterns
 let alternateInterval = null; // For pattern switching
 let randomTargetInterval = null; // For random target changes
 let buttonRotationInterval = null; // For rotating button positions
+let colorRotationInterval = null; // For color rotation in levels 9-10
 let currentActiveTargets = []; // Track which targets are currently active in patterns
+let currentRotationIndex = 0; // For tracking rotation position in levels 9-10
+
+// Multi-button validation state (Levels 1-4, 7-8)
+let buttonsToValidate = []; // Array of button IDs that need to be pressed
+let buttonsValidated = []; // Array of button IDs that have been pressed
+
+// Sequence validation state (Levels 5-6)
+let sequenceToMatch = []; // The sequence player must reproduce
+let sequenceDisplaying = false; // Whether we're showing the sequence
+let sequencePlayerInput = []; // Player's input so far
+let sequenceValidationActive = false; // Whether player is currently entering sequence
 
 function activateModeMemorySequence() {
   if (!memorySequenceDisplayed) {
@@ -2427,10 +2481,12 @@ function lightRandomAnyColorButton() {
   activeButtonColors[randomIndex] = randomColor;
 }
 
+// ========== NEW TWO-STEP VALIDATION HANDLER ==========
 function handleTwoStepValidation(hitColor) {
   // Called when a valid target is hit in two-step modes
   if (validationPending) {
     // Ignore new hits while validation is pending
+    console.log('[STRIKELOOP] Validation already pending, ignoring hit');
     return false;
   }
 
@@ -2439,74 +2495,341 @@ function handleTwoStepValidation(hitColor) {
 
   // Light up buttons based on button mode
   const buttonMode = activeMission.buttonMode;
-  
+
+  console.log(`[STRIKELOOP] Starting validation - Mode: ${buttonMode}, Hit Color: ${hitColor}`);
+
   switch (buttonMode) {
-    case 'fixed-green':
-    case 'fixed-blue':
-    case 'random-green':
-    case 'random-blue':
-      // Buttons already lit and rotating, just wait for press
+    case 'all-green':
+      // Light up all 4 green buttons
+      buttonsToValidate = [...BUTTONS_BY_COLOR.green];
+      buttonsValidated = [];
+      turnOnAllButtonsOfColor('green');
+      console.log('[STRIKELOOP] Lit all 4 green buttons:', buttonsToValidate);
       break;
-    case 'color-matched':
-      lightRandomButton(hitColor);
+
+    case 'all-blue':
+      // Light up all 4 blue buttons
+      buttonsToValidate = [...BUTTONS_BY_COLOR.blue];
+      buttonsValidated = [];
+      turnOnAllButtonsOfColor('blue');
+      console.log('[STRIKELOOP] Lit all 4 blue buttons:', buttonsToValidate);
       break;
-    case 'random-all-colors':
-    case 'random-all-colors-timed':
-      lightRandomAnyColorButton();
+
+    case 'sequence-green':
+      // Generate random sequence of 3 green buttons
+      startSequenceValidation('green');
       break;
+
+    case 'sequence-blue':
+      // Generate random sequence of 3 blue buttons
+      startSequenceValidation('blue');
+      break;
+
+    case 'all-colors-match':
+      // Buttons already lit (all colors), player must press matching color
+      // No change needed - buttons stay lit
+      console.log('[STRIKELOOP] All buttons already lit, waiting for color match');
+      break;
+
+    case 'random-one-per-color':
+      // Light up one random button of each color
+      lightOneRandomButtonPerColor();
+      break;
+
+    default:
+      console.error('[STRIKELOOP] Unknown button mode:', buttonMode);
+      validationPending = false;
+      return false;
   }
 
-  // Set validation timeout
-  const window = activeMission.validationWindow || 3000;
-  validationTimeout = setTimeout(() => {
-    // Timeout - no points awarded
-    console.log('[STRIKELOOP] Validation timeout - no button pressed');
-    validationPending = false;
-    validationHitColor = null;
-    
-    // Don't clear buttons in modes where they stay lit
-    // (fixed and rotating modes keep buttons lit)
-  }, window);
+  // Set validation timeout (only for sequence mode, not for multi-button modes)
+  // Multi-button modes don't timeout - buttons stay lit until all are pressed
+  if (buttonMode === 'sequence-green' || buttonMode === 'sequence-blue') {
+    const window = activeMission.validationWindow || 3000;
+    validationTimeout = setTimeout(() => {
+      console.log('[STRIKELOOP] ⏱️ Sequence timeout - no sequence completed');
+      // Clear sequence state - player must hit circle again
+      sequenceToMatch = [];
+      sequencePlayerInput = [];
+      sequenceValidationActive = false;
+      validationPending = false;
+    }, window);
+  }
 
-  return true; // Indicate hit was registered but needs validation
+  return true;
 }
 
+// Helper: Start sequence validation (Levels 5-6)
+function startSequenceValidation(colorName) {
+  const buttons = BUTTONS_BY_COLOR[colorName];
+
+  // Select 3 random buttons from the 4 available
+  const shuffled = [...buttons].sort(() => Math.random() - 0.5);
+  sequenceToMatch = shuffled.slice(0, 3);
+  sequencePlayerInput = [];
+  sequenceDisplaying = true;
+
+  console.log('[STRIKELOOP] Starting sequence display:', sequenceToMatch);
+
+  // Display sequence
+  displayButtonSequence(sequenceToMatch, colorName);
+}
+
+// Helper: Display button sequence (1s on, 1s off)
+function displayButtonSequence(sequence, colorName) {
+  const colorCode = colorName === 'green' ? 'g' : 'b';
+  let index = 0;
+
+  const showNext = () => {
+    if (index < sequence.length) {
+      const buttonId = sequence[index];
+
+      // Turn on button
+      controlLED(buttonId, colorCode);
+      console.log(`[STRIKELOOP] Sequence step ${index + 1}/${sequence.length}: Button ${buttonId} ON`);
+
+      setTimeout(() => {
+        // Turn off button
+        controlLED(buttonId, 'o');
+        console.log(`[STRIKELOOP] Sequence step ${index + 1}/${sequence.length}: Button ${buttonId} OFF`);
+
+        // Wait 1 second before next
+        setTimeout(() => {
+          index++;
+          showNext();
+        }, 1000);
+      }, 1000);
+    } else {
+      // Sequence display complete - now player must reproduce
+      sequenceDisplaying = false;
+      sequenceValidationActive = true;
+      console.log('[STRIKELOOP] Sequence display complete - waiting for player input');
+    }
+  };
+
+  showNext();
+}
+
+// Helper: Light one random button of each color (Level 10)
+function lightOneRandomButtonPerColor() {
+  clearAllButtons();
+  activeButtonColors = new Array(15).fill('o');
+
+  buttonsToValidate = [];
+
+  // Pick one random button from each color
+  const colors = ['green', 'blue', 'yellow', 'white'];
+  colors.forEach(colorName => {
+    const buttons = BUTTONS_BY_COLOR[colorName];
+    const randomButton = buttons[Math.floor(Math.random() * buttons.length)];
+    buttonsToValidate.push(randomButton);
+
+    const colorCode = colorName === 'green' ? 'g' : colorName === 'blue' ? 'b' : colorName === 'yellow' ? 'y' : 'd';
+    controlLED(randomButton, colorCode);
+
+    const index = randomButton - 14;
+    activeButtonColors[index] = colorCode;
+
+    console.log(`[STRIKELOOP] Lit random ${colorName} button: ${randomButton}`);
+  });
+
+  buttonsValidated = [];
+}
+
+// Helper: Reset validation state
+function resetValidationState() {
+  validationPending = false;
+  validationHitColor = null;
+  buttonsToValidate = [];
+  buttonsValidated = [];
+
+  // Only clear sequence if not in sequence reproduction mode
+  // (sequence needs to persist until player completes or fails)
+  if (!sequenceValidationActive) {
+    sequenceToMatch = [];
+    sequencePlayerInput = [];
+  }
+
+  sequenceDisplaying = false;
+  sequenceValidationActive = false;
+
+  if (validationTimeout) {
+    clearTimeout(validationTimeout);
+    validationTimeout = null;
+  }
+
+  // Clear all buttons (except for modes where they stay lit)
+  const keepLitModes = ['all-colors-match'];
+  if (!keepLitModes.includes(activeMission.buttonMode)) {
+    clearAllButtons();
+  }
+}
+
+// ========== NEW BUTTON VALIDATION FUNCTION ==========
 function validateButtonPress(buttonIndex) {
   // Called when a button is pressed
+  const buttonId = buttonIndex + 14; // Convert index (0-14) to button ID (14-28)
+
+  console.log(`[STRIKELOOP] Button press: Index ${buttonIndex}, ID ${buttonId}`);
+
+  // Check if during sequence display - ignore button presses
+  if (sequenceDisplaying) {
+    console.log('[STRIKELOOP] Ignoring button press during sequence display');
+    return false;
+  }
+
+  // Handle sequence validation (Levels 5-6)
+  if (sequenceValidationActive) {
+    return validateSequenceButtonPress(buttonId);
+  }
+
+  // Handle multi-button validation (Levels 1-4, 7-8)
+  if (buttonsToValidate.length > 0) {
+    return validateMultiButtonPress(buttonId);
+  }
+
+  // Handle color-matching validation (Levels 9-10)
+  if (validationPending) {
+    return validateColorMatchButtonPress(buttonId);
+  }
+
+  console.log('[STRIKELOOP] No validation pending');
+  return false;
+}
+
+// Validate sequence button press (Levels 5-6)
+function validateSequenceButtonPress(buttonId) {
+  const expectedButton = sequenceToMatch[sequencePlayerInput.length];
+
+  console.log(`[STRIKELOOP] Sequence validation: Pressed ${buttonId}, Expected ${expectedButton}`);
+  console.log(`[STRIKELOOP] Sequence state: sequenceToMatch=${JSON.stringify(sequenceToMatch)}, playerInput=${JSON.stringify(sequencePlayerInput)}`);
+
+  if (!sequenceToMatch || sequenceToMatch.length === 0) {
+    console.log(`[STRIKELOOP] ❌ No sequence to match! Player must hit circle first.`);
+    return false;
+  }
+
+  if (buttonId === expectedButton) {
+    // Correct button!
+    sequencePlayerInput.push(buttonId);
+    console.log(`[STRIKELOOP] ✅ Correct! Progress: ${sequencePlayerInput.length}/${sequenceToMatch.length}`);
+
+    // Check if sequence complete
+    if (sequencePlayerInput.length === sequenceToMatch.length) {
+      // Sequence completed successfully!
+      clearTimeout(validationTimeout);
+
+      const points = activeMission.pointsPerValidated || 100;
+      const newScore = localScore + points;
+      updateScore(newScore);
+      console.log(`[STRIKELOOP] 🎉 SEQUENCE COMPLETED! +${points} points`);
+
+      // Clear sequence state for next round
+      sequenceToMatch = [];
+      sequencePlayerInput = [];
+      sequenceValidationActive = false;
+      validationPending = false;
+      return true;
+    }
+    return true;
+  } else {
+    // Wrong button - reset and player must hit circle again
+    console.log(`[STRIKELOOP] ❌ Wrong button! Resetting sequence...`);
+
+    // Clear sequence state - player must hit circle again
+    sequenceToMatch = [];
+    sequencePlayerInput = [];
+    sequenceValidationActive = false;
+    validationPending = false;
+
+    if (validationTimeout) {
+      clearTimeout(validationTimeout);
+      validationTimeout = null;
+    }
+
+    return false;
+  }
+}
+
+// Validate multi-button press (Levels 1-4, 7-8)
+function validateMultiButtonPress(buttonId) {
+  // Check if this button is in the list to validate
+  if (!buttonsToValidate.includes(buttonId)) {
+    console.log(`[STRIKELOOP] ❌ Button ${buttonId} not in validation list`);
+    return false;
+  }
+
+  // Check if already validated
+  if (buttonsValidated.includes(buttonId)) {
+    console.log(`[STRIKELOOP] Button ${buttonId} already validated`);
+    return false;
+  }
+
+  // Valid button press!
+  buttonsValidated.push(buttonId);
+
+  // Turn off the button
+  controlLED(buttonId, 'o');
+  const index = buttonId - 14;
+  activeButtonColors[index] = 'o';
+
+  console.log(`[STRIKELOOP] ✅ Button ${buttonId} validated! Progress: ${buttonsValidated.length}/${buttonsToValidate.length}`);
+
+  // Check if all buttons validated
+  if (buttonsValidated.length === buttonsToValidate.length) {
+    // All buttons pressed!
+    clearTimeout(validationTimeout);
+
+    const points = activeMission.pointsPerValidated || 100;
+    const newScore = localScore + points;
+    updateScore(newScore);
+    console.log(`[STRIKELOOP] 🎉 ALL BUTTONS VALIDATED! +${points} points`);
+
+    // Reset for next round
+    resetValidationState();
+    return true;
+  }
+
+  return true;
+}
+
+// Validate color-matching button press (Levels 9-10)
+function validateColorMatchButtonPress(buttonId) {
   if (!validationPending) {
-    // No validation pending, ignore button press
+    console.log('[STRIKELOOP] No validation pending');
     return false;
   }
 
-  // Check if the pressed button is lit
-  const buttonColor = activeButtonColors[buttonIndex];
+  // Check if button is lit
+  const index = buttonId - 14;
+  const buttonColor = activeButtonColors[index];
+
   if (buttonColor === 'o' || !buttonColor) {
-    // Wrong button pressed - not lit
-    console.log('[STRIKELOOP] Wrong button pressed - not lit');
+    console.log(`[STRIKELOOP] ❌ Button ${buttonId} not lit`);
     return false;
   }
 
-  // Check if the button color matches the required color
+  // Check if button color matches the hit circle color
   if (buttonColor !== validationHitColor) {
-    // Wrong color pressed
-    console.log(`[STRIKELOOP] ❌ Wrong button color - expected ${validationHitColor.toUpperCase()}, got ${buttonColor.toUpperCase()}`);
+    console.log(`[STRIKELOOP] ❌ Wrong color! Expected ${validationHitColor}, got ${buttonColor}`);
     return false;
   }
 
-  // Validation successful!
+  // Correct color match!
   clearTimeout(validationTimeout);
-  validationPending = false;
-  
-  // Award points
+
   const points = activeMission.pointsPerValidated || 100;
   const newScore = localScore + points;
   updateScore(newScore);
-  console.log(`[STRIKELOOP] ✅ VALIDATED! +${points} points`);
+  console.log(`[STRIKELOOP] ✅ COLOR MATCH! +${points} points`);
 
-  // Don't clear buttons - they stay lit in all modes
-  // (fixed and rotating modes keep buttons lit)
+  // For Level 10 (random-one-per-color), light new random buttons
+  if (activeMission.buttonMode === 'random-one-per-color') {
+    lightOneRandomButtonPerColor();
+  }
 
-  validationHitColor = null;
+  resetValidationState();
+  validationPending = true; // Keep validation active for next hit
   return true;
 }
 
@@ -2892,9 +3215,434 @@ function activateModeTwoStepUltimate() {
   }
 
   activateBonusSection();
-  
+
   // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
   setAllButtonsRandomColors();
+}
+
+// ========== NEW ROUND 3 IMPLEMENTATION ==========
+
+// Helper function to turn on all buttons of a specific color
+function turnOnAllButtonsOfColor(colorName) {
+  const buttons = BUTTONS_BY_COLOR[colorName];
+  if (!buttons) {
+    console.error(`[STRIKELOOP] Invalid color name: ${colorName}`);
+    return [];
+  }
+
+  // Clear all buttons first (turn off all 14-28)
+  clearAllButtons();
+
+  // Initialize activeButtonColors array for all 15 buttons (indexed 0-14 for buttons 14-28)
+  activeButtonColors = new Array(15).fill('o');
+
+  // Turn on the specified color buttons
+  const colorCode = colorName === 'green' ? 'g' : colorName === 'blue' ? 'b' : colorName === 'yellow' ? 'y' : 'd';
+  buttons.forEach(buttonId => {
+    controlLED(buttonId, colorCode);
+    const index = buttonId - 14; // Convert button ID to array index
+    activeButtonColors[index] = colorCode;
+  });
+
+  console.log(`[STRIKELOOP] Turned on all ${colorName} buttons:`, buttons);
+  return buttons;
+}
+
+// Level 1: Fixed Green + All 4 Green Buttons
+function activateModeTwoStepAllButtonsGreen() {
+  console.log('[STRIKELOOP] Activating Level 1: Fixed Green + All 4 Green Buttons');
+
+  // Setup green circles (1-4) - always lit
+  activeMission.greenTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'g', isValid: true, needsValidation: true };
+    activeTargets.push(target);
+    controlLED(pos, 'g');
+  });
+
+  // Setup red traps (5-8)
+  activeMission.redTraps.forEach(pos => {
+    const trap = { elementId: pos, colorCode: 'r', isTrap: true };
+    activeTargets.push(trap);
+    trapPositions.push(trap);
+    startBlinkingLED(pos, 'r', 500);
+  });
+
+  // Turn off all buttons initially - but ONLY if not in active validation
+  // (Don't clear buttons during LED refresh if player is validating)
+  if (buttonsToValidate.length === 0) {
+    clearAllButtons();
+  }
+
+  activateBonusSection();
+}
+
+// Level 2: Fixed Blue + All 4 Blue Buttons
+function activateModeTwoStepAllButtonsBlue() {
+  console.log('[STRIKELOOP] Activating Level 2: Fixed Blue + All 4 Blue Buttons');
+
+  // Setup blue circles (5-8) - always lit
+  activeMission.blueTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'b', isValid: true, needsValidation: true };
+    activeTargets.push(target);
+    controlLED(pos, 'b');
+  });
+
+  // Setup red traps (1-4)
+  activeMission.redTraps.forEach(pos => {
+    const trap = { elementId: pos, colorCode: 'r', isTrap: true };
+    activeTargets.push(trap);
+    trapPositions.push(trap);
+    startBlinkingLED(pos, 'r', 500);
+  });
+
+  // Turn off all buttons initially - but ONLY if not in active validation
+  if (buttonsToValidate.length === 0) {
+    clearAllButtons();
+  }
+
+  activateBonusSection();
+}
+
+// Level 3: Alternating Green + All 4 Green Buttons
+function activateModeTwoStepAlternatingAllButtonsGreen() {
+  console.log('[STRIKELOOP] Activating Level 3: Alternating Green + All 4 Green Buttons');
+
+  if (alternateInterval) clearInterval(alternateInterval);
+  alternatePatternIndex = 0;
+
+  const updatePattern = () => {
+    activeTargets = activeTargets.filter(t => t.isBonus || t.isTrap);
+
+    const pattern = activeMission.alternatePattern[alternatePatternIndex];
+    pattern.forEach(pos => {
+      const target = { elementId: pos, colorCode: 'g', isValid: true, needsValidation: true };
+      activeTargets.push(target);
+      controlLED(pos, 'g');
+    });
+
+    // Turn off non-active green circles
+    activeMission.greenTargets.forEach(pos => {
+      if (!pattern.includes(pos)) {
+        controlLED(pos, 'o');
+      }
+    });
+
+    alternatePatternIndex = (alternatePatternIndex + 1) % activeMission.alternatePattern.length;
+  };
+
+  // Setup red traps
+  activeMission.redTraps.forEach(pos => {
+    const trap = { elementId: pos, colorCode: 'r', isTrap: true };
+    activeTargets.push(trap);
+    trapPositions.push(trap);
+    startBlinkingLED(pos, 'r', 500);
+  });
+
+  updatePattern();
+  alternateInterval = setInterval(updatePattern, activeMission.alternateInterval || 3000);
+
+  if (buttonsToValidate.length === 0) {
+    clearAllButtons();
+  }
+  activateBonusSection();
+}
+
+// Level 4: Alternating Blue + All 4 Blue Buttons
+function activateModeTwoStepAlternatingAllButtonsBlue() {
+  console.log('[STRIKELOOP] Activating Level 4: Alternating Blue + All 4 Blue Buttons');
+
+  if (alternateInterval) clearInterval(alternateInterval);
+  alternatePatternIndex = 0;
+
+  const updatePattern = () => {
+    activeTargets = activeTargets.filter(t => t.isBonus || t.isTrap);
+
+    const pattern = activeMission.alternatePattern[alternatePatternIndex];
+    pattern.forEach(pos => {
+      const target = { elementId: pos, colorCode: 'b', isValid: true, needsValidation: true };
+      activeTargets.push(target);
+      controlLED(pos, 'b');
+    });
+
+    // Turn off non-active blue circles
+    activeMission.blueTargets.forEach(pos => {
+      if (!pattern.includes(pos)) {
+        controlLED(pos, 'o');
+      }
+    });
+
+    alternatePatternIndex = (alternatePatternIndex + 1) % activeMission.alternatePattern.length;
+  };
+
+  // Setup red traps
+  activeMission.redTraps.forEach(pos => {
+    const trap = { elementId: pos, colorCode: 'r', isTrap: true };
+    activeTargets.push(trap);
+    trapPositions.push(trap);
+    startBlinkingLED(pos, 'r', 500);
+  });
+
+  updatePattern();
+  alternateInterval = setInterval(updatePattern, activeMission.alternateInterval || 3000);
+
+  if (buttonsToValidate.length === 0) {
+    clearAllButtons();
+  }
+  activateBonusSection();
+}
+
+// Level 5: Sequence Reproduction - Green
+function activateModeTwoStepSequenceGreen() {
+  console.log('[STRIKELOOP] Activating Level 5: Sequence Reproduction - Green');
+
+  // Setup green circles (1-4) - always lit
+  activeMission.greenTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'g', isValid: true, needsValidation: true };
+    activeTargets.push(target);
+    controlLED(pos, 'g');
+  });
+
+  // Setup red traps
+  activeMission.redTraps.forEach(pos => {
+    const trap = { elementId: pos, colorCode: 'r', isTrap: true };
+    activeTargets.push(trap);
+    trapPositions.push(trap);
+    startBlinkingLED(pos, 'r', 500);
+  });
+
+  // Don't clear buttons if sequence is being displayed or validated
+  if (!sequenceDisplaying && !sequenceValidationActive) {
+    clearAllButtons();
+  }
+  activateBonusSection();
+}
+
+// Level 6: Sequence Reproduction - Blue
+function activateModeTwoStepSequenceBlue() {
+  console.log('[STRIKELOOP] Activating Level 6: Sequence Reproduction - Blue');
+
+  // Setup blue circles (5-8) - always lit
+  activeMission.blueTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'b', isValid: true, needsValidation: true };
+    activeTargets.push(target);
+    controlLED(pos, 'b');
+  });
+
+  // Setup red traps
+  activeMission.redTraps.forEach(pos => {
+    const trap = { elementId: pos, colorCode: 'r', isTrap: true };
+    activeTargets.push(trap);
+    trapPositions.push(trap);
+    startBlinkingLED(pos, 'r', 500);
+  });
+
+  // Don't clear buttons if sequence is being displayed or validated
+  if (!sequenceDisplaying && !sequenceValidationActive) {
+    clearAllButtons();
+  }
+  activateBonusSection();
+}
+
+// Level 7: Random Green + All 4 Green Buttons
+function activateModeTwoStepRandomAllButtonsGreen() {
+  console.log('[STRIKELOOP] Activating Level 7: Random Green + All 4 Green Buttons');
+
+  if (randomTargetInterval) clearInterval(randomTargetInterval);
+
+  const updateRandomTargets = () => {
+    activeTargets = activeTargets.filter(t => t.isBonus || t.isTrap);
+
+    // Randomly select N targets
+    const count = activeMission.randomTargetCount || 2;
+    const shuffled = [...activeMission.greenTargets].sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, count);
+
+    // Turn on selected
+    selected.forEach(pos => {
+      const target = { elementId: pos, colorCode: 'g', isValid: true, needsValidation: true };
+      activeTargets.push(target);
+      controlLED(pos, 'g');
+    });
+
+    // Turn off non-selected
+    activeMission.greenTargets.forEach(pos => {
+      if (!selected.includes(pos)) {
+        controlLED(pos, 'o');
+      }
+    });
+  };
+
+  // Setup red traps
+  activeMission.redTraps.forEach(pos => {
+    const trap = { elementId: pos, colorCode: 'r', isTrap: true };
+    activeTargets.push(trap);
+    trapPositions.push(trap);
+    startBlinkingLED(pos, 'r', 500);
+  });
+
+  updateRandomTargets();
+  randomTargetInterval = setInterval(updateRandomTargets, activeMission.randomChangeInterval || 4000);
+
+  if (buttonsToValidate.length === 0) {
+    clearAllButtons();
+  }
+  activateBonusSection();
+}
+
+// Level 8: Mixed Colors Alternating + All 4 Blue Buttons
+function activateModeTwoStepMixedAllButtonsBlue() {
+  console.log('[STRIKELOOP] Activating Level 8: Mixed Colors + All 4 Blue Buttons');
+
+  if (alternateInterval) clearInterval(alternateInterval);
+  alternatePatternIndex = 0;
+
+  const updatePattern = () => {
+    activeTargets = activeTargets.filter(t => t.isBonus);
+
+    const pattern = activeMission.alternatePattern[alternatePatternIndex];
+    pattern.forEach(pos => {
+      const color = pos <= 4 ? 'g' : 'b';
+      const target = { elementId: pos, colorCode: color, isValid: true, needsValidation: true };
+      activeTargets.push(target);
+      controlLED(pos, color);
+    });
+
+    // Turn off non-active circles
+    [1, 2, 3, 4, 5, 6, 7, 8].forEach(pos => {
+      if (!pattern.includes(pos)) {
+        controlLED(pos, 'o');
+      }
+    });
+
+    alternatePatternIndex = (alternatePatternIndex + 1) % activeMission.alternatePattern.length;
+  };
+
+  updatePattern();
+  alternateInterval = setInterval(updatePattern, activeMission.alternateInterval || 3000);
+
+  if (buttonsToValidate.length === 0) {
+    clearAllButtons();
+  }
+  activateBonusSection();
+}
+
+// Level 9: Color Rotation (Circles 1-4) + All Buttons Match Color
+function activateModeTwoStepColorRotation1To4() {
+  console.log('[STRIKELOOP] Activating Level 9: Color Rotation 1-4');
+
+  if (colorRotationInterval) clearInterval(colorRotationInterval);
+  currentRotationIndex = 0;
+
+  const rotateColors = () => {
+    activeTargets = activeTargets.filter(t => t.isBonus || t.isTrap);
+
+    // Get current circle and color
+    const circleId = activeMission.circleTargets[currentRotationIndex];
+    const color = activeMission.rotationSequence[currentRotationIndex];
+
+    // Turn on current circle with its color
+    const target = { elementId: circleId, colorCode: color, isValid: true, needsValidation: true, rotatingColor: true };
+    activeTargets.push(target);
+    controlLED(circleId, color);
+
+    // Turn off other circles in rotation
+    activeMission.circleTargets.forEach(pos => {
+      if (pos !== circleId) {
+        controlLED(pos, 'o');
+      }
+    });
+
+    currentRotationIndex = (currentRotationIndex + 1) % activeMission.circleTargets.length;
+  };
+
+  // Setup red traps
+  activeMission.redTraps.forEach(pos => {
+    const trap = { elementId: pos, colorCode: 'r', isTrap: true };
+    activeTargets.push(trap);
+    trapPositions.push(trap);
+    startBlinkingLED(pos, 'r', 500);
+  });
+
+  // Turn on ALL buttons of all colors (do it manually to avoid clearing)
+  clearAllButtons();
+  activeButtonColors = new Array(15).fill('o');
+
+  // Light all green buttons
+  BUTTONS_BY_COLOR.green.forEach(buttonId => {
+    controlLED(buttonId, 'g');
+    activeButtonColors[buttonId - 14] = 'g';
+  });
+
+  // Light all blue buttons
+  BUTTONS_BY_COLOR.blue.forEach(buttonId => {
+    controlLED(buttonId, 'b');
+    activeButtonColors[buttonId - 14] = 'b';
+  });
+
+  // Light all yellow buttons
+  BUTTONS_BY_COLOR.yellow.forEach(buttonId => {
+    controlLED(buttonId, 'y');
+    activeButtonColors[buttonId - 14] = 'y';
+  });
+
+  // Light all white buttons
+  BUTTONS_BY_COLOR.white.forEach(buttonId => {
+    controlLED(buttonId, 'd');
+    activeButtonColors[buttonId - 14] = 'd';
+  });
+
+  console.log('[STRIKELOOP] All buttons lit with their fixed colors');
+
+  rotateColors();
+  colorRotationInterval = setInterval(rotateColors, activeMission.rotationDelay || 2000);
+
+  activateBonusSection();
+}
+
+// Level 10: Color Rotation (Circles 5-8) + Random One Button Per Color
+function activateModeTwoStepColorRotation5To8() {
+  console.log('[STRIKELOOP] Activating Level 10: Color Rotation 5-8');
+
+  if (colorRotationInterval) clearInterval(colorRotationInterval);
+  currentRotationIndex = 0;
+
+  const rotateColors = () => {
+    activeTargets = activeTargets.filter(t => t.isBonus || t.isTrap);
+
+    // Get current circle and color
+    const circleId = activeMission.circleTargets[currentRotationIndex];
+    const color = activeMission.rotationSequence[currentRotationIndex];
+
+    // Turn on current circle with its color
+    const target = { elementId: circleId, colorCode: color, isValid: true, needsValidation: true, rotatingColor: true };
+    activeTargets.push(target);
+    controlLED(circleId, color);
+
+    // Turn off other circles in rotation
+    activeMission.circleTargets.forEach(pos => {
+      if (pos !== circleId) {
+        controlLED(pos, 'o');
+      }
+    });
+
+    currentRotationIndex = (currentRotationIndex + 1) % activeMission.circleTargets.length;
+  };
+
+  // Setup red traps
+  activeMission.redTraps.forEach(pos => {
+    const trap = { elementId: pos, colorCode: 'r', isTrap: true };
+    activeTargets.push(trap);
+    trapPositions.push(trap);
+    startBlinkingLED(pos, 'r', 500);
+  });
+
+  // Note: Buttons will be lit randomly when player hits a circle (in validation logic)
+  clearAllButtons();
+
+  rotateColors();
+  colorRotationInterval = setInterval(rotateColors, activeMission.rotationDelay || 2000);
+
+  activateBonusSection();
 }
 
 function activateLegacyArcadeMode() {
@@ -3135,17 +3883,17 @@ function validateArcadeInput(target, timestamp) {
     'snake-blue-3',
     'snake-green-2',
     'snake-blue-2',
-    // Two-step modes manage their own patterns
-    'two-step-fixed-green',
-    'two-step-fixed-blue',
-    'two-step-alternating-green',
-    'two-step-alternating-blue',
-    'two-step-random-button-green',
-    'two-step-random-button-blue',
-    'two-step-random-green',
-    'two-step-mixed-colors',
-    'two-step-rotating-green',
-    'two-step-ultimate'
+    // Two-step modes manage their own patterns - NEW
+    'two-step-all-buttons-green',
+    'two-step-all-buttons-blue',
+    'two-step-alternating-all-buttons-green',
+    'two-step-alternating-all-buttons-blue',
+    'two-step-sequence-green',
+    'two-step-sequence-blue',
+    'two-step-random-all-buttons-green',
+    'two-step-mixed-all-buttons-blue',
+    'two-step-color-rotation-1-4',
+    'two-step-color-rotation-5-8'
   ];
   if (!noRefreshModes.includes(activeMission.arcadeMode)) {
     setTimeout(() => {
@@ -3203,17 +3951,17 @@ function processArcadeMode(target, timestamp) {
     case 'memory-sequence-6-mixed':
     case 'memory-sequence-7-mixed':
       return processMemorySequenceMode(target);
-    // Two-step validation modes (Round 3)
-    case 'two-step-fixed-green':
-    case 'two-step-fixed-blue':
-    case 'two-step-alternating-green':
-    case 'two-step-alternating-blue':
-    case 'two-step-random-button-green':
-    case 'two-step-random-button-blue':
-    case 'two-step-random-green':
-    case 'two-step-mixed-colors':
-    case 'two-step-rotating-green':
-    case 'two-step-ultimate':
+    // Two-step validation modes (Round 3) - NEW IMPLEMENTATION
+    case 'two-step-all-buttons-green':
+    case 'two-step-all-buttons-blue':
+    case 'two-step-alternating-all-buttons-green':
+    case 'two-step-alternating-all-buttons-blue':
+    case 'two-step-sequence-green':
+    case 'two-step-sequence-blue':
+    case 'two-step-random-all-buttons-green':
+    case 'two-step-mixed-all-buttons-blue':
+    case 'two-step-color-rotation-1-4':
+    case 'two-step-color-rotation-5-8':
       return processTwoStepMode(target);
     default:
       console.log(`[STRIKELOOP] Unknown arcade mode: ${mode}`);
@@ -3835,7 +4583,7 @@ function cleanupArcadeGame() {
   lastSnakeMode = null;
   snakePatternIndex = 0;
   
-  // Round 3: Clear two-step validation state
+  // Round 3: Clear two-step validation state - NEW IMPLEMENTATION
   if (validationTimeout) {
     clearTimeout(validationTimeout);
     validationTimeout = null;
@@ -3852,12 +4600,26 @@ function cleanupArcadeGame() {
     clearInterval(buttonRotationInterval);
     buttonRotationInterval = null;
   }
+  if (colorRotationInterval) {
+    clearInterval(colorRotationInterval);
+    colorRotationInterval = null;
+  }
+
   validationPending = false;
   validationHitColor = null;
   activeButtonColors = [];
   alternatePatternIndex = 0;
   currentActiveTargets = [];
-  
+  currentRotationIndex = 0;
+
+  // Clear new Round 3 state variables
+  buttonsToValidate = [];
+  buttonsValidated = [];
+  sequenceToMatch = [];
+  sequencePlayerInput = [];
+  sequenceDisplaying = false;
+  sequenceValidationActive = false;
+
   // Clear all buttons
   clearAllButtons();
 }

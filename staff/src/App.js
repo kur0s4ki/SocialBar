@@ -169,12 +169,30 @@ function App() {
     if (ledState && ledState.active) {
       return ledState.colorValue;
     }
-    
-    // For control buttons (14-22), return white when not active
-    if (elementId >= 14 && elementId <= 22) {
-      return '#ffffff'; // White when not lit
+
+    // For control buttons (14-28), show their fixed hardware colors even when off
+    if (elementId >= 14 && elementId <= 28) {
+      // Button color mapping (hardware-defined)
+      const buttonColors = {
+        14: '#f1c40f',  // Yellow
+        15: '#27ae60',  // Green
+        16: '#3498db',  // Blue
+        17: '#3498db',  // Blue
+        18: '#ffffff',  // White
+        19: '#ffffff',  // White
+        20: '#f1c40f',  // Yellow
+        21: '#27ae60',  // Green
+        22: '#27ae60',  // Green
+        23: '#f1c40f',  // Yellow
+        24: '#3498db',  // Blue
+        25: '#ffffff',  // White
+        26: '#27ae60',  // Green
+        27: '#3498db',  // Blue
+        28: '#f1c40f'   // Yellow
+      };
+      return buttonColors[elementId] || '#ffffff';
     }
-    
+
     return '#ffffff'; // Default white for circles
   };
 
@@ -200,7 +218,7 @@ function App() {
 
   const getButtonOpacity = (elementId) => {
     const ledState = ledStates[elementId];
-    if (elementId >= 14 && elementId <= 22) {
+    if (elementId >= 14 && elementId <= 28) {
       // Control buttons: low opacity when off, high opacity when on
       return ledState && ledState.active ? 1.0 : 0.3;
     }
@@ -212,7 +230,7 @@ function App() {
       return `Input ID: ${elementId} | Output ID: ${elementId}`;
     } else if (elementId >= 9 && elementId <= 13) {
       return `Input ID: ${elementId} | No LED (input only)`;
-    } else if (elementId >= 14 && elementId <= 22) {
+    } else if (elementId >= 14 && elementId <= 28) {
       return `Input ID: ${elementId} | Output ID: ${elementId}`;
     }
     return `Input ID: ${elementId}`;
@@ -275,63 +293,16 @@ function App() {
             <div className="simulator-panels">
               <div className="left-panel">
                 <div className="control-buttons">
-                  {/* Randomly colored buttons */}
-                  <div
-                    className={`control-button ${getButtonPulseClass(14)}`}
-                    style={{opacity: getButtonOpacity(14), backgroundColor: getCircleColor(14)}}
-                    onClick={() => handleCircleClick(14)}
-                    title={getElementTooltip(14)}
-                  ></div>
-                  <div
-                    className={`control-button ${getButtonPulseClass(15)}`}
-                    style={{opacity: getButtonOpacity(15), backgroundColor: getCircleColor(15)}}
-                    onClick={() => handleCircleClick(15)}
-                    title={getElementTooltip(15)}
-                  ></div>
-                  <div
-                    className={`control-button ${getButtonPulseClass(16)}`}
-                    style={{opacity: getButtonOpacity(16), backgroundColor: getCircleColor(16)}}
-                    onClick={() => handleCircleClick(16)}
-                    title={getElementTooltip(16)}
-                  ></div>
-
-                  <div
-                    className={`control-button ${getButtonPulseClass(17)}`}
-                    style={{opacity: getButtonOpacity(17), backgroundColor: getCircleColor(17)}}
-                    onClick={() => handleCircleClick(17)}
-                    title={getElementTooltip(17)}
-                  ></div>
-                  <div
-                    className={`control-button ${getButtonPulseClass(18)}`}
-                    style={{opacity: getButtonOpacity(18), backgroundColor: getCircleColor(18)}}
-                    onClick={() => handleCircleClick(18)}
-                    title={getElementTooltip(18)}
-                  ></div>
-                  <div
-                    className={`control-button ${getButtonPulseClass(19)}`}
-                    style={{opacity: getButtonOpacity(19), backgroundColor: getCircleColor(19)}}
-                    onClick={() => handleCircleClick(19)}
-                    title={getElementTooltip(19)}
-                  ></div>
-
-                  <div
-                    className={`control-button ${getButtonPulseClass(20)}`}
-                    style={{opacity: getButtonOpacity(20), backgroundColor: getCircleColor(20)}}
-                    onClick={() => handleCircleClick(20)}
-                    title={getElementTooltip(20)}
-                  ></div>
-                  <div
-                    className={`control-button ${getButtonPulseClass(21)}`}
-                    style={{opacity: getButtonOpacity(21), backgroundColor: getCircleColor(21)}}
-                    onClick={() => handleCircleClick(21)}
-                    title={getElementTooltip(21)}
-                  ></div>
-                  <div
-                    className={`control-button ${getButtonPulseClass(22)}`}
-                    style={{opacity: getButtonOpacity(22), backgroundColor: getCircleColor(22)}}
-                    onClick={() => handleCircleClick(22)}
-                    title={getElementTooltip(22)}
-                  ></div>
+                  {/* Control buttons 14-28 (15 buttons total) */}
+                  {[14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].map(buttonId => (
+                    <div
+                      key={buttonId}
+                      className={`control-button ${getButtonPulseClass(buttonId)}`}
+                      style={{opacity: getButtonOpacity(buttonId), backgroundColor: getCircleColor(buttonId)}}
+                      onClick={() => handleCircleClick(buttonId)}
+                      title={getElementTooltip(buttonId)}
+                    ></div>
+                  ))}
                 </div>
               </div>
 

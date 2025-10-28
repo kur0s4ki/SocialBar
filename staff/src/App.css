@@ -390,21 +390,21 @@ input::placeholder {
 .control-buttons {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+  gap: 20px;
   width: 100%;
   max-width: 300px;
   height: 100%;
-  max-height: 300px;
+  max-height: 500px; /* Increased for 15 buttons (5 rows) */
 }
 
 .control-button {
-  width: 80px;
-  height: 80px;
+  width: 70px;  /* Reduced from 80px for 15 buttons */
+  height: 70px;
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border: 3px solid rgba(20, 30, 40, 1);
-  box-shadow: 
+  box-shadow:
     0 8px 25px rgba(0, 0, 0, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
   justify-self: center;
