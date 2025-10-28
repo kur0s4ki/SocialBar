@@ -147,7 +147,12 @@ displayWss.on('connection', (ws) => {
 // Listen for Arduino events and forward to strikeLoop
 arduino.emitter.on('EventInput', (message, value) => {
   console.log('[APP] Arduino input received:', message, 'Value:', value);
-  strikeLoop.emitter.emit('EventInput', message, value);
+
+  // CRITICAL FIX: Translate hardware ID to logical ID before forwarding to game
+  // Hardware wiring doesn't match logical positions, so we need to reverse-map inputs
+  const logicalId = HAL.translateHardwareToLogical(message);
+
+  strikeLoop.emitter.emit('EventInput', logicalId, value);
 });
 
 // Broadcast function to send messages to staff clients

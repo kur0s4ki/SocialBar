@@ -36,6 +36,18 @@ const HARDWARE_ID_MAP = {
   19: 19, 20: 20, 21: 21, 22: 22
 };
 
+// Reverse Hardware ID Mapping (for inputs coming from Arduino)
+// Maps physical hardware IDs back to logical IDs used in game code
+const HARDWARE_TO_LOGICAL_MAP = {};
+
+// Build reverse map automatically from forward map
+Object.keys(HARDWARE_ID_MAP).forEach(logicalId => {
+  const hardwareId = HARDWARE_ID_MAP[logicalId];
+  HARDWARE_TO_LOGICAL_MAP[hardwareId] = parseInt(logicalId);
+});
+
+console.log('[HAL] Hardware to Logical mapping initialized:', HARDWARE_TO_LOGICAL_MAP);
+
 // Color mapping for simulation display
 const COLORS = {
   'o': '#ffffff',     // OFF - white
@@ -229,7 +241,7 @@ function flashOutput(outputId, colorCode, duration) {
 // ============================================================================
 
 /**
- * Translate logical ID to physical hardware ID
+ * Translate logical ID to physical hardware ID (for outputs)
  * @private
  * @param {number} logicalId - Logical ID used in code/UI
  * @returns {number} Physical hardware ID based on actual wiring
@@ -244,10 +256,35 @@ function _translateToHardwareId(logicalId) {
 
   // Log mapping only when IDs differ (to show remapping in action)
   if (CONFIG.enableLogging && hardwareId !== logicalId) {
-    console.log(`[HAL] ID Translation: Logical ${logicalId} → Hardware ${hardwareId}`);
+    console.log(`[HAL] Output Translation: Logical ${logicalId} → Hardware ${hardwareId}`);
   }
 
   return hardwareId;
+}
+
+/**
+ * Translate physical hardware ID back to logical ID (for inputs)
+ * This is the REVERSE of _translateToHardwareId
+ * @param {number} hardwareId - Physical hardware ID from Arduino input
+ * @returns {number} Logical ID used in game code/UI
+ */
+function translateHardwareToLogical(hardwareId) {
+  // Convert string to number if needed (Arduino may send as string)
+  const hardwareIdNum = parseInt(hardwareId);
+
+  const logicalId = HARDWARE_TO_LOGICAL_MAP[hardwareIdNum];
+
+  if (logicalId === undefined) {
+    console.warn(`[HAL] No logical mapping for hardware ID ${hardwareIdNum}, using as-is`);
+    return hardwareIdNum;
+  }
+
+  // Always log input translations for debugging (critical for gameplay)
+  if (hardwareIdNum !== logicalId) {
+    console.log(`[HAL] ⚡ Input Translation: Hardware ${hardwareIdNum} → Logical ${logicalId}`);
+  }
+
+  return logicalId;
 }
 
 /**
@@ -386,6 +423,9 @@ module.exports = {
   // State management
   clearStateCache,
   getStateCache,
+
+  // Input translation (CRITICAL FIX for hardware ID mapping)
+  translateHardwareToLogical,
 
   // Legacy compatibility
   controlLED,
