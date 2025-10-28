@@ -1,5 +1,4 @@
 const events = require('events');
-const arduino = require('./arduino.js');
 const HAL = require('./hardwareAbstraction.js');
 const readline = require('readline');
 const emitter = new events.EventEmitter();
@@ -7,36 +6,6 @@ const emitter = new events.EventEmitter();
 // ⚠️ TESTING FLAG: Set to true to play Round 2 first (for testing)
 // Set to false for normal game flow (Round 1 → Round 2 → Round 3)
 const TESTING_MODE_SWAP_ROUNDS = false;
-
-const INPUT_IDS = {
-  
-  OUTER_CIRCLE_1: 1,
-  OUTER_CIRCLE_2: 2,
-  OUTER_CIRCLE_3: 3,
-  OUTER_CIRCLE_4: 4,
-  OUTER_CIRCLE_5: 5,
-  OUTER_CIRCLE_6: 6,
-  OUTER_CIRCLE_7: 7,
-  OUTER_CIRCLE_8: 8,
-  
-  
-  INNER_CIRCLE_1: 9,
-  INNER_CIRCLE_2: 10,
-  INNER_CIRCLE_3: 11,
-  INNER_CIRCLE_4: 12,
-  INNER_CIRCLE_5: 13,
-  
-  
-  CONTROL_BUTTON_1: 14,
-  CONTROL_BUTTON_2: 15,
-  CONTROL_BUTTON_3: 16,
-  CONTROL_BUTTON_4: 17,
-  CONTROL_BUTTON_5: 18,
-  CONTROL_BUTTON_6: 19,
-  CONTROL_BUTTON_7: 20,
-  CONTROL_BUTTON_8: 21,
-  CONTROL_BUTTON_9: 22
-};
 
 
 const OUTPUT_IDS = {
