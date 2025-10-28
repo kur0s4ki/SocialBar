@@ -846,6 +846,20 @@ function initializeMission(levelConfig, isRetry = false) {
   memorySequence = [];
   memorySequenceIndex = 0;
   memorySequenceDisplayed = false;
+  
+  // Clear sequence validation state (Levels 5-6)
+  sequenceToMatch = [];
+  sequencePlayerInput = [];
+  sequenceDisplaying = false;
+  sequenceValidationActive = false;
+  
+  // Clear hole sequence matching state (Levels 7-10)
+  holeSequenceToMatch = [];
+  holeSequenceHit = [];
+  holeSequenceActive = false;
+  buttonSequenceToMatch = [];
+  buttonSequencePressed = [];
+  buttonSequenceActive = false;
 
   // Clear blink states
   blinkStates = {};
@@ -924,7 +938,12 @@ function startLEDRefresh() {
     'two-step-random-green',
     'two-step-mixed-colors',
     'two-step-rotating-green',
-    'two-step-ultimate'
+    'two-step-ultimate',
+    // Hole sequence matching modes (Levels 7-10) - MUST NOT REFRESH
+    'sequence-match-2-holes',
+    'sequence-match-2-holes-hard',
+    'sequence-match-3-holes',
+    'sequence-match-3-holes-hard'
   ];
 
   if (activeMission && !noRefreshModes.includes(activeMission.arcadeMode)) {
@@ -2866,7 +2885,7 @@ function validateHoleSequenceButtonPress(buttonId) {
     console.log('[STRIKELOOP] Resetting - hit holes again to retry');
 
     // Reset all sequence state
-    holeSequenceActive = false;
+    holeSequenceActive = true;  // Set to true to accept new hole hits
     holeSequenceHit = [];
     buttonSequenceToMatch = [];
     buttonSequencePressed = [];
@@ -2894,7 +2913,7 @@ function validateHoleSequenceButtonPress(buttonId) {
     console.log(`[STRIKELOOP] Buttons pressed: ${buttonSequencePressed.join(', ')}`);
 
     // Reset for next sequence
-    holeSequenceActive = false;
+    holeSequenceActive = true;  // Set to true to accept new hole hits
     holeSequenceHit = [];
     buttonSequenceToMatch = [];
     buttonSequencePressed = [];
@@ -3760,6 +3779,8 @@ function activateModeSequenceMatch2Holes() {
   holeSequenceActive = true;
   holeSequenceHit = [];
   buttonSequenceToMatch = [];
+  buttonSequencePressed = [];
+  buttonSequenceActive = false;
 
   activateBonusSection();
 }
@@ -3803,6 +3824,8 @@ function activateModeSequenceMatch2HolesHard() {
   holeSequenceActive = true;
   holeSequenceHit = [];
   buttonSequenceToMatch = [];
+  buttonSequencePressed = [];
+  buttonSequenceActive = false;
 
   activateBonusSection();
 }
@@ -3852,6 +3875,8 @@ function activateModeSequenceMatch3Holes() {
   holeSequenceActive = true;
   holeSequenceHit = [];
   buttonSequenceToMatch = [];
+  buttonSequencePressed = [];
+  buttonSequenceActive = false;
 
   activateBonusSection();
 }
@@ -3909,6 +3934,8 @@ function activateModeSequenceMatch3HolesHard() {
   holeSequenceActive = true;
   holeSequenceHit = [];
   buttonSequenceToMatch = [];
+  buttonSequencePressed = [];
+  buttonSequenceActive = false;
 
   activateBonusSection();
 }
@@ -4701,17 +4728,11 @@ function processHoleSequenceMatchMode(target) {
   const elementId = target.elementId;
   const colorCode = target.colorCode;
 
-  // Check if it's a bonus target (yellow) - always valid, no validation needed
-  if (colorCode === 'y') {
-    console.log(`[STRIKELOOP] ✅ BONUS HIT! Circle ${elementId} +${activeMission.pointsPerBonus} points`);
-    return true;
-  }
-
-  // Check if it's a red trap
+  // Check if it's a red trap FIRST
   if (target.isTrap || colorCode === 'r') {
     console.log(`[STRIKELOOP] ❌ TRAP HIT! Circle ${elementId} ${activeMission.penaltyRed} points`);
     // Reset hole sequence on trap hit
-    holeSequenceActive = false;
+    holeSequenceActive = true;  // Reset to accept new hole hits
     holeSequenceHit = [];
     buttonSequenceToMatch = [];
     buttonSequencePressed = [];
@@ -4720,8 +4741,9 @@ function processHoleSequenceMatchMode(target) {
     return false;
   }
 
-  // Check if it's a valid hole target
-  if (target.needsValidation && target.isValid) {
+  // Check if it's a valid hole target (holes 1-8, including yellow targets)
+  // This MUST come before bonus check to handle yellow holes correctly
+  if (target.needsValidation && target.isValid && elementId <= 8) {
     const sequenceLength = activeMission.sequenceLength || 2;
 
     // If button sequence is active, ignore hole hits
@@ -4748,6 +4770,15 @@ function processHoleSequenceMatchMode(target) {
 
     holeSequenceActive = true;
     return false; // No points yet, sequence not complete
+  }
+
+  // Check if it's a bonus target (circles 9-13 only, NOT yellow holes)
+  if (elementId >= 9 && elementId <= 13 && (target.isBonus || (activeMission.bonusTargets && activeMission.bonusTargets.includes(elementId)))) {
+    console.log(`[STRIKELOOP] ✅ BONUS HIT! Circle ${elementId} +${activeMission.pointsPerBonus} points`);
+    const points = activeMission.pointsPerBonus || 50;
+    const newScore = localScore + points;
+    updateScore(newScore);
+    return true;
   }
 
   // Not a valid target
