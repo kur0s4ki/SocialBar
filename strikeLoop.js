@@ -346,7 +346,7 @@ let gameRounds = [
     round: 3, level: 1,
     mission: 'Touchez les cibles vertes puis appuyez sur les 4 boutons VERT!',
     duration: 30,
-    goalScore: 4400,
+    goalScore: 440,
     arcadeMode: 'two-step-all-buttons-green',
     greenTargets: [1, 2, 3, 4],  // Fixed green circles
     redTraps: [5, 6, 7, 8],
@@ -361,7 +361,7 @@ let gameRounds = [
     round: 3, level: 2,
     mission: 'Touchez les cibles bleues puis appuyez sur les 4 boutons BLEU!',
     duration: 30,
-    goalScore: 4400,
+    goalScore: 440,
     arcadeMode: 'two-step-all-buttons-blue',
     blueTargets: [5, 6, 7, 8],  // Fixed blue circles
     redTraps: [1, 2, 3, 4],
@@ -376,7 +376,7 @@ let gameRounds = [
     round: 3, level: 3,
     mission: 'Touchez les cibles vertes mobiles puis appuyez sur les 4 boutons VERT!',
     duration: 30,
-    goalScore: 4800,
+    goalScore: 480,
     arcadeMode: 'two-step-alternating-all-buttons-green',
     greenTargets: [1, 2, 3, 4],
     redTraps: [5, 6, 7, 8],
@@ -393,7 +393,7 @@ let gameRounds = [
     round: 3, level: 4,
     mission: 'Touchez les cibles bleues mobiles puis appuyez sur les 4 boutons BLEU!',
     duration: 30,
-    goalScore: 4800,
+    goalScore: 480,
     arcadeMode: 'two-step-alternating-all-buttons-blue',
     blueTargets: [5, 6, 7, 8],
     redTraps: [1, 2, 3, 4],
@@ -410,7 +410,7 @@ let gameRounds = [
     round: 3, level: 5,
     mission: 'Mémorisez et reproduisez la séquence VERTE!',
     duration: 30,
-    goalScore: 5200,
+    goalScore: 520,
     arcadeMode: 'two-step-sequence-green',
     greenTargets: [1, 2, 3, 4],  // Fixed green circles
     redTraps: [5, 6, 7, 8],
@@ -428,7 +428,7 @@ let gameRounds = [
     round: 3, level: 6,
     mission: 'Mémorisez et reproduisez la séquence BLEUE!',
     duration: 30,
-    goalScore: 5200,
+    goalScore: 520,
     arcadeMode: 'two-step-sequence-blue',
     blueTargets: [5, 6, 7, 8],  // Fixed blue circles
     redTraps: [1, 2, 3, 4],
@@ -446,7 +446,7 @@ let gameRounds = [
     round: 3, level: 7,
     mission: 'Cibles vertes aléatoires! Touchez-les et validez avec les boutons!',
     duration: 30,
-    goalScore: 5600,
+    goalScore: 560,
     arcadeMode: 'two-step-random-all-buttons-green',
     greenTargets: [1, 2, 3, 4],
     redTraps: [5, 6, 7, 8],
@@ -463,7 +463,7 @@ let gameRounds = [
     round: 3, level: 8,
     mission: 'Vert et bleu ensemble! Appuyez sur les 4 boutons BLEU!',
     duration: 30,
-    goalScore: 5800,
+    goalScore: 580,
     arcadeMode: 'two-step-mixed-all-buttons-blue',
     greenTargets: [1, 2, 3, 4],
     blueTargets: [5, 6, 7, 8],
@@ -479,7 +479,7 @@ let gameRounds = [
     round: 3, level: 9,
     mission: 'Cibles tournantes multicolores! Validez avec la MÊME couleur!',
     duration: 30,
-    goalScore: 6000,
+    goalScore: 600,
     arcadeMode: 'two-step-color-rotation-1-4',
     circleTargets: [1, 2, 3, 4],  // Circles 1-4
     redTraps: [5, 6, 7, 8],
@@ -496,7 +496,7 @@ let gameRounds = [
     round: 3, level: 10,
     mission: 'Chaos de couleurs! Trouvez et validez le bon bouton!',
     duration: 30,
-    goalScore: 6200,
+    goalScore: 620,
     arcadeMode: 'two-step-color-rotation-5-8',
     circleTargets: [5, 6, 7, 8],  // Circles 5-8
     redTraps: [1, 2, 3, 4],
@@ -2542,19 +2542,8 @@ function handleTwoStepValidation(hitColor) {
       return false;
   }
 
-  // Set validation timeout (only for sequence mode, not for multi-button modes)
+  // Note: Timeout for sequence modes is set AFTER sequence display completes
   // Multi-button modes don't timeout - buttons stay lit until all are pressed
-  if (buttonMode === 'sequence-green' || buttonMode === 'sequence-blue') {
-    const window = activeMission.validationWindow || 3000;
-    validationTimeout = setTimeout(() => {
-      console.log('[STRIKELOOP] ⏱️ Sequence timeout - no sequence completed');
-      // Clear sequence state - player must hit circle again
-      sequenceToMatch = [];
-      sequencePlayerInput = [];
-      sequenceValidationActive = false;
-      validationPending = false;
-    }, window);
-  }
 
   return true;
 }
@@ -2604,6 +2593,7 @@ function displayButtonSequence(sequence, colorName) {
       sequenceDisplaying = false;
       sequenceValidationActive = true;
       console.log('[STRIKELOOP] Sequence display complete - waiting for player input');
+      // No timeout needed - if player fails, they just hit circle again for new sequence
     }
   };
 
@@ -2672,14 +2662,9 @@ function validateButtonPress(buttonIndex) {
 
   console.log(`[STRIKELOOP] Button press: Index ${buttonIndex}, ID ${buttonId}`);
 
-  // Check if during sequence display - ignore button presses
-  if (sequenceDisplaying) {
-    console.log('[STRIKELOOP] Ignoring button press during sequence display');
-    return false;
-  }
-
   // Handle sequence validation (Levels 5-6)
-  if (sequenceValidationActive) {
+  // Allow button presses during OR after sequence display
+  if (sequenceDisplaying || sequenceValidationActive) {
     return validateSequenceButtonPress(buttonId);
   }
 
