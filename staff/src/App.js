@@ -190,10 +190,10 @@ function App() {
         27: '#3498db',  // Blue
         28: '#f1c40f'   // Yellow
       };
-      return buttonColors[elementId] || '#ffffff';
+      return buttonColors[elementId] || '#4a4a4a';
     }
 
-    return '#ffffff'; // Default white for circles
+    return '#4a4a4a'; // Default dark gray for off state (was white, changed to distinguish from white LEDs)
   };
 
   const getSmallCircleColor = (elementId) => {

@@ -444,68 +444,65 @@ let gameRounds = [
   },
   {
     round: 3, level: 7,
-    mission: 'Cibles vertes aléatoires! Touchez-les et validez avec les boutons!',
+    mission: 'Frappez 2 trous et validez dans le MÊME ORDRE!',
     duration: 30,
     goalScore: 560,
-    arcadeMode: 'two-step-random-all-buttons-green',
-    greenTargets: [1, 2, 3, 4],
-    redTraps: [5, 6, 7, 8],
+    arcadeMode: 'sequence-match-2-holes',
+    greenTargets: [1, 2, 3, 4],    // 4 green holes
+    blueTargets: [5, 6, 7, 8],     // 4 blue holes
     bonusTargets: [9, 10, 11, 12, 13],
-    randomTargetCount: 2,  // Keep existing random logic
-    randomChangeInterval: 4000,
-    buttonMode: 'all-green',
-    validationWindow: 3000,
-    pointsPerValidated: 100,
-    pointsPerBonus: 50,
-    penaltyRed: -100
-  },
-  {
-    round: 3, level: 8,
-    mission: 'Vert et bleu ensemble! Appuyez sur les 4 boutons BLEU!',
-    duration: 30,
-    goalScore: 580,
-    arcadeMode: 'two-step-mixed-all-buttons-blue',
-    greenTargets: [1, 2, 3, 4],
-    blueTargets: [5, 6, 7, 8],
-    bonusTargets: [9, 10, 11, 12, 13],
-    alternatePattern: [[1, 3, 5, 7], [2, 4, 6, 8]],  // Keep existing mixed pattern
-    alternateInterval: 3000,
-    buttonMode: 'all-blue',
-    validationWindow: 3000,
-    pointsPerValidated: 100,
+    sequenceLength: 2,  // Must hit 2 holes
+    buttonMode: 'sequence-match',
+    pointsPerSequence: 100,
     pointsPerBonus: 50
   },
   {
-    round: 3, level: 9,
-    mission: 'Cibles tournantes multicolores! Validez avec la MÊME couleur!',
+    round: 3, level: 8,
+    mission: 'Frappez 2 trous et validez dans le MÊME ORDRE!',
     duration: 30,
-    goalScore: 600,
-    arcadeMode: 'two-step-color-rotation-1-4',
-    circleTargets: [1, 2, 3, 4],  // Circles 1-4
-    redTraps: [5, 6, 7, 8],
+    goalScore: 580,
+    arcadeMode: 'sequence-match-2-holes-hard',
+    greenTargets: [1, 2],      // Only 2 green holes
+    blueTargets: [5, 6],       // Only 2 blue holes
+    redTraps: [3, 4, 7, 8],    // Rest are red penalties
     bonusTargets: [9, 10, 11, 12, 13],
-    rotationSequence: ['b', 'y', 'g', 'd'],  // Blue, Yellow, Green, White
-    rotationDelay: 2000,  // 2 seconds per color
-    buttonMode: 'all-colors-match',  // All buttons lit, match hit color
-    validationWindow: 3000,
-    pointsPerValidated: 100,
+    sequenceLength: 2,  // Must hit 2 holes
+    buttonMode: 'sequence-match',
+    pointsPerSequence: 100,
     pointsPerBonus: 50,
     penaltyRed: -100
   },
   {
+    round: 3, level: 9,
+    mission: 'Frappez 3 trous et validez dans le MÊME ORDRE!',
+    duration: 30,
+    goalScore: 600,
+    arcadeMode: 'sequence-match-3-holes',
+    greenTargets: [1, 2],      // 2 green holes
+    blueTargets: [5, 6],       // 2 blue holes
+    yellowTargets: [3, 7],     // 2 yellow holes
+    whiteTargets: [4, 8],      // 2 white holes
+    bonusTargets: [9, 10, 11, 12, 13],
+    sequenceLength: 3,  // Must hit 3 holes
+    buttonMode: 'sequence-match',
+    pointsPerSequence: 100,
+    pointsPerBonus: 50
+  },
+  {
     round: 3, level: 10,
-    mission: 'Chaos de couleurs! Trouvez et validez le bon bouton!',
+    mission: 'Frappez 3 trous et validez dans le MÊME ORDRE!',
     duration: 30,
     goalScore: 620,
-    arcadeMode: 'two-step-color-rotation-5-8',
-    circleTargets: [5, 6, 7, 8],  // Circles 5-8
-    redTraps: [1, 2, 3, 4],
+    arcadeMode: 'sequence-match-3-holes-hard',
+    greenTargets: [1],         // 1 green hole
+    blueTargets: [5],          // 1 blue hole
+    yellowTargets: [3],        // 1 yellow hole
+    whiteTargets: [4],         // 1 white hole
+    redTraps: [2, 6, 7, 8],    // Rest are red penalties
     bonusTargets: [9, 10, 11, 12, 13],
-    rotationSequence: ['b', 'y', 'g', 'd'],  // Blue, Yellow, Green, White
-    rotationDelay: 2000,  // 2 seconds per color
-    buttonMode: 'random-one-per-color',  // One random button per color
-    validationWindow: 3000,
-    pointsPerValidated: 100,
+    sequenceLength: 3,  // Must hit 3 holes
+    buttonMode: 'sequence-match',
+    pointsPerSequence: 100,
     pointsPerBonus: 50,
     penaltyRed: -100
   }
@@ -1683,6 +1680,19 @@ function activateArcadeLEDs() {
     case 'two-step-color-rotation-5-8':
       activateModeTwoStepColorRotation5To8();
       break;
+    // Hole sequence matching modes (Levels 7-10)
+    case 'sequence-match-2-holes':
+      activateModeSequenceMatch2Holes();
+      break;
+    case 'sequence-match-2-holes-hard':
+      activateModeSequenceMatch2HolesHard();
+      break;
+    case 'sequence-match-3-holes':
+      activateModeSequenceMatch3Holes();
+      break;
+    case 'sequence-match-3-holes-hard':
+      activateModeSequenceMatch3HolesHard();
+      break;
     default:
       activateLegacyArcadeMode();
       break;
@@ -2232,6 +2242,14 @@ let sequenceDisplaying = false; // Whether we're showing the sequence
 let sequencePlayerInput = []; // Player's input so far
 let sequenceValidationActive = false; // Whether player is currently entering sequence
 
+// Hole sequence matching state (Levels 7-10)
+let holeSequenceToMatch = []; // Array of {holeId, color} for holes player must hit
+let holeSequenceHit = []; // Array of hole IDs player has hit so far
+let holeSequenceActive = false; // Whether player is currently building hole sequence
+let buttonSequenceToMatch = []; // Array of button colors player must press after hitting holes
+let buttonSequencePressed = []; // Array of button IDs player has pressed
+let buttonSequenceActive = false; // Whether player is validating with buttons
+
 function activateModeMemorySequence() {
   if (!memorySequenceDisplayed) {
     // Generate random sequence only once per level
@@ -2662,18 +2680,23 @@ function validateButtonPress(buttonIndex) {
 
   console.log(`[STRIKELOOP] Button press: Index ${buttonIndex}, ID ${buttonId}`);
 
+  // Handle hole sequence matching (Levels 7-10) - PRIORITY CHECK
+  if (buttonSequenceActive) {
+    return validateHoleSequenceButtonPress(buttonId);
+  }
+
   // Handle sequence validation (Levels 5-6)
   // Allow button presses during OR after sequence display
   if (sequenceDisplaying || sequenceValidationActive) {
     return validateSequenceButtonPress(buttonId);
   }
 
-  // Handle multi-button validation (Levels 1-4, 7-8)
+  // Handle multi-button validation (Levels 1-4)
   if (buttonsToValidate.length > 0) {
     return validateMultiButtonPress(buttonId);
   }
 
-  // Handle color-matching validation (Levels 9-10)
+  // Handle color-matching validation (old Levels 9-10)
   if (validationPending) {
     return validateColorMatchButtonPress(buttonId);
   }
@@ -2815,6 +2838,80 @@ function validateColorMatchButtonPress(buttonId) {
 
   resetValidationState();
   validationPending = true; // Keep validation active for next hit
+  return true;
+}
+
+// Validate hole sequence button press (Levels 7-10)
+function validateHoleSequenceButtonPress(buttonId) {
+  if (!buttonSequenceActive || buttonSequenceToMatch.length === 0) {
+    console.log('[STRIKELOOP] ❌ No button sequence active!');
+    return false;
+  }
+
+  const currentStep = buttonSequencePressed.length;
+  const expectedColor = buttonSequenceToMatch[currentStep];
+
+  // Get the color of the pressed button
+  const buttonColor = BUTTONS_BY_COLOR.green.includes(buttonId) ? 'g' :
+                      BUTTONS_BY_COLOR.blue.includes(buttonId) ? 'b' :
+                      BUTTONS_BY_COLOR.yellow.includes(buttonId) ? 'y' :
+                      BUTTONS_BY_COLOR.white.includes(buttonId) ? 'd' : null;
+
+  console.log(`[STRIKELOOP] Button ${buttonId} pressed (color: ${buttonColor?.toUpperCase()}), Expected: ${expectedColor.toUpperCase()}`);
+  console.log(`[STRIKELOOP] Progress: ${currentStep + 1}/${buttonSequenceToMatch.length}`);
+
+  if (buttonColor !== expectedColor) {
+    // Wrong button! Reset everything
+    console.log(`[STRIKELOOP] ❌ WRONG BUTTON! Expected ${expectedColor.toUpperCase()}, got ${buttonColor?.toUpperCase()}`);
+    console.log('[STRIKELOOP] Resetting - hit holes again to retry');
+
+    // Reset all sequence state
+    holeSequenceActive = false;
+    holeSequenceHit = [];
+    buttonSequenceToMatch = [];
+    buttonSequencePressed = [];
+    buttonSequenceActive = false;
+
+    return false;
+  }
+
+  // Correct button!
+  buttonSequencePressed.push(buttonId);
+
+  // Turn off the button that was just pressed
+  controlLED(buttonId, 'o');
+  console.log(`[STRIKELOOP] ✅ Correct! Button ${buttonId} turned OFF`);
+
+  // Check if sequence is complete
+  if (buttonSequencePressed.length >= buttonSequenceToMatch.length) {
+    // Sequence completed successfully!
+    const points = activeMission.pointsPerSequence || 100;
+    const newScore = localScore + points;
+    updateScore(newScore);
+
+    console.log(`[STRIKELOOP] 🎉 BUTTON SEQUENCE COMPLETED! +${points} points`);
+    console.log(`[STRIKELOOP] Holes hit: ${holeSequenceHit.join(', ')}`);
+    console.log(`[STRIKELOOP] Buttons pressed: ${buttonSequencePressed.join(', ')}`);
+
+    // Reset for next sequence
+    holeSequenceActive = false;
+    holeSequenceHit = [];
+    buttonSequenceToMatch = [];
+    buttonSequencePressed = [];
+    buttonSequenceActive = false;
+
+    // Re-light all buttons for next round
+    [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].forEach(btnId => {
+      const color = BUTTONS_BY_COLOR.green.includes(btnId) ? 'g' :
+                    BUTTONS_BY_COLOR.blue.includes(btnId) ? 'b' :
+                    BUTTONS_BY_COLOR.yellow.includes(btnId) ? 'y' : 'd';
+      controlLED(btnId, color);
+    });
+
+    return true;
+  }
+
+  console.log(`[STRIKELOOP] Button sequence progress: ${buttonSequencePressed.length}/${buttonSequenceToMatch.length}`);
   return true;
 }
 
@@ -3630,6 +3727,192 @@ function activateModeTwoStepColorRotation5To8() {
   activateBonusSection();
 }
 
+// ========== HOLE SEQUENCE MATCHING MODES (LEVELS 7-10) ==========
+
+// Level 7: All 8 holes lit (4 green + 4 blue), hit 2 holes, validate with matching buttons in order
+function activateModeSequenceMatch2Holes() {
+  console.log('[STRIKELOOP] Activating Level 7: Sequence Match - 2 Holes (All 8 lit)');
+
+  // Light all 4 green holes
+  activeMission.greenTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'g', isValid: true, needsValidation: true };
+    activeTargets.push(target);
+    controlLED(pos, 'g');
+  });
+
+  // Light all 4 blue holes
+  activeMission.blueTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'b', isValid: true, needsValidation: true };
+    activeTargets.push(target);
+    controlLED(pos, 'b');
+  });
+
+  // Light ALL 15 buttons in their fixed colors
+  clearAllButtons();
+  [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].forEach(buttonId => {
+    const color = BUTTONS_BY_COLOR.green.includes(buttonId) ? 'g' :
+                  BUTTONS_BY_COLOR.blue.includes(buttonId) ? 'b' :
+                  BUTTONS_BY_COLOR.yellow.includes(buttonId) ? 'y' : 'd';
+    controlLED(buttonId, color);
+  });
+
+  // Initialize hole sequence tracking
+  holeSequenceActive = true;
+  holeSequenceHit = [];
+  buttonSequenceToMatch = [];
+
+  activateBonusSection();
+}
+
+// Level 8: Only 4 holes lit (2 green + 2 blue + 4 red traps), same mechanic
+function activateModeSequenceMatch2HolesHard() {
+  console.log('[STRIKELOOP] Activating Level 8: Sequence Match - 2 Holes (4 lit + traps)');
+
+  // Light 2 green holes
+  activeMission.greenTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'g', isValid: true, needsValidation: true };
+    activeTargets.push(target);
+    controlLED(pos, 'g');
+  });
+
+  // Light 2 blue holes
+  activeMission.blueTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'b', isValid: true, needsValidation: true };
+    activeTargets.push(target);
+    controlLED(pos, 'b');
+  });
+
+  // Setup red traps
+  activeMission.redTraps.forEach(pos => {
+    const trap = { elementId: pos, colorCode: 'r', isTrap: true };
+    activeTargets.push(trap);
+    trapPositions.push(trap);
+    startBlinkingLED(pos, 'r', 500);
+  });
+
+  // Light ALL 15 buttons in their fixed colors
+  clearAllButtons();
+  [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].forEach(buttonId => {
+    const color = BUTTONS_BY_COLOR.green.includes(buttonId) ? 'g' :
+                  BUTTONS_BY_COLOR.blue.includes(buttonId) ? 'b' :
+                  BUTTONS_BY_COLOR.yellow.includes(buttonId) ? 'y' : 'd';
+    controlLED(buttonId, color);
+  });
+
+  // Initialize hole sequence tracking
+  holeSequenceActive = true;
+  holeSequenceHit = [];
+  buttonSequenceToMatch = [];
+
+  activateBonusSection();
+}
+
+// Level 9: All 8 holes lit (2G + 2B + 2Y + 2W), hit 3 holes, validate with matching buttons in order
+function activateModeSequenceMatch3Holes() {
+  console.log('[STRIKELOOP] Activating Level 9: Sequence Match - 3 Holes (All 8 lit)');
+
+  // Light 2 green holes
+  activeMission.greenTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'g', isValid: true, needsValidation: true };
+    activeTargets.push(target);
+    controlLED(pos, 'g');
+  });
+
+  // Light 2 blue holes
+  activeMission.blueTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'b', isValid: true, needsValidation: true };
+    activeTargets.push(target);
+    controlLED(pos, 'b');
+  });
+
+  // Light 2 yellow holes
+  activeMission.yellowTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'y', isValid: true, needsValidation: true };
+    activeTargets.push(target);
+    controlLED(pos, 'y');
+  });
+
+  // Light 2 white holes
+  activeMission.whiteTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'd', isValid: true, needsValidation: true };
+    activeTargets.push(target);
+    controlLED(pos, 'd');
+  });
+
+  // Light ALL 15 buttons in their fixed colors
+  clearAllButtons();
+  [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].forEach(buttonId => {
+    const color = BUTTONS_BY_COLOR.green.includes(buttonId) ? 'g' :
+                  BUTTONS_BY_COLOR.blue.includes(buttonId) ? 'b' :
+                  BUTTONS_BY_COLOR.yellow.includes(buttonId) ? 'y' : 'd';
+    controlLED(buttonId, color);
+  });
+
+  // Initialize hole sequence tracking
+  holeSequenceActive = true;
+  holeSequenceHit = [];
+  buttonSequenceToMatch = [];
+
+  activateBonusSection();
+}
+
+// Level 10: Only 4 holes lit (1G + 1B + 1Y + 1W + 4 red traps), same mechanic
+function activateModeSequenceMatch3HolesHard() {
+  console.log('[STRIKELOOP] Activating Level 10: Sequence Match - 3 Holes (4 lit + traps)');
+
+  // Light 1 green hole
+  activeMission.greenTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'g', isValid: true, needsValidation: true };
+    activeTargets.push(target);
+    controlLED(pos, 'g');
+  });
+
+  // Light 1 blue hole
+  activeMission.blueTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'b', isValid: true, needsValidation: true };
+    activeTargets.push(target);
+    controlLED(pos, 'b');
+  });
+
+  // Light 1 yellow hole
+  activeMission.yellowTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'y', isValid: true, needsValidation: true };
+    activeTargets.push(target);
+    controlLED(pos, 'y');
+  });
+
+  // Light 1 white hole
+  activeMission.whiteTargets.forEach(pos => {
+    const target = { elementId: pos, colorCode: 'd', isValid: true, needsValidation: true };
+    activeTargets.push(target);
+    controlLED(pos, 'd');
+  });
+
+  // Setup red traps
+  activeMission.redTraps.forEach(pos => {
+    const trap = { elementId: pos, colorCode: 'r', isTrap: true };
+    activeTargets.push(trap);
+    trapPositions.push(trap);
+    startBlinkingLED(pos, 'r', 500);
+  });
+
+  // Light ALL 15 buttons in their fixed colors
+  clearAllButtons();
+  [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].forEach(buttonId => {
+    const color = BUTTONS_BY_COLOR.green.includes(buttonId) ? 'g' :
+                  BUTTONS_BY_COLOR.blue.includes(buttonId) ? 'b' :
+                  BUTTONS_BY_COLOR.yellow.includes(buttonId) ? 'y' : 'd';
+    controlLED(buttonId, color);
+  });
+
+  // Initialize hole sequence tracking
+  holeSequenceActive = true;
+  holeSequenceHit = [];
+  buttonSequenceToMatch = [];
+
+  activateBonusSection();
+}
+
 function activateLegacyArcadeMode() {
   const config = activeMission;
   const largePositions = [1, 2, 3, 4];
@@ -3878,7 +4161,12 @@ function validateArcadeInput(target, timestamp) {
     'two-step-random-all-buttons-green',
     'two-step-mixed-all-buttons-blue',
     'two-step-color-rotation-1-4',
-    'two-step-color-rotation-5-8'
+    'two-step-color-rotation-5-8',
+    // Hole sequence matching modes (Levels 7-10)
+    'sequence-match-2-holes',
+    'sequence-match-2-holes-hard',
+    'sequence-match-3-holes',
+    'sequence-match-3-holes-hard'
   ];
   if (!noRefreshModes.includes(activeMission.arcadeMode)) {
     setTimeout(() => {
@@ -3948,6 +4236,12 @@ function processArcadeMode(target, timestamp) {
     case 'two-step-color-rotation-1-4':
     case 'two-step-color-rotation-5-8':
       return processTwoStepMode(target);
+    // Hole sequence matching modes (Levels 7-10)
+    case 'sequence-match-2-holes':
+    case 'sequence-match-2-holes-hard':
+    case 'sequence-match-3-holes':
+    case 'sequence-match-3-holes-hard':
+      return processHoleSequenceMatchMode(target);
     default:
       console.log(`[STRIKELOOP] Unknown arcade mode: ${mode}`);
       return false;
@@ -4397,6 +4691,65 @@ function processTwoStepMode(target) {
     return false; // No points until validated
   }
   
+  // Not a valid target
+  console.log(`[STRIKELOOP] ⚪ Target ${elementId} ignored`);
+  return false;
+}
+
+// ========== HOLE SEQUENCE MATCHING PROCESSOR (LEVELS 7-10) ==========
+function processHoleSequenceMatchMode(target) {
+  const elementId = target.elementId;
+  const colorCode = target.colorCode;
+
+  // Check if it's a bonus target (yellow) - always valid, no validation needed
+  if (colorCode === 'y') {
+    console.log(`[STRIKELOOP] ✅ BONUS HIT! Circle ${elementId} +${activeMission.pointsPerBonus} points`);
+    return true;
+  }
+
+  // Check if it's a red trap
+  if (target.isTrap || colorCode === 'r') {
+    console.log(`[STRIKELOOP] ❌ TRAP HIT! Circle ${elementId} ${activeMission.penaltyRed} points`);
+    // Reset hole sequence on trap hit
+    holeSequenceActive = false;
+    holeSequenceHit = [];
+    buttonSequenceToMatch = [];
+    buttonSequencePressed = [];
+    buttonSequenceActive = false;
+    console.log('[STRIKELOOP] Hole sequence reset due to trap hit');
+    return false;
+  }
+
+  // Check if it's a valid hole target
+  if (target.needsValidation && target.isValid) {
+    const sequenceLength = activeMission.sequenceLength || 2;
+
+    // If button sequence is active, ignore hole hits
+    if (buttonSequenceActive) {
+      console.log(`[STRIKELOOP] ⚠️ Ignoring hole hit - button validation in progress`);
+      return false;
+    }
+
+    // Add hole to sequence
+    holeSequenceHit.push(elementId);
+    buttonSequenceToMatch.push(colorCode);
+
+    console.log(`[STRIKELOOP] Hole ${elementId} (${colorCode.toUpperCase()}) hit - Progress: ${holeSequenceHit.length}/${sequenceLength}`);
+    console.log(`[STRIKELOOP] Hole sequence so far: ${holeSequenceHit.join(', ')}`);
+    console.log(`[STRIKELOOP] Button colors to match: ${buttonSequenceToMatch.map(c => c.toUpperCase()).join(', ')}`);
+
+    // Check if sequence is complete
+    if (holeSequenceHit.length >= sequenceLength) {
+      console.log('[STRIKELOOP] 🎯 Hole sequence complete! Now validate with buttons in SAME ORDER');
+      holeSequenceActive = false;
+      buttonSequenceActive = true;
+      return false; // No points yet, must validate with buttons
+    }
+
+    holeSequenceActive = true;
+    return false; // No points yet, sequence not complete
+  }
+
   // Not a valid target
   console.log(`[STRIKELOOP] ⚪ Target ${elementId} ignored`);
   return false;
