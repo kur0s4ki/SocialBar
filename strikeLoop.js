@@ -647,7 +647,16 @@ emitter.on('EventInput', (message, value) => {
   if (isRunning) {
     console.log('[STRIKELOOP] Arduino input received during game:', message, 'Value:', value);
 
-    processGameInput(message, 'arduino');
+    // Check if it's a button (14-28) or circle (1-13)
+    if (message >= CONTROL_BUTTONS_RANGE.min && message <= CONTROL_BUTTONS_RANGE.max) {
+      // It's a button press
+      const buttonIndex = message - CONTROL_BUTTONS_RANGE.min;
+      console.log(`[STRIKELOOP] Hardware button ${message} pressed (index ${buttonIndex})`);
+      validateButtonPress(buttonIndex);
+    } else {
+      // It's a circle hit
+      processGameInput(message, 'arduino');
+    }
   } else {
     console.log('[STRIKELOOP] Arduino input received but no game running');
   }
