@@ -2636,10 +2636,9 @@ function handleTwoStepValidation(hitColor) {
 
   console.log(`[STRIKELOOP] Starting validation - Mode: ${buttonMode}, Hit Color: ${hitColor}`);
 
-  // Turn all holes red for sequence modes (Levels 5-6) to signal button mode
-  if (buttonMode === 'sequence-green' || buttonMode === 'sequence-blue') {
-    turnAllHolesRed();
-  }
+  // Turn all holes red for ALL button modes (Levels 1-6) to signal button mode
+  // This provides visual feedback that hardware has switched to button input mode
+  turnAllHolesRed();
 
   switch (buttonMode) {
     case 'all-green':
@@ -2978,6 +2977,10 @@ function validateMultiButtonPress(buttonId) {
 
     // Reset for next round
     resetValidationState();
+
+    // Restore hole colors - player can hit holes again (Levels 1-4)
+    restoreHoleColors();
+
     return true;
   }
 
@@ -3596,6 +3599,13 @@ function activateModeTwoStepAlternatingAllButtonsGreen() {
   alternatePatternIndex = 0;
 
   const updatePattern = () => {
+    // Don't update pattern if validation is pending (buttons are active)
+    // This prevents overwriting the red holes during button validation
+    if (validationPending) {
+      console.log('[STRIKELOOP] Pattern update skipped - validation in progress');
+      return;
+    }
+
     activeTargets = activeTargets.filter(t => t.isBonus || t.isTrap);
 
     const pattern = activeMission.alternatePattern[alternatePatternIndex];
@@ -3640,6 +3650,13 @@ function activateModeTwoStepAlternatingAllButtonsBlue() {
   alternatePatternIndex = 0;
 
   const updatePattern = () => {
+    // Don't update pattern if validation is pending (buttons are active)
+    // This prevents overwriting the red holes during button validation
+    if (validationPending) {
+      console.log('[STRIKELOOP] Pattern update skipped - validation in progress');
+      return;
+    }
+
     activeTargets = activeTargets.filter(t => t.isBonus || t.isTrap);
 
     const pattern = activeMission.alternatePattern[alternatePatternIndex];
