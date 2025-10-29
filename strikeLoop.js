@@ -2463,12 +2463,13 @@ function clearAllButtons() {
 }
 
 function turnAllHolesRed() {
-  // Turn all 8 holes (1-8) red to signal hardware is in "button mode"
+  // Turn all 9 holes (1-9) red to signal hardware is in "button mode"
   // This is a visual indicator that player should focus on buttons
-  for (let i = 1; i <= 8; i++) {
+  // Output 9 is the bonus zone (central circle), also turned red since it's also a hole input
+  for (let i = 1; i <= 9; i++) {
     controlLED(i, 'r');
   }
-  console.log('[STRIKELOOP] All 8 holes turned RED - hardware in button input mode');
+  console.log('[STRIKELOOP] All 9 holes (including bonus zone) turned RED - hardware in button input mode');
 }
 
 function restoreHoleColors() {
@@ -2478,17 +2479,22 @@ function restoreHoleColors() {
 
   console.log('[STRIKELOOP] Restoring hole colors for mode:', activeMission.arcadeMode);
 
-  // Clear all holes first
-  for (let i = 1; i <= 8; i++) {
-    controlLED(i, 'o');
-  }
-
-  // Restore based on current targets
+  // Directly restore colors without turning OFF first (optimization)
+  // This reduces serial writes by 50% (no unnecessary OFF commands)
+  // Includes holes 1-9 (9 is bonus zone)
   activeTargets.forEach(target => {
-    if (target.elementId >= 1 && target.elementId <= 8) {
+    if (target.elementId >= 1 && target.elementId <= 9) {
       controlLED(target.elementId, target.colorCode);
     }
   });
+
+  // Turn OFF any holes that are not in activeTargets (holes 1-9)
+  for (let i = 1; i <= 9; i++) {
+    const isActive = activeTargets.some(t => t.elementId === i);
+    if (!isActive) {
+      controlLED(i, 'o');
+    }
+  }
 }
 
 function setButtonColors(colors) {
@@ -3105,13 +3111,9 @@ function validateHoleSequenceButtonPress(buttonId) {
     buttonSequencePressed = [];
     buttonSequenceActive = false;
 
-    // Re-light all buttons for next round
-    ALL_BUTTON_IDS.forEach(btnId => {
-      const color = getButtonColorCode(btnId);
-      controlLED(btnId, color);
-    });
-
     // Restore hole colors - player can hit holes again
+    // NOTE: Don't re-light buttons here - they will be lit when next hole sequence completes
+    // Re-lighting buttons would shift hardware focus back to buttons instead of holes
     restoreHoleColors();
 
     return true;
