@@ -47,7 +47,12 @@ const INNER_CIRCLES_RANGE = { min: 9, max: 13 };
 const CONTROL_BUTTONS_RANGE = { min: 14, max: 28 }; // Extended to 15 buttons
 const CENTRAL_CIRCLE_ID = 9;
 
-
+// Game timing and scoring constants
+const DEFAULT_VALIDATION_TIMEOUT_MS = 3000;  // 3 seconds for button validation
+const DEFAULT_ROTATION_DELAY_MS = 2000;      // 2 seconds for pattern rotation
+const DEFAULT_POINTS_VALIDATED = 100;        // Points awarded for validated target
+const DEFAULT_POINTS_BONUS = 50;             // Points awarded for bonus target
+const DEFAULT_PENALTY_RED_TRAP = -100;       // Penalty for hitting red trap
 
 let roundInterval;
 let isRunning = false;
@@ -596,6 +601,17 @@ const BUTTONS_BY_COLOR = {
   white: [18, 19, 25]           // 3 white buttons
 };
 
+// All button IDs array (14-28) for easy iteration
+const ALL_BUTTON_IDS = [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28];
+
+// Helper function to get button color code by button ID
+function getButtonColorCode(buttonId) {
+  if (BUTTONS_BY_COLOR.green.includes(buttonId)) return 'g';
+  if (BUTTONS_BY_COLOR.blue.includes(buttonId)) return 'b';
+  if (BUTTONS_BY_COLOR.yellow.includes(buttonId)) return 'y';
+  if (BUTTONS_BY_COLOR.white.includes(buttonId)) return 'd';
+  return null; // Invalid button ID
+}
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -640,9 +656,15 @@ emitter.on('EventInput', (message, value) => {
 emitter.on('circleClick', (data) => {
   if (isRunning) {
     console.log('[STRIKELOOP] Circle clicked - ID:', data.circleId);
-    
-    // Check if it's a button click (14-22) or circle click (1-13)
+
+    // Validate and parse the circle ID
     const clickedId = parseInt(data.circleId);
+    if (isNaN(clickedId) || clickedId < 1 || clickedId > 28) {
+      console.error('[STRIKELOOP] ❌ Invalid circle ID received:', data.circleId);
+      return;
+    }
+
+    // Check if it's a button click (14-28) or circle click (1-13)
     if (clickedId >= CONTROL_BUTTONS_RANGE.min && clickedId <= CONTROL_BUTTONS_RANGE.max) {
       // It's a button click
       const buttonIndex = clickedId - CONTROL_BUTTONS_RANGE.min;
@@ -1533,7 +1555,7 @@ function setupKeyboardListener() {
   console.log('[STRIKELOOP] Examples: 1b (circle 1 blue), 9r (central circle red), 15 (button 15 on), 15o (button 15 off)');
   console.log('[STRIKELOOP] Outer Circles (1-8): [id][color] - Colors: b=blue, g=green, r=red, y=yellow, o=off');
   console.log('[STRIKELOOP] Central Circle: 9[color] - Colors: b=blue, g=green, r=red, y=yellow, o=off');
-  console.log('[STRIKELOOP] Control Buttons (14-22): [id] (on) or [id]o (off)');
+  console.log('[STRIKELOOP] Control Buttons (14-28): [id] (on) or [id]o (off)');
   console.log('[STRIKELOOP] Inner Circles (10-13): Clickable only, no LED control');
   
   rl.on('line', (input) => {
@@ -2424,7 +2446,7 @@ function activateBonusSection() {
 // ========== TWO-STEP VALIDATION FUNCTIONS (ROUND 3) ==========
 
 function clearAllButtons() {
-  // Turn off all control buttons (14-22)
+  // Turn off all control buttons (14-28)
   for (let i = CONTROL_BUTTONS_RANGE.min; i <= CONTROL_BUTTONS_RANGE.max; i++) {
     controlLED(i, 'o');
   }
@@ -2432,7 +2454,7 @@ function clearAllButtons() {
 
 function setButtonColors(colors) {
   // Set button colors based on array (for fixed modes)
-  // colors array has 9 elements for buttons 14-22
+  // colors array has 15 elements for buttons 14-28
   activeButtonColors = colors;
   colors.forEach((color, index) => {
     const buttonId = CONTROL_BUTTONS_RANGE.min + index;
@@ -2911,10 +2933,7 @@ function validateHoleSequenceButtonPress(buttonId) {
   const expectedColor = buttonSequenceToMatch[currentStep];
 
   // Get the color of the pressed button
-  const buttonColor = BUTTONS_BY_COLOR.green.includes(buttonId) ? 'g' :
-                      BUTTONS_BY_COLOR.blue.includes(buttonId) ? 'b' :
-                      BUTTONS_BY_COLOR.yellow.includes(buttonId) ? 'y' :
-                      BUTTONS_BY_COLOR.white.includes(buttonId) ? 'd' : null;
+  const buttonColor = getButtonColorCode(buttonId);
 
   console.log(`[STRIKELOOP] Button ${buttonId} pressed (color: ${buttonColor?.toUpperCase()}), Expected: ${expectedColor.toUpperCase()}`);
   console.log(`[STRIKELOOP] Progress: ${currentStep + 1}/${buttonSequenceToMatch.length}`);
@@ -2966,10 +2985,8 @@ function validateHoleSequenceButtonPress(buttonId) {
     buttonSequenceActive = false;
 
     // Re-light all buttons for next round
-    [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].forEach(btnId => {
-      const color = BUTTONS_BY_COLOR.green.includes(btnId) ? 'g' :
-                    BUTTONS_BY_COLOR.blue.includes(btnId) ? 'b' :
-                    BUTTONS_BY_COLOR.yellow.includes(btnId) ? 'y' : 'd';
+    ALL_BUTTON_IDS.forEach(btnId => {
+      const color = getButtonColorCode(btnId);
       controlLED(btnId, color);
     });
 
@@ -3815,10 +3832,8 @@ function activateModeSequenceMatch2Holes() {
   // OPTIMIZATION: Only light buttons once, not on every LED refresh (saves 15 serial writes per refresh)
   if (!buttonsInitialized) {
     clearAllButtons();
-    [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].forEach(buttonId => {
-      const color = BUTTONS_BY_COLOR.green.includes(buttonId) ? 'g' :
-                    BUTTONS_BY_COLOR.blue.includes(buttonId) ? 'b' :
-                    BUTTONS_BY_COLOR.yellow.includes(buttonId) ? 'y' : 'd';
+    ALL_BUTTON_IDS.forEach(buttonId => {
+      const color = getButtonColorCode(buttonId);
       controlLED(buttonId, color);
     });
     buttonsInitialized = true;
@@ -3864,10 +3879,8 @@ function activateModeSequenceMatch2HolesHard() {
   // OPTIMIZATION: Only light buttons once, not on every LED refresh (saves 15 serial writes per refresh)
   if (!buttonsInitialized) {
     clearAllButtons();
-    [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].forEach(buttonId => {
-      const color = BUTTONS_BY_COLOR.green.includes(buttonId) ? 'g' :
-                    BUTTONS_BY_COLOR.blue.includes(buttonId) ? 'b' :
-                    BUTTONS_BY_COLOR.yellow.includes(buttonId) ? 'y' : 'd';
+    ALL_BUTTON_IDS.forEach(buttonId => {
+      const color = getButtonColorCode(buttonId);
       controlLED(buttonId, color);
     });
     buttonsInitialized = true;
@@ -3919,10 +3932,8 @@ function activateModeSequenceMatch3Holes() {
   // OPTIMIZATION: Only light buttons once, not on every LED refresh (saves 15 serial writes per refresh)
   if (!buttonsInitialized) {
     clearAllButtons();
-    [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].forEach(buttonId => {
-      const color = BUTTONS_BY_COLOR.green.includes(buttonId) ? 'g' :
-                    BUTTONS_BY_COLOR.blue.includes(buttonId) ? 'b' :
-                    BUTTONS_BY_COLOR.yellow.includes(buttonId) ? 'y' : 'd';
+    ALL_BUTTON_IDS.forEach(buttonId => {
+      const color = getButtonColorCode(buttonId);
       controlLED(buttonId, color);
     });
     buttonsInitialized = true;
@@ -3982,10 +3993,8 @@ function activateModeSequenceMatch3HolesHard() {
   // OPTIMIZATION: Only light buttons once, not on every LED refresh (saves 15 serial writes per refresh)
   if (!buttonsInitialized) {
     clearAllButtons();
-    [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].forEach(buttonId => {
-      const color = BUTTONS_BY_COLOR.green.includes(buttonId) ? 'g' :
-                    BUTTONS_BY_COLOR.blue.includes(buttonId) ? 'b' :
-                    BUTTONS_BY_COLOR.yellow.includes(buttonId) ? 'y' : 'd';
+    ALL_BUTTON_IDS.forEach(buttonId => {
+      const color = getButtonColorCode(buttonId);
       controlLED(buttonId, color);
     });
     buttonsInitialized = true;
