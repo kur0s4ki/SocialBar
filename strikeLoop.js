@@ -826,7 +826,13 @@ function initializeMission(levelConfig, isRetry = false) {
 
   // Now set the new mission
   activeMission = levelConfig;
-  activeTargets = [];
+
+  // OPTIMIZATION: Only clear activeTargets on NEW level, not on retry
+  // On retry, targets are already set correctly and we want to preserve them
+  if (!isRetry) {
+    activeTargets = [];
+  }
+
   missionTargetsHit = 0;
   sequenceProgress = 0;
   currentSequence = levelConfig.sequence || [];
@@ -939,7 +945,7 @@ function startLEDRefresh() {
     'memory-sequence-4-blue',
     'memory-sequence-6-mixed',
     'memory-sequence-7-mixed',
-    // Two-step modes manage their own patterns
+    // Two-step modes manage their own patterns (Round 3 Levels 1-6)
     'two-step-fixed-green',
     'two-step-fixed-blue',
     'two-step-alternating-green',
@@ -950,6 +956,16 @@ function startLEDRefresh() {
     'two-step-mixed-colors',
     'two-step-rotating-green',
     'two-step-ultimate',
+    'two-step-all-buttons-green',
+    'two-step-all-buttons-blue',
+    'two-step-alternating-all-buttons-green',
+    'two-step-alternating-all-buttons-blue',
+    'two-step-sequence-green',
+    'two-step-sequence-blue',
+    'two-step-random-all-buttons-green',
+    'two-step-mixed-all-buttons-blue',
+    'two-step-color-rotation-1-4',
+    'two-step-color-rotation-5-8',
     // Hole sequence matching modes (Levels 7-10) - MUST NOT REFRESH
     'sequence-match-2-holes',
     'sequence-match-2-holes-hard',
@@ -973,28 +989,28 @@ function startLEDRefresh() {
 }
 
 
-function stopLEDRefresh() {
+function stopLEDRefresh(clearLEDs = true) {
   if (ledRefreshInterval) {
     clearInterval(ledRefreshInterval);
     ledRefreshInterval = null;
   }
-
 
   if (rotationInterval) {
     clearInterval(rotationInterval);
     rotationInterval = null;
   }
 
-
-  for (let i = 1; i <= 8; i++) {
-    controlLED(i, 'o');
+  // OPTIMIZATION: Only clear LEDs if explicitly requested (not on retry)
+  if (clearLEDs) {
+    for (let i = 1; i <= 8; i++) {
+      controlLED(i, 'o');
+    }
+    controlLED(CENTRAL_CIRCLE_ID, 'o');
+    activeTargets = [];
+    console.log('[STRIKELOOP] LED refresh stopped, all LEDs cleared');
+  } else {
+    console.log('[STRIKELOOP] LED refresh stopped, LEDs preserved');
   }
-
-
-  controlLED(CENTRAL_CIRCLE_ID, 'o');
-
-  activeTargets = [];
-  console.log('[STRIKELOOP] LED refresh stopped, all LEDs cleared');
 }
 
 
@@ -1312,9 +1328,8 @@ function startLevelTimer() {
 
         console.log(`[STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (${localScore}/${currentLevel.goalScore}). Retrying level...`);
 
-
-        stopLEDRefresh();
-
+        // OPTIMIZATION: Don't clear LEDs on retry to preserve state and reduce serial writes
+        stopLEDRefresh(false);
 
         startNextLevel(true);
       }
@@ -2534,9 +2549,22 @@ function lightRandomAnyColorButton() {
 function handleTwoStepValidation(hitColor) {
   // Called when a valid target is hit in two-step modes
   if (validationPending) {
-    // Ignore new hits while validation is pending
-    console.log('[STRIKELOOP] Validation already pending, ignoring hit');
-    return false;
+    // IMPORTANT: For sequence modes, allow new hit to abort current sequence and start fresh
+    // This allows player to restart if they made a mistake or if they didn't complete in time
+    if (activeMission.buttonMode === 'sequence-green' || activeMission.buttonMode === 'sequence-blue') {
+      console.log('[STRIKELOOP] New hit during sequence validation - aborting current sequence and starting fresh');
+      // Clear current sequence state
+      sequenceToMatch = [];
+      sequencePlayerInput = [];
+      sequenceDisplaying = false;
+      sequenceValidationActive = false;
+      validationPending = false;
+      // Now continue with new validation below
+    } else {
+      // For multi-button modes, ignore new hits while validation is pending
+      console.log('[STRIKELOOP] Validation already pending, ignoring hit');
+      return false;
+    }
   }
 
   validationPending = true;
