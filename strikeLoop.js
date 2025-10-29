@@ -53,6 +53,7 @@ const DEFAULT_ROTATION_DELAY_MS = 2000;      // 2 seconds for pattern rotation
 const DEFAULT_POINTS_VALIDATED = 100;        // Points awarded for validated target
 const DEFAULT_POINTS_BONUS = 50;             // Points awarded for bonus target
 const DEFAULT_PENALTY_RED_TRAP = -100;       // Penalty for hitting red trap
+const BUTTON_SEQUENCE_TIMEOUT_MS = 5000;     // 5 seconds for button sequence reproduction (Levels 5-10)
 
 let roundInterval;
 let isRunning = false;
@@ -2461,6 +2462,35 @@ function clearAllButtons() {
   }
 }
 
+function turnAllHolesRed() {
+  // Turn all 8 holes (1-8) red to signal hardware is in "button mode"
+  // This is a visual indicator that player should focus on buttons
+  for (let i = 1; i <= 8; i++) {
+    controlLED(i, 'r');
+  }
+  console.log('[STRIKELOOP] All 8 holes turned RED - hardware in button input mode');
+}
+
+function restoreHoleColors() {
+  // Restore holes to their original game colors based on current arcade mode
+  // Called after button validation completes or times out
+  if (!activeMission || !activeMission.arcadeMode) return;
+
+  console.log('[STRIKELOOP] Restoring hole colors for mode:', activeMission.arcadeMode);
+
+  // Clear all holes first
+  for (let i = 1; i <= 8; i++) {
+    controlLED(i, 'o');
+  }
+
+  // Restore based on current targets
+  activeTargets.forEach(target => {
+    if (target.elementId >= 1 && target.elementId <= 8) {
+      controlLED(target.elementId, target.colorCode);
+    }
+  });
+}
+
 function setButtonColors(colors) {
   // Set button colors based on array (for fixed modes)
   // colors array has 15 elements for buttons 14-28
@@ -2606,6 +2636,11 @@ function handleTwoStepValidation(hitColor) {
 
   console.log(`[STRIKELOOP] Starting validation - Mode: ${buttonMode}, Hit Color: ${hitColor}`);
 
+  // Turn all holes red for sequence modes (Levels 5-6) to signal button mode
+  if (buttonMode === 'sequence-green' || buttonMode === 'sequence-blue') {
+    turnAllHolesRed();
+  }
+
   switch (buttonMode) {
     case 'all-green':
       // Light up all 4 green buttons
@@ -2701,11 +2736,62 @@ function displayButtonSequence(sequence, colorName) {
       sequenceDisplaying = false;
       sequenceValidationActive = true;
       console.log('[STRIKELOOP] Sequence display complete - waiting for player input');
-      // No timeout needed - if player fails, they just hit circle again for new sequence
+
+      // Start 5-second timeout for sequence reproduction
+      startSequenceTimeout();
     }
   };
 
   showNext();
+}
+
+// Helper: Start 5-second timeout for sequence reproduction (Levels 5-6)
+function startSequenceTimeout() {
+  // Clear any existing timeout
+  if (validationTimeout) {
+    clearTimeout(validationTimeout);
+  }
+
+  console.log(`[STRIKELOOP] Starting ${BUTTON_SEQUENCE_TIMEOUT_MS / 1000}-second timeout for sequence reproduction`);
+
+  validationTimeout = setTimeout(() => {
+    console.log('[STRIKELOOP] ⏱️ Sequence timeout! Player failed to reproduce sequence in time');
+
+    // Clear sequence state
+    sequenceToMatch = [];
+    sequencePlayerInput = [];
+    sequenceValidationActive = false;
+    validationPending = false;
+    validationTimeout = null;
+
+    // Restore hole colors - player can try again
+    restoreHoleColors();
+  }, BUTTON_SEQUENCE_TIMEOUT_MS);
+}
+
+// Helper: Start 5-second timeout for hole sequence button validation (Levels 7-10)
+function startHoleSequenceTimeout() {
+  // Clear any existing timeout
+  if (validationTimeout) {
+    clearTimeout(validationTimeout);
+  }
+
+  console.log(`[STRIKELOOP] Starting ${BUTTON_SEQUENCE_TIMEOUT_MS / 1000}-second timeout for button sequence validation`);
+
+  validationTimeout = setTimeout(() => {
+    console.log('[STRIKELOOP] ⏱️ Button sequence timeout! Player failed to complete button sequence in time');
+
+    // Reset hole sequence state
+    holeSequenceActive = true;  // Set to true to accept new hole hits
+    holeSequenceHit = [];
+    buttonSequenceToMatch = [];
+    buttonSequencePressed = [];
+    buttonSequenceActive = false;
+    validationTimeout = null;
+
+    // Restore hole colors - player can try again
+    restoreHoleColors();
+  }, BUTTON_SEQUENCE_TIMEOUT_MS);
 }
 
 // Helper: Light one random button of each color (Level 10)
@@ -2827,6 +2913,10 @@ function validateSequenceButtonPress(buttonId) {
       sequencePlayerInput = [];
       sequenceValidationActive = false;
       validationPending = false;
+
+      // Restore hole colors - player can hit holes again
+      restoreHoleColors();
+
       return true;
     }
     return true;
@@ -2844,6 +2934,9 @@ function validateSequenceButtonPress(buttonId) {
       clearTimeout(validationTimeout);
       validationTimeout = null;
     }
+
+    // Restore hole colors - player can hit holes again
+    restoreHoleColors();
 
     return false;
   }
@@ -2952,12 +3045,21 @@ function validateHoleSequenceButtonPress(buttonId) {
     console.log(`[STRIKELOOP] ❌ WRONG BUTTON! Expected ${expectedColor.toUpperCase()}, got ${buttonColor?.toUpperCase()}`);
     console.log('[STRIKELOOP] Resetting - hit holes again to retry');
 
+    // Clear timeout
+    if (validationTimeout) {
+      clearTimeout(validationTimeout);
+      validationTimeout = null;
+    }
+
     // Reset all sequence state
     holeSequenceActive = true;  // Set to true to accept new hole hits
     holeSequenceHit = [];
     buttonSequenceToMatch = [];
     buttonSequencePressed = [];
     buttonSequenceActive = false;
+
+    // Restore hole colors - player can try again
+    restoreHoleColors();
 
     return false;
   }
@@ -2978,6 +3080,13 @@ function validateHoleSequenceButtonPress(buttonId) {
   // Check if sequence is complete
   if (buttonSequencePressed.length >= buttonSequenceToMatch.length) {
     // Sequence completed successfully!
+
+    // Clear timeout
+    if (validationTimeout) {
+      clearTimeout(validationTimeout);
+      validationTimeout = null;
+    }
+
     const points = activeMission.pointsPerSequence || 100;
     const newScore = localScore + points;
     updateScore(newScore);
@@ -2998,6 +3107,9 @@ function validateHoleSequenceButtonPress(buttonId) {
       const color = getButtonColorCode(btnId);
       controlLED(btnId, color);
     });
+
+    // Restore hole colors - player can hit holes again
+    restoreHoleColors();
 
     return true;
   }
@@ -4841,6 +4953,13 @@ function processHoleSequenceMatchMode(target) {
       console.log('[STRIKELOOP] 🎯 Hole sequence complete! Now validate with buttons in SAME ORDER');
       holeSequenceActive = false;
       buttonSequenceActive = true;
+
+      // Turn all holes red to signal button mode
+      turnAllHolesRed();
+
+      // Start 5-second timeout for button sequence validation
+      startHoleSequenceTimeout();
+
       return false; // No points yet, must validate with buttons
     }
 

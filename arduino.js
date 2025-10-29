@@ -181,12 +181,9 @@ async function sendCmd1(mes) {
 function manageInputEvent(mes, input) {
   var a = parseInt(Number(`0x` + input), 10); //attention 10 ? il faut un mot de 16bits
 
-  if (mes == `21`) {
-    //answer to getinput 1
-    input1 = a;
-    fAnswerReceived1 = true;
-    return;
-  }
+  // NOTE: Removed the "if (mes == '21')" check that was blocking button 21 events
+  // The I21 getinput response is already handled in manageSerialPort1() at line 242-264
+  // This function should only handle individual button/hole input events
 
   if (mes[0] == `0`) {
     mes = mes.substring(1);
