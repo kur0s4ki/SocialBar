@@ -2960,8 +2960,8 @@ function activateModeTwoStepFixedGreen() {
     const trap = { elementId: pos, colorCode: 'r', isTrap: true };
     activeTargets.push(trap);
     trapPositions.push(trap);
-    // Start blinking red for traps
-    startBlinkingLED(pos, 'r', 500); // Blink red every 500ms
+    // OPTIMIZATION: Constant red instead of blinking to reduce serial writes
+    controlLED(pos, 'r'); // Constant red (was blinking - saves 4 serial writes/second per trap)
   });
 
   // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
@@ -2981,8 +2981,8 @@ function activateModeTwoStepFixedBlue() {
     const trap = { elementId: pos, colorCode: 'r', isTrap: true };
     activeTargets.push(trap);
     trapPositions.push(trap);
-    // Start blinking red for traps
-    startBlinkingLED(pos, 'r', 500); // Blink red every 500ms
+    // OPTIMIZATION: Constant red instead of blinking to reduce serial writes
+    controlLED(pos, 'r'); // Constant red (was blinking - saves 4 serial writes/second per trap)
   });
 
   // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
@@ -3016,12 +3016,12 @@ function activateModeTwoStepAlternatingGreen() {
       }
     });
 
-    // Red traps (blinking)
+    // Red traps - OPTIMIZATION: Constant red instead of blinking to reduce serial writes
     activeMission.redTraps.forEach(pos => {
       const trap = { elementId: pos, colorCode: 'r', isTrap: true };
       activeTargets.push(trap);
       trapPositions.push(trap);
-      startBlinkingLED(pos, 'r', 500);
+      controlLED(pos, 'r'); // Constant red (was blinking - saves 4 serial writes/second per trap)
     });
 
     activateBonusSection();
@@ -3091,7 +3091,7 @@ function activateModeTwoStepRandomButtonGreen() {
     const trap = { elementId: pos, colorCode: 'r', isTrap: true };
     activeTargets.push(trap);
     trapPositions.push(trap);
-    startBlinkingLED(pos, 'r', 500);
+    controlLED(pos, 'r'); // OPTIMIZATION: Constant red (was blinking - saves 4 serial writes/second per trap)
   });
 
   activateBonusSection();
@@ -3119,7 +3119,7 @@ function activateModeTwoStepRandomButtonBlue() {
     const trap = { elementId: pos, colorCode: 'r', isTrap: true };
     activeTargets.push(trap);
     trapPositions.push(trap);
-    startBlinkingLED(pos, 'r', 500);
+    controlLED(pos, 'r'); // OPTIMIZATION: Constant red (was blinking - saves 4 serial writes/second per trap)
   });
 
   activateBonusSection();
@@ -3168,12 +3168,12 @@ function activateModeTwoStepRandomGreen() {
       }
     });
 
-    // Red traps (blinking)
+    // Red traps - OPTIMIZATION: Constant red instead of blinking to reduce serial writes
     activeMission.redTraps.forEach(pos => {
       const trap = { elementId: pos, colorCode: 'r', isTrap: true };
       activeTargets.push(trap);
       trapPositions.push(trap);
-      startBlinkingLED(pos, 'r', 500);
+      controlLED(pos, 'r'); // Constant red (was blinking - saves 4 serial writes/second per trap)
     });
 
     activateBonusSection();
@@ -3247,12 +3247,12 @@ function activateModeTwoStepRotatingGreen() {
       }
     });
 
-    // Red traps (blinking)
+    // Red traps - OPTIMIZATION: Constant red instead of blinking to reduce serial writes
     activeMission.redTraps.forEach(pos => {
       const trap = { elementId: pos, colorCode: 'r', isTrap: true };
       activeTargets.push(trap);
       trapPositions.push(trap);
-      startBlinkingLED(pos, 'r', 500);
+      controlLED(pos, 'r'); // Constant red (was blinking - saves 4 serial writes/second per trap)
     });
 
     activateBonusSection();
@@ -3372,12 +3372,12 @@ function activateModeTwoStepAllButtonsGreen() {
     controlLED(pos, 'g');
   });
 
-  // Setup red traps (5-8)
+  // Setup red traps (5-8) - OPTIMIZATION: Constant red instead of blinking
   activeMission.redTraps.forEach(pos => {
     const trap = { elementId: pos, colorCode: 'r', isTrap: true };
     activeTargets.push(trap);
     trapPositions.push(trap);
-    startBlinkingLED(pos, 'r', 500);
+    controlLED(pos, 'r'); // Constant red (was blinking - saves 4 serial writes/second per trap)
   });
 
   // Turn off all buttons initially - but ONLY if not in active validation
@@ -3400,12 +3400,12 @@ function activateModeTwoStepAllButtonsBlue() {
     controlLED(pos, 'b');
   });
 
-  // Setup red traps (1-4)
+  // Setup red traps (1-4) - OPTIMIZATION: Constant red instead of blinking
   activeMission.redTraps.forEach(pos => {
     const trap = { elementId: pos, colorCode: 'r', isTrap: true };
     activeTargets.push(trap);
     trapPositions.push(trap);
-    startBlinkingLED(pos, 'r', 500);
+    controlLED(pos, 'r'); // Constant red (was blinking - saves 4 serial writes/second per trap)
   });
 
   // Turn off all buttons initially - but ONLY if not in active validation
@@ -3443,12 +3443,12 @@ function activateModeTwoStepAlternatingAllButtonsGreen() {
     alternatePatternIndex = (alternatePatternIndex + 1) % activeMission.alternatePattern.length;
   };
 
-  // Setup red traps
+  // Setup red traps - OPTIMIZATION: Use constant red instead of blinking to reduce serial writes
   activeMission.redTraps.forEach(pos => {
     const trap = { elementId: pos, colorCode: 'r', isTrap: true };
     activeTargets.push(trap);
     trapPositions.push(trap);
-    startBlinkingLED(pos, 'r', 500);
+    controlLED(pos, 'r'); // Constant red (was blinking - saves 4 serial writes/second per trap)
   });
 
   updatePattern();
@@ -3487,12 +3487,12 @@ function activateModeTwoStepAlternatingAllButtonsBlue() {
     alternatePatternIndex = (alternatePatternIndex + 1) % activeMission.alternatePattern.length;
   };
 
-  // Setup red traps
+  // Setup red traps - OPTIMIZATION: Use constant red instead of blinking to reduce serial writes
   activeMission.redTraps.forEach(pos => {
     const trap = { elementId: pos, colorCode: 'r', isTrap: true };
     activeTargets.push(trap);
     trapPositions.push(trap);
-    startBlinkingLED(pos, 'r', 500);
+    controlLED(pos, 'r'); // Constant red (was blinking - saves 4 serial writes/second per trap)
   });
 
   updatePattern();
@@ -3515,12 +3515,12 @@ function activateModeTwoStepSequenceGreen() {
     controlLED(pos, 'g');
   });
 
-  // Setup red traps
+  // Setup red traps - OPTIMIZATION: Use constant red instead of blinking to reduce serial writes
   activeMission.redTraps.forEach(pos => {
     const trap = { elementId: pos, colorCode: 'r', isTrap: true };
     activeTargets.push(trap);
     trapPositions.push(trap);
-    startBlinkingLED(pos, 'r', 500);
+    controlLED(pos, 'r'); // Constant red (was blinking - saves 4 serial writes/second per trap)
   });
 
   // Don't clear buttons if sequence is being displayed or validated
@@ -3541,12 +3541,12 @@ function activateModeTwoStepSequenceBlue() {
     controlLED(pos, 'b');
   });
 
-  // Setup red traps
+  // Setup red traps - OPTIMIZATION: Use constant red instead of blinking to reduce serial writes
   activeMission.redTraps.forEach(pos => {
     const trap = { elementId: pos, colorCode: 'r', isTrap: true };
     activeTargets.push(trap);
     trapPositions.push(trap);
-    startBlinkingLED(pos, 'r', 500);
+    controlLED(pos, 'r'); // Constant red (was blinking - saves 4 serial writes/second per trap)
   });
 
   // Don't clear buttons if sequence is being displayed or validated
@@ -3585,12 +3585,12 @@ function activateModeTwoStepRandomAllButtonsGreen() {
     });
   };
 
-  // Setup red traps
+  // Setup red traps - OPTIMIZATION: Use constant red instead of blinking to reduce serial writes
   activeMission.redTraps.forEach(pos => {
     const trap = { elementId: pos, colorCode: 'r', isTrap: true };
     activeTargets.push(trap);
     trapPositions.push(trap);
-    startBlinkingLED(pos, 'r', 500);
+    controlLED(pos, 'r'); // Constant red (was blinking - saves 4 serial writes/second per trap)
   });
 
   updateRandomTargets();
@@ -3668,12 +3668,12 @@ function activateModeTwoStepColorRotation1To4() {
     currentRotationIndex = (currentRotationIndex + 1) % activeMission.circleTargets.length;
   };
 
-  // Setup red traps
+  // Setup red traps - OPTIMIZATION: Use constant red instead of blinking to reduce serial writes
   activeMission.redTraps.forEach(pos => {
     const trap = { elementId: pos, colorCode: 'r', isTrap: true };
     activeTargets.push(trap);
     trapPositions.push(trap);
-    startBlinkingLED(pos, 'r', 500);
+    controlLED(pos, 'r'); // Constant red (was blinking - saves 4 serial writes/second per trap)
   });
 
   // Turn on ALL buttons of all colors (do it manually to avoid clearing)
@@ -3741,12 +3741,12 @@ function activateModeTwoStepColorRotation5To8() {
     currentRotationIndex = (currentRotationIndex + 1) % activeMission.circleTargets.length;
   };
 
-  // Setup red traps
+  // Setup red traps - OPTIMIZATION: Use constant red instead of blinking to reduce serial writes
   activeMission.redTraps.forEach(pos => {
     const trap = { elementId: pos, colorCode: 'r', isTrap: true };
     activeTargets.push(trap);
     trapPositions.push(trap);
-    startBlinkingLED(pos, 'r', 500);
+    controlLED(pos, 'r'); // Constant red (was blinking - saves 4 serial writes/second per trap)
   });
 
   // Note: Buttons will be lit randomly when player hits a circle (in validation logic)
@@ -3819,12 +3819,12 @@ function activateModeSequenceMatch2HolesHard() {
     controlLED(pos, 'b');
   });
 
-  // Setup red traps
+  // Setup red traps - OPTIMIZATION: Use constant red instead of blinking to reduce serial writes
   activeMission.redTraps.forEach(pos => {
     const trap = { elementId: pos, colorCode: 'r', isTrap: true };
     activeTargets.push(trap);
     trapPositions.push(trap);
-    startBlinkingLED(pos, 'r', 500);
+    controlLED(pos, 'r'); // Constant red (was blinking - saves 4 serial writes/second per trap)
   });
 
   // OPTIMIZATION: Only light buttons once, not on every LED refresh (saves 15 serial writes per refresh)
@@ -3937,12 +3937,12 @@ function activateModeSequenceMatch3HolesHard() {
     controlLED(pos, 'd');
   });
 
-  // Setup red traps
+  // Setup red traps - OPTIMIZATION: Use constant red instead of blinking to reduce serial writes
   activeMission.redTraps.forEach(pos => {
     const trap = { elementId: pos, colorCode: 'r', isTrap: true };
     activeTargets.push(trap);
     trapPositions.push(trap);
-    startBlinkingLED(pos, 'r', 500);
+    controlLED(pos, 'r'); // Constant red (was blinking - saves 4 serial writes/second per trap)
   });
 
   // OPTIMIZATION: Only light buttons once, not on every LED refresh (saves 15 serial writes per refresh)
@@ -4022,13 +4022,9 @@ function setupTrapPosition(position) {
   trapPositions.push(trap);
 
   
-  if (activeMission.arcadeMode === 'green-only' || activeMission.arcadeMode === 'sequence') {
-    console.log(`[STRIKELOOP] Setting up solid red trap at position ${position} (${activeMission.arcadeMode} mode)`);
-    controlLED(position, 'r');
-  } else {
-    
-    startBlinkingLED(position, 'r');
-  }
+  // OPTIMIZATION: Always use constant red for traps (no blinking to reduce serial writes)
+  console.log(`[STRIKELOOP] Setting up constant red trap at position ${position}`);
+  controlLED(position, 'r');
 }
 
 
@@ -4161,7 +4157,7 @@ function validateArcadeInput(target, timestamp) {
     if (activeMission.traps?.reactivateDelay > 0) {
       setTimeout(() => {
         console.log(`[STRIKELOOP] Trap ${elementId} reactivated`);
-        startBlinkingLED(elementId, 'r');
+        controlLED(elementId, 'r'); // OPTIMIZATION: Constant red (was blinking)
       }, activeMission.traps.reactivateDelay * 1000);
     }
   }
