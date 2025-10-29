@@ -861,6 +861,11 @@ function initializeMission(levelConfig, isRetry = false) {
   buttonSequencePressed = [];
   buttonSequenceActive = false;
 
+  // Reset button initialization flag (only on new level, not retry)
+  if (!isRetry) {
+    buttonsInitialized = false;
+  }
+
   // Clear blink states
   blinkStates = {};
 
@@ -873,6 +878,7 @@ function initializeMission(levelConfig, isRetry = false) {
 
   // OPTIMIZATION: Only reset LEDs when starting a NEW level, not on retry
   // On retry, the same level pattern will be reactivated, so we save ~17 serial writes
+  // IMPORTANT: For Round 3 hole sequence modes, also preserve sequence state on retry
   if (!isRetry) {
     console.log('[STRIKELOOP] New level - resetting all LEDs');
     // Turn off all LEDs before starting new level
@@ -883,7 +889,8 @@ function initializeMission(levelConfig, isRetry = false) {
     // Turn off central circle (9)
     controlLED(9, 'o');
   } else {
-    console.log('[STRIKELOOP] Retry mode - keeping existing LED pattern (will be refreshed by startArcadeLEDs)');
+    console.log('[STRIKELOOP] Retry mode - keeping existing LED pattern and validation state');
+    // SKIP calling startArcadeLEDs() on retry to prevent clearing sequence state and redundant serial writes
   }
 
   console.log(`[STRIKELOOP] Mission initialized:`, {
@@ -892,9 +899,13 @@ function initializeMission(levelConfig, isRetry = false) {
     duration: levelConfig.duration
   });
 
-
-  startArcadeLEDs();
-
+  // OPTIMIZATION: Skip arcade LED initialization on retry to save serial writes
+  // The LED pattern and validation state are already set from previous attempt
+  if (!isRetry) {
+    startArcadeLEDs();
+  } else {
+    console.log('[STRIKELOOP] Retry - skipping startArcadeLEDs() to preserve state and reduce serial writes');
+  }
 
   startLEDRefresh();
 }
@@ -2268,6 +2279,7 @@ let holeSequenceActive = false; // Whether player is currently building hole seq
 let buttonSequenceToMatch = []; // Array of button colors player must press after hitting holes
 let buttonSequencePressed = []; // Array of button IDs player has pressed
 let buttonSequenceActive = false; // Whether player is validating with buttons
+let buttonsInitialized = false; // Track if all 15 buttons have been lit (optimization to avoid redundant serial writes)
 
 function activateModeMemorySequence() {
   if (!memorySequenceDisplayed) {
@@ -3766,14 +3778,18 @@ function activateModeSequenceMatch2Holes() {
     controlLED(pos, 'b');
   });
 
-  // Light ALL 15 buttons in their fixed colors
-  clearAllButtons();
-  [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].forEach(buttonId => {
-    const color = BUTTONS_BY_COLOR.green.includes(buttonId) ? 'g' :
-                  BUTTONS_BY_COLOR.blue.includes(buttonId) ? 'b' :
-                  BUTTONS_BY_COLOR.yellow.includes(buttonId) ? 'y' : 'd';
-    controlLED(buttonId, color);
-  });
+  // OPTIMIZATION: Only light buttons once, not on every LED refresh (saves 15 serial writes per refresh)
+  if (!buttonsInitialized) {
+    clearAllButtons();
+    [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].forEach(buttonId => {
+      const color = BUTTONS_BY_COLOR.green.includes(buttonId) ? 'g' :
+                    BUTTONS_BY_COLOR.blue.includes(buttonId) ? 'b' :
+                    BUTTONS_BY_COLOR.yellow.includes(buttonId) ? 'y' : 'd';
+      controlLED(buttonId, color);
+    });
+    buttonsInitialized = true;
+    console.log('[STRIKELOOP] All 15 buttons initialized with fixed colors');
+  }
 
   // Initialize hole sequence tracking
   holeSequenceActive = true;
@@ -3811,14 +3827,18 @@ function activateModeSequenceMatch2HolesHard() {
     startBlinkingLED(pos, 'r', 500);
   });
 
-  // Light ALL 15 buttons in their fixed colors
-  clearAllButtons();
-  [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].forEach(buttonId => {
-    const color = BUTTONS_BY_COLOR.green.includes(buttonId) ? 'g' :
-                  BUTTONS_BY_COLOR.blue.includes(buttonId) ? 'b' :
-                  BUTTONS_BY_COLOR.yellow.includes(buttonId) ? 'y' : 'd';
-    controlLED(buttonId, color);
-  });
+  // OPTIMIZATION: Only light buttons once, not on every LED refresh (saves 15 serial writes per refresh)
+  if (!buttonsInitialized) {
+    clearAllButtons();
+    [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].forEach(buttonId => {
+      const color = BUTTONS_BY_COLOR.green.includes(buttonId) ? 'g' :
+                    BUTTONS_BY_COLOR.blue.includes(buttonId) ? 'b' :
+                    BUTTONS_BY_COLOR.yellow.includes(buttonId) ? 'y' : 'd';
+      controlLED(buttonId, color);
+    });
+    buttonsInitialized = true;
+    console.log('[STRIKELOOP] All 15 buttons initialized with fixed colors');
+  }
 
   // Initialize hole sequence tracking
   holeSequenceActive = true;
@@ -3862,14 +3882,18 @@ function activateModeSequenceMatch3Holes() {
     controlLED(pos, 'd');
   });
 
-  // Light ALL 15 buttons in their fixed colors
-  clearAllButtons();
-  [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].forEach(buttonId => {
-    const color = BUTTONS_BY_COLOR.green.includes(buttonId) ? 'g' :
-                  BUTTONS_BY_COLOR.blue.includes(buttonId) ? 'b' :
-                  BUTTONS_BY_COLOR.yellow.includes(buttonId) ? 'y' : 'd';
-    controlLED(buttonId, color);
-  });
+  // OPTIMIZATION: Only light buttons once, not on every LED refresh (saves 15 serial writes per refresh)
+  if (!buttonsInitialized) {
+    clearAllButtons();
+    [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].forEach(buttonId => {
+      const color = BUTTONS_BY_COLOR.green.includes(buttonId) ? 'g' :
+                    BUTTONS_BY_COLOR.blue.includes(buttonId) ? 'b' :
+                    BUTTONS_BY_COLOR.yellow.includes(buttonId) ? 'y' : 'd';
+      controlLED(buttonId, color);
+    });
+    buttonsInitialized = true;
+    console.log('[STRIKELOOP] All 15 buttons initialized with fixed colors');
+  }
 
   // Initialize hole sequence tracking
   holeSequenceActive = true;
@@ -3921,14 +3945,18 @@ function activateModeSequenceMatch3HolesHard() {
     startBlinkingLED(pos, 'r', 500);
   });
 
-  // Light ALL 15 buttons in their fixed colors
-  clearAllButtons();
-  [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].forEach(buttonId => {
-    const color = BUTTONS_BY_COLOR.green.includes(buttonId) ? 'g' :
-                  BUTTONS_BY_COLOR.blue.includes(buttonId) ? 'b' :
-                  BUTTONS_BY_COLOR.yellow.includes(buttonId) ? 'y' : 'd';
-    controlLED(buttonId, color);
-  });
+  // OPTIMIZATION: Only light buttons once, not on every LED refresh (saves 15 serial writes per refresh)
+  if (!buttonsInitialized) {
+    clearAllButtons();
+    [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].forEach(buttonId => {
+      const color = BUTTONS_BY_COLOR.green.includes(buttonId) ? 'g' :
+                    BUTTONS_BY_COLOR.blue.includes(buttonId) ? 'b' :
+                    BUTTONS_BY_COLOR.yellow.includes(buttonId) ? 'y' : 'd';
+      controlLED(buttonId, color);
+    });
+    buttonsInitialized = true;
+    console.log('[STRIKELOOP] All 15 buttons initialized with fixed colors');
+  }
 
   // Initialize hole sequence tracking
   holeSequenceActive = true;
