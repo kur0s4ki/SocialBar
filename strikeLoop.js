@@ -2934,6 +2934,12 @@ function validateHoleSequenceButtonPress(buttonId) {
     return false;
   }
 
+  // Check if same button was just pressed (prevent tapping same button twice)
+  if (buttonSequencePressed.length > 0 && buttonSequencePressed[buttonSequencePressed.length - 1] === buttonId) {
+    console.log(`[STRIKELOOP] ❌ Same button pressed twice! Must press different buttons.`);
+    return false;
+  }
+
   // Correct button!
   buttonSequencePressed.push(buttonId);
 

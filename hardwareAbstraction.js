@@ -57,7 +57,8 @@ const COLORS = {
   'b': '#3498db',     // Blue
   'y': '#f1c40f',     // Yellow
   'p': '#9b59b6',     // Purple
-  'w': '#ecf0f1',     // White
+  'd': '#ffffff',     // White ON (serial protocol uses 'd' for white)
+  'w': '#ecf0f1',     // White (legacy - 'w' is actually OFF in serial protocol)
   'c': '#1abc9c',     // Cyan
 };
 
@@ -358,10 +359,12 @@ function _translateColorCode(colorCode, elementId) {
   }
 
   // Direct color code mapping
-  if (colorCode === '0' || colorCode === 'o') return 'w'; // OFF uses white (irrelevant)
-  if (['r', 'g', 'b', 'y', 'p', 'w', 'c'].includes(colorCode)) {
+  if (colorCode === '0' || colorCode === 'o') return 'w'; // OFF uses 'w' command
+  if (colorCode === 'd') return 'd'; // White ON uses 'd' command
+  if (['r', 'g', 'b', 'y', 'p', 'c'].includes(colorCode)) {
     return colorCode;
   }
+  // Note: 'w' is explicitly for OFF, not white color
 
   // Default fallback
   return 'w';
