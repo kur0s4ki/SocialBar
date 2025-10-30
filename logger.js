@@ -30,7 +30,7 @@ class Logger {
       APP: LOG_LEVELS.INFO,
       'STAFF-WS': LOG_LEVELS.INFO,
       'DISPLAY-WS': LOG_LEVELS.INFO,
-      ARDUINO: LOG_LEVELS.INFO,
+      ARDUINO: LOG_LEVELS.DEBUG,  // Set to DEBUG to see serial commands
       HAL: LOG_LEVELS.WARN,
       FRONTEND: LOG_LEVELS.INFO
     };
@@ -131,7 +131,8 @@ class Logger {
   }
 
   /**
-   * Special formatted logging for serial commands
+   * Special formatted logging for serial commands (colored box)
+   * Shown at DEBUG level for ARDUINO module
    */
   serial(message) {
     if (this._shouldLog('ARDUINO', LOG_LEVELS.DEBUG)) {
