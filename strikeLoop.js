@@ -2658,6 +2658,14 @@ function handleTwoStepValidation(hitColor) {
       sequenceDisplaying = false;
       sequenceValidationActive = false;
       validationPending = false;
+
+      // CRITICAL: Clear any running timeout from previous sequence
+      if (validationTimeout) {
+        clearTimeout(validationTimeout);
+        validationTimeout = null;
+        logger.debug('STRIKELOOP', 'Cleared previous sequence timeout');
+      }
+
       // Now continue with new validation below
     } else {
       // For multi-button modes, ignore new hits while validation is pending
@@ -2736,6 +2744,13 @@ function handleTwoStepValidation(hitColor) {
 
 // Helper: Start sequence validation (Levels 5-6)
 function startSequenceValidation(colorName) {
+  // Clear any existing timeout from previous sequence (safety check)
+  if (validationTimeout) {
+    clearTimeout(validationTimeout);
+    validationTimeout = null;
+    logger.debug('STRIKELOOP', 'Cleared previous timeout before starting new sequence');
+  }
+
   const buttons = BUTTONS_BY_COLOR[colorName];
 
   // Select 3 random buttons from the 4 available
@@ -2752,6 +2767,13 @@ function startSequenceValidation(colorName) {
 
 // Helper: Start sequence validation for all colors (Levels 7-10)
 function startSequenceValidationAllColors() {
+  // Clear any existing timeout from previous sequence (safety check)
+  if (validationTimeout) {
+    clearTimeout(validationTimeout);
+    validationTimeout = null;
+    logger.debug('STRIKELOOP', 'Cleared previous timeout before starting new sequence');
+  }
+
   // Get sequence length from mission config (4-7 buttons)
   const sequenceLength = activeMission.sequenceLength || 4;
 
