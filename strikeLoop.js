@@ -2498,18 +2498,28 @@ function turnAllHolesRed() {
   }
   logger.info('STRIKELOOP', 'All 9 holes (including bonus zone) turned RED - hardware in button input mode');
 
-  // NOW light the buttons (after all holes are red)
-  // This switches hardware to BUTTON input mode
-  // Buttons were deferred during level initialization to keep hardware in hole mode
-  if (!buttonsInitialized) {
-    clearAllButtons();
-    ALL_BUTTON_IDS.forEach(buttonId => {
-      const color = getButtonColorCode(buttonId);
-      controlLED(buttonId, color);
-    });
-    buttonsInitialized = true;
-    logger.info('STRIKELOOP', 'Buttons now activated - hardware switched to button input mode');
+  // For SEQUENCE MODES only (Levels 7-10), light all buttons now
+  // Two-step modes (Levels 1-6) will light specific buttons later
+  const sequenceModes = [
+    'sequence-match-2-holes',
+    'sequence-match-2-holes-hard',
+    'sequence-match-3-holes',
+    'sequence-match-3-holes-hard'
+  ];
+
+  if (activeMission && sequenceModes.includes(activeMission.arcadeMode)) {
+    // Sequence modes: Light all buttons with their fixed colors
+    if (!buttonsInitialized) {
+      clearAllButtons(); // Turn off first (optional, could skip)
+      ALL_BUTTON_IDS.forEach(buttonId => {
+        const color = getButtonColorCode(buttonId);
+        controlLED(buttonId, color);
+      });
+      buttonsInitialized = true;
+      logger.info('STRIKELOOP', 'Buttons now activated - hardware switched to button input mode');
+    }
   }
+  // Two-step modes: Don't light buttons here, they'll be lit by turnOnAllButtonsOfColor()
 }
 
 function restoreHoleColors() {
@@ -3575,13 +3585,14 @@ function turnOnAllButtonsOfColor(colorName) {
     return [];
   }
 
-  // Clear all buttons first (turn off all 14-28)
-  clearAllButtons();
+  // Don't clear all buttons - just light the ones we need
+  // This saves 15 serial writes and keeps hardware in button mode
+  // (Hardware switched to button mode when turnAllHolesRed() was called)
 
   // Initialize activeButtonColors array for all 15 buttons (indexed 0-14 for buttons 14-28)
   activeButtonColors = new Array(15).fill('o');
 
-  // Turn on the specified color buttons
+  // Turn on ONLY the specified color buttons
   const colorCode = colorName === 'green' ? 'g' : colorName === 'blue' ? 'b' : colorName === 'yellow' ? 'y' : 'd';
   buttons.forEach(buttonId => {
     controlLED(buttonId, colorCode);
@@ -3612,11 +3623,9 @@ function activateModeTwoStepAllButtonsGreen() {
     controlLED(pos, 'r'); // Constant red (was blinking - saves 4 serial writes/second per trap)
   });
 
-  // Turn off all buttons initially - but ONLY if not in active validation
-  // (Don't clear buttons during LED refresh if player is validating)
-  if (buttonsToValidate.length === 0) {
-    clearAllButtons();
-  }
+  // Don't clear buttons at level start - we're in hole mode
+  // Buttons will be lit when player hits a hole and enters button validation
+  // This keeps hardware in hole input mode
 
   activateBonusSection();
 }

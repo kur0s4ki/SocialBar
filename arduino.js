@@ -81,7 +81,7 @@ SerialPort.list()
   });
 
 setTimeout(() => {
-  if (true) initControllinoSerialPort('COM4');
+  if (ControllinoPort) initControllinoSerialPort(ControllinoPort.path);
 }, 5000);
 
 
