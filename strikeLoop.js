@@ -2497,6 +2497,19 @@ function turnAllHolesRed() {
     controlLED(i, 'r');
   }
   logger.info('STRIKELOOP', 'All 9 holes (including bonus zone) turned RED - hardware in button input mode');
+
+  // NOW light the buttons (after all holes are red)
+  // This switches hardware to BUTTON input mode
+  // Buttons were deferred during level initialization to keep hardware in hole mode
+  if (!buttonsInitialized) {
+    clearAllButtons();
+    ALL_BUTTON_IDS.forEach(buttonId => {
+      const color = getButtonColorCode(buttonId);
+      controlLED(buttonId, color);
+    });
+    buttonsInitialized = true;
+    logger.info('STRIKELOOP', 'Buttons now activated - hardware switched to button input mode');
+  }
 }
 
 function restoreHoleColors() {
@@ -2505,6 +2518,21 @@ function restoreHoleColors() {
   if (!activeMission || !activeMission.arcadeMode) return;
 
   logger.info('STRIKELOOP', 'Restoring hole colors for mode:', activeMission.arcadeMode);
+
+  // For sequence modes, turn OFF all buttons first to clear button input mode
+  // This ensures hardware switches back to hole input mode
+  const sequenceModes = [
+    'sequence-match-2-holes',
+    'sequence-match-2-holes-hard',
+    'sequence-match-3-holes',
+    'sequence-match-3-holes-hard'
+  ];
+
+  if (sequenceModes.includes(activeMission.arcadeMode)) {
+    logger.debug('STRIKELOOP', 'Turning off buttons - returning to hole input mode');
+    clearAllButtons(); // Turn off all buttons (sends O14w-O28w)
+    buttonsInitialized = false; // Allow buttons to be re-lit on next sequence
+  }
 
   // Directly restore colors without turning OFF first (optimization)
   // This reduces serial writes by 50% (no unnecessary OFF commands)
@@ -3996,16 +4024,10 @@ function activateModeSequenceMatch2Holes() {
     controlLED(pos, 'b');
   });
 
-  // OPTIMIZATION: Only light buttons once, not on every LED refresh (saves 15 serial writes per refresh)
-  if (!buttonsInitialized) {
-    clearAllButtons();
-    ALL_BUTTON_IDS.forEach(buttonId => {
-      const color = getButtonColorCode(buttonId);
-      controlLED(buttonId, color);
-    });
-    buttonsInitialized = true;
-    logger.info('STRIKELOOP', 'All 15 buttons initialized with fixed colors');
-  }
+  // DEFER button initialization until hole sequence completes
+  // This keeps hardware in HOLE input mode during the hole-hitting phase
+  // Buttons will be lit when startButtonSequenceValidation() is called
+  logger.debug('STRIKELOOP', 'Buttons deferred - will activate after hole sequence');
 
   // Initialize hole sequence tracking
   holeSequenceActive = true;
@@ -4043,16 +4065,10 @@ function activateModeSequenceMatch2HolesHard() {
     controlLED(pos, 'r'); // Constant red (was blinking - saves 4 serial writes/second per trap)
   });
 
-  // OPTIMIZATION: Only light buttons once, not on every LED refresh (saves 15 serial writes per refresh)
-  if (!buttonsInitialized) {
-    clearAllButtons();
-    ALL_BUTTON_IDS.forEach(buttonId => {
-      const color = getButtonColorCode(buttonId);
-      controlLED(buttonId, color);
-    });
-    buttonsInitialized = true;
-    logger.info('STRIKELOOP', 'All 15 buttons initialized with fixed colors');
-  }
+  // DEFER button initialization until hole sequence completes
+  // This keeps hardware in HOLE input mode during the hole-hitting phase
+  // Buttons will be lit when startButtonSequenceValidation() is called
+  logger.debug('STRIKELOOP', 'Buttons deferred - will activate after hole sequence');
 
   // Initialize hole sequence tracking
   holeSequenceActive = true;
@@ -4096,16 +4112,10 @@ function activateModeSequenceMatch3Holes() {
     controlLED(pos, 'd');
   });
 
-  // OPTIMIZATION: Only light buttons once, not on every LED refresh (saves 15 serial writes per refresh)
-  if (!buttonsInitialized) {
-    clearAllButtons();
-    ALL_BUTTON_IDS.forEach(buttonId => {
-      const color = getButtonColorCode(buttonId);
-      controlLED(buttonId, color);
-    });
-    buttonsInitialized = true;
-    logger.info('STRIKELOOP', 'All 15 buttons initialized with fixed colors');
-  }
+  // DEFER button initialization until hole sequence completes
+  // This keeps hardware in HOLE input mode during the hole-hitting phase
+  // Buttons will be lit when startButtonSequenceValidation() is called
+  logger.debug('STRIKELOOP', 'Buttons deferred - will activate after hole sequence');
 
   // Initialize hole sequence tracking
   holeSequenceActive = true;
@@ -4157,16 +4167,10 @@ function activateModeSequenceMatch3HolesHard() {
     controlLED(pos, 'r'); // Constant red (was blinking - saves 4 serial writes/second per trap)
   });
 
-  // OPTIMIZATION: Only light buttons once, not on every LED refresh (saves 15 serial writes per refresh)
-  if (!buttonsInitialized) {
-    clearAllButtons();
-    ALL_BUTTON_IDS.forEach(buttonId => {
-      const color = getButtonColorCode(buttonId);
-      controlLED(buttonId, color);
-    });
-    buttonsInitialized = true;
-    logger.info('STRIKELOOP', 'All 15 buttons initialized with fixed colors');
-  }
+  // DEFER button initialization until hole sequence completes
+  // This keeps hardware in HOLE input mode during the hole-hitting phase
+  // Buttons will be lit when startButtonSequenceValidation() is called
+  logger.debug('STRIKELOOP', 'Buttons deferred - will activate after hole sequence');
 
   // Initialize hole sequence tracking
   holeSequenceActive = true;
