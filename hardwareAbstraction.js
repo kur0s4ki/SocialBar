@@ -5,6 +5,7 @@
 
 const events = require('events');
 const arduino = require('./arduino.js');
+const logger = require('./logger.js');
 
 const emitter = new events.EventEmitter();
 
@@ -46,7 +47,7 @@ Object.keys(HARDWARE_ID_MAP).forEach(logicalId => {
   HARDWARE_TO_LOGICAL_MAP[hardwareId] = parseInt(logicalId);
 });
 
-console.log('[HAL] Hardware to Logical mapping initialized:', HARDWARE_TO_LOGICAL_MAP);
+logger.debug('HAL', 'Hardware to Logical mapping initialized:', HARDWARE_TO_LOGICAL_MAP);
 
 // Color mapping for simulation display
 const COLORS = {
@@ -85,7 +86,7 @@ function setMode(mode) {
     // Always log mode changes (important)
     console.log(`[HAL] Mode set to: ${mode}`);
   } else {
-    console.error(`[HAL] Invalid mode: ${mode}. Must be 'simulation', 'hardware', or 'both'`);
+    logger.error('HAL', ` Invalid mode: ${mode}. Must be 'simulation', 'hardware', or 'both'`);
   }
 }
 
@@ -251,7 +252,7 @@ function _translateToHardwareId(logicalId) {
   const hardwareId = HARDWARE_ID_MAP[logicalId];
 
   if (hardwareId === undefined) {
-    console.warn(`[HAL] No hardware mapping for logical ID ${logicalId}, using as-is`);
+    logger.warn('HAL', ` No hardware mapping for logical ID ${logicalId}, using as-is`);
     return logicalId;
   }
 
@@ -276,7 +277,7 @@ function translateHardwareToLogical(hardwareId) {
   const logicalId = HARDWARE_TO_LOGICAL_MAP[hardwareIdNum];
 
   if (logicalId === undefined) {
-    console.warn(`[HAL] No logical mapping for hardware ID ${hardwareIdNum}, using as-is`);
+    logger.warn('HAL', ` No logical mapping for hardware ID ${hardwareIdNum}, using as-is`);
     return hardwareIdNum;
   }
 
@@ -393,7 +394,7 @@ function setLogging(enabled) {
  */
 function clearStateCache() {
   Object.keys(hardwareStateCache).forEach(key => delete hardwareStateCache[key]);
-  console.log('[HAL] Hardware state cache cleared');
+  logger.debug('HAL', 'Hardware state cache cleared');
 }
 
 /**

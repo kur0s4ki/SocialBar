@@ -3,6 +3,7 @@ const http = require('http');
 const arduino = require('./arduino.js');
 const HAL = require('./hardwareAbstraction.js');
 const strikeLoop = require('./strikeloop.js');
+const logger = require('./logger.js');
 
 // Create HTTP servers for both staff and display clients
 const staffServer = http.createServer();
@@ -30,7 +31,7 @@ staffWss.on('connection', (ws) => {
   };
 
   staffClients.set(clientId, clientData);
-  console.log(`[STAFF-WS] New staff client connected: ${clientId} from ${clientData.ip} (Total staff clients: ${staffClients.size})`);
+  logger.info('STAFF-WS', `Client connected: ${clientId} (Total: ${staffClients.size})`);
 
   // Send client ID to the new client
   ws.send(JSON.stringify({
@@ -48,7 +49,7 @@ staffWss.on('connection', (ws) => {
       switch (data.type) {
         case 'start':
           if (data.teamName) {
-            console.log(`[STAFF-WS] Game start request from ${clientId} for team: ${data.teamName}`);
+            logger.info('STAFF-WS', `Game start: ${data.teamName}`);
             // Broadcast team name to display clients immediately
             broadcastToDisplay({
               type: 'teamName',
@@ -60,33 +61,30 @@ staffWss.on('connection', (ws) => {
 
         case 'circleClick':
           if (data.circleId) {
-            console.log(`[STAFF-WS] Circle click from ${clientId}: circle ${data.circleId}`);
+            logger.trace('STAFF-WS', `Circle ${data.circleId} clicked`); // Move to TRACE level - too frequent
             strikeLoop.emitter.emit('circleClick', data);
           }
           break;
 
         case 'hardReset':
-          console.log(`[STAFF-WS] Hard reset request from ${clientId}`);
+          logger.warn('STAFF-WS', `Hard reset requested`);
           strikeLoop.emitter.emit('hardReset');
           break;
 
         default:
-          console.log(`[STAFF-WS] Unknown message type from ${clientId}: ${data.type}`);
+          logger.warn('STAFF-WS', `Unknown message type: ${data.type}`);
       }
     } catch (error) {
-      console.error(`[STAFF-WS] Error parsing message from client:`, error);
+      logger.error('STAFF-WS', 'Error parsing message:', error);
     }
   });
 
   ws.on('close', () => {
     const client = [...staffClients.values()].find(c => c.ws === ws);
     if (client) {
-      console.log(`[STAFF-WS] Client disconnected: ${client.id} - was connected since ${client.connectedAt}`);
+      logger.debug('STAFF-WS', `${client.id} disconnected (Remaining: ${staffClients.size - 1})`);
       staffClients.delete(client.id);
-    } else {
-      console.log('[STAFF-WS] Unknown client disconnected');
     }
-    console.log(`[STAFF-WS] Total staff clients remaining: ${staffClients.size}`);
   });
 });
 
@@ -102,7 +100,7 @@ displayWss.on('connection', (ws) => {
   };
 
   displayClients.set(clientId, clientData);
-  console.log(`[DISPLAY-WS] New display client connected: ${clientId} from ${clientData.ip} (Total display clients: ${displayClients.size})`);
+  logger.info('DISPLAY-WS', `Client connected: ${clientId} (Total: ${displayClients.size})`);
 
   // Send client ID to the new client
   ws.send(JSON.stringify({
@@ -116,37 +114,34 @@ displayWss.on('connection', (ws) => {
       const client = [...displayClients.values()].find(c => c.ws === ws);
       const clientId = client ? client.id : 'unknown';
 
-      console.log(`[DISPLAY-WS] Message from ${clientId}:`, data);
+      logger.trace('DISPLAY-WS', `Message from ${clientId}:`, data);
 
       // Display clients are mainly read-only, but can acknowledge messages
       switch (data.type) {
         case 'acknowledge':
-          console.log(`[DISPLAY-WS] Acknowledgment from ${clientId}:`, data.messageType);
+          logger.trace('DISPLAY-WS', `Acknowledgment: ${data.messageType}`);
           break;
 
         default:
-          console.log(`[DISPLAY-WS] Unknown message type from ${clientId}: ${data.type}`);
+          logger.warn('DISPLAY-WS', `Unknown message type: ${data.type}`);
       }
     } catch (error) {
-      console.error(`[DISPLAY-WS] Error parsing message from client:`, error);
+      logger.error('DISPLAY-WS', 'Error parsing message:', error);
     }
   });
 
   ws.on('close', () => {
     const client = [...displayClients.values()].find(c => c.ws === ws);
     if (client) {
-      console.log(`[DISPLAY-WS] Client disconnected: ${client.id} - was connected since ${client.connectedAt}`);
+      logger.debug('DISPLAY-WS', `${client.id} disconnected (Remaining: ${displayClients.size - 1})`);
       displayClients.delete(client.id);
-    } else {
-      console.log('[DISPLAY-WS] Unknown client disconnected');
     }
-    console.log(`[DISPLAY-WS] Total display clients remaining: ${displayClients.size}`);
   });
 });
 
 // Listen for Arduino events and forward to strikeLoop
 arduino.emitter.on('EventInput', (message, value) => {
-  console.log('[APP] Arduino input received:', message, 'Value:', value);
+  logger.debug('APP', `Arduino input: ${message} = ${value}`);
 
   // CRITICAL FIX: Translate hardware ID to logical ID before forwarding to game
   // Hardware wiring doesn't match logical positions, so we need to reverse-map inputs
@@ -165,15 +160,16 @@ function broadcastToStaff(message) {
       client.ws.send(messageStr);
       sentCount++;
     } else {
-      console.log(`[STAFF-WS] Removing disconnected client: ${clientId}`);
+      logger.debug('STAFF-WS', `Removing disconnected client: ${clientId}`);
       staffClients.delete(clientId);
     }
   });
 
-  // Reduced logging - only show important broadcasts
-if (message.type !== 'ledControl' && message.type !== 'timeUpdate') {
-  console.log(`[STAFF-WS] Broadcasted message type '${message.type}' to ${sentCount} staff clients`);
-}
+  // Only log important broadcasts - suppress high-frequency messages
+  const suppressedTypes = ['ledControl', 'timeUpdate', 'scoreUpdate'];
+  if (!suppressedTypes.includes(message.type)) {
+    logger.debug('STAFF-WS', `Broadcast '${message.type}' → ${sentCount} clients`);
+  }
 }
 
 // Broadcast function to send messages to display clients
@@ -186,14 +182,15 @@ function broadcastToDisplay(message) {
       client.ws.send(messageStr);
       sentCount++;
     } else {
-      console.log(`[DISPLAY-WS] Removing disconnected client: ${clientId}`);
+      logger.debug('DISPLAY-WS', `Removing disconnected client: ${clientId}`);
       displayClients.delete(clientId);
     }
   });
 
-  // Reduced logging - only show important broadcasts
-  if (message.type !== 'ledControl' && message.type !== 'timeUpdate') {
-    console.log(`[DISPLAY-WS] Broadcasted message type '${message.type}' to ${sentCount} display clients`);
+  // Only log important broadcasts - suppress high-frequency messages
+  const suppressedTypes = ['ledControl', 'timeUpdate', 'scoreUpdate'];
+  if (!suppressedTypes.includes(message.type)) {
+    logger.debug('DISPLAY-WS', `Broadcast '${message.type}' → ${sentCount} clients`);
   }
 }
 
@@ -208,7 +205,7 @@ function addTrackedListener(emitter, event, handler) {
 
 // Listen for strikeLoop events with proper scoping
 addTrackedListener(strikeLoop.emitter, 'gameStarted', () => {
-  console.log('[APP] Game started event received from strikeLoop');
+  logger.info('APP', 'Game started');
 
   // Send to staff clients
   broadcastToStaff({
@@ -234,7 +231,7 @@ addTrackedListener(HAL.emitter, 'ledControl', (data) => {
 });
 
 addTrackedListener(strikeLoop.emitter, 'gameFinished', () => {
-  console.log('[APP] Game finished, resetting frontend');
+  logger.info('APP', 'Game finished, resetting frontend');
 
   // Send reset message to both client types
   broadcastToStaff({
@@ -247,7 +244,7 @@ addTrackedListener(strikeLoop.emitter, 'gameFinished', () => {
 });
 
 addTrackedListener(strikeLoop.emitter, 'reset', () => {
-  console.log('[APP] Hard reset triggered, resetting frontend');
+  logger.warn('APP', 'Hard reset triggered');
 
   // Send reset message to both client types
   broadcastToStaff({
@@ -261,7 +258,7 @@ addTrackedListener(strikeLoop.emitter, 'reset', () => {
 
 // Individual event listeners for separation of concerns
 addTrackedListener(strikeLoop.emitter, 'roundUpdate', (roundData) => {
-  console.log('[APP] Round update received:', roundData);
+  logger.debug('APP', `Round ${roundData.round} Level ${roundData.level}`);
   broadcastToDisplay({
     type: 'roundUpdate',
     ...roundData
@@ -269,7 +266,7 @@ addTrackedListener(strikeLoop.emitter, 'roundUpdate', (roundData) => {
 });
 
 addTrackedListener(strikeLoop.emitter, 'missionUpdate', (missionData) => {
-  console.log('[APP] Mission update received:', missionData);
+  logger.debug('APP', `Mission ${missionData.number}: ${missionData.description.substring(0, 40)}...`);
   broadcastToDisplay({
     type: 'missionUpdate',
     ...missionData
@@ -277,7 +274,7 @@ addTrackedListener(strikeLoop.emitter, 'missionUpdate', (missionData) => {
 });
 
 addTrackedListener(strikeLoop.emitter, 'multiplierUpdate', (multiplier) => {
-  console.log('[APP] Multiplier update received:', multiplier);
+  logger.debug('APP', `Multiplier: ${multiplier}`);
   broadcastToDisplay({
     type: 'multiplierUpdate',
     multiplier: multiplier
@@ -286,7 +283,8 @@ addTrackedListener(strikeLoop.emitter, 'multiplierUpdate', (multiplier) => {
 
 // Keep separate score update listener for mid-round score changes
 addTrackedListener(strikeLoop.emitter, 'scoreUpdate', (score) => {
-  console.log('[APP] Score update received:', score);
+  // Score updates are very frequent, suppress logging entirely
+  logger.trace('APP', `Score: ${score}`);
   broadcastToDisplay({
     type: 'scoreUpdate',
     score: score
@@ -305,7 +303,7 @@ addTrackedListener(strikeLoop.emitter, 'timeUpdate', (timeData) => {
 });
 
 addTrackedListener(strikeLoop.emitter, 'bonusActive', (isActive) => {
-  console.log('[APP] Bonus active update:', isActive);
+  logger.debug('APP', `Bonus zone: ${isActive ? 'ACTIVE' : 'inactive'}`);
   broadcastToDisplay({
     type: 'bonusActive',
     active: isActive
@@ -327,20 +325,20 @@ if (modeArg) {
 }
 
 HAL.setMode(hardwareMode);
-console.log(`[APP] Hardware Abstraction Layer mode: ${hardwareMode}`);
-console.log(`[APP] Available modes: simulation (default), hardware, both`);
-console.log(`[APP] Change mode with: node app.js --mode=hardware or --hardware or --both`);
+logger.info('APP', `HAL mode: ${hardwareMode}`);
+logger.info('APP', `Modes: simulation (default), hardware, both`);
+logger.info('APP', `Change: node app.js --mode=hardware or --hardware or --both`);
 
 // Start the servers
 const STAFF_PORT = 8080;
 const DISPLAY_PORT = 8081;
 
 staffServer.listen(STAFF_PORT, () => {
-  console.log(`[STAFF-WS] Staff WebSocket server running on port ${STAFF_PORT}`);
+  logger.info('STAFF-WS', `Server running on port ${STAFF_PORT}`);
 });
 
 displayServer.listen(DISPLAY_PORT, () => {
-  console.log(`[DISPLAY-WS] Display WebSocket server running on port ${DISPLAY_PORT}`);
+  logger.info('DISPLAY-WS', `Server running on port ${DISPLAY_PORT}`);
 });
 
 // Cleanup function to remove all event listeners
@@ -350,7 +348,7 @@ function cleanup() {
   if (isAppCleanedUp) return;
   isAppCleanedUp = true;
 
-  console.log('[APP] Cleaning up event listeners...');
+  logger.info('APP', 'Cleaning up event listeners...');
   eventListeners.forEach(({ emitter, event, handler }) => {
     emitter.removeListener(event, handler);
   });
@@ -364,21 +362,21 @@ function gracefulShutdown() {
   if (isShuttingDown) return;
   isShuttingDown = true;
 
-  console.log('[APP] Shutting down servers...');
+  logger.info('APP', 'Shutting down servers...');
   cleanup();
 
   // Close servers
   staffServer.close(() => {
-    console.log('[STAFF-WS] Server closed');
+    logger.info('STAFF-WS', 'Server closed');
   });
 
   displayServer.close(() => {
-    console.log('[DISPLAY-WS] Server closed');
+    logger.info('DISPLAY-WS', 'Server closed');
   });
 
   // Force exit after 2 seconds if cleanup doesn't complete
   setTimeout(() => {
-    console.log('[APP] Force exit');
+    logger.warn('APP', 'Force exit');
     process.exit(0);
   }, 2000);
 }

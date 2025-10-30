@@ -1,6 +1,7 @@
 const events = require('events');
 const HAL = require('./hardwareAbstraction.js');
 const readline = require('readline');
+const logger = require('./logger.js');
 const emitter = new events.EventEmitter();
 
 // ⚠️ TESTING FLAG: Set to true to play Round 2 first (for testing)
@@ -516,7 +517,7 @@ let gameRounds = [
 
 
 const totalDuration = gameRounds.reduce((sum, round) => sum + round.duration, 0);
-console.log(`[STRIKELOOP] Total game duration: ${totalDuration} seconds (${Math.floor(totalDuration/60)} minutes ${totalDuration%60} seconds)`);
+logger.info('STRIKELOOP', `Total game duration: ${totalDuration} seconds (${Math.floor(totalDuration/60)} minutes ${totalDuration%60} seconds)`);
 
 
 let currentRoundTimeLeft = 0;
@@ -633,44 +634,44 @@ function addTrackedGameListener(emitter, event, handler) {
 
 // Permanent event listeners - these should NEVER be removed
 emitter.on('start', (teamData) => {
-  console.log('[STRIKELOOP] Game start received for team:', teamData.teamName);
+  logger.info('STRIKELOOP', 'Game start received for team:', teamData.teamName);
   startRoundBasedGame();
   setupKeyboardListener();
 });
 
 // Handle reset command from staff interface
 emitter.on('hardReset', () => {
-  console.log('[STRIKELOOP] Hard reset received from staff interface');
+  logger.info('STRIKELOOP', 'Hard reset received from staff interface');
   resetGameToInitialState();
 });
 
 emitter.on('EventInput', (message, value) => {
   if (isRunning) {
-    console.log('[STRIKELOOP] Arduino input received during game:', message, 'Value:', value);
+    logger.info('STRIKELOOP', 'Arduino input received during game:', message, 'Value:', value);
 
     // Check if it's a button (14-28) or circle (1-13)
     if (message >= CONTROL_BUTTONS_RANGE.min && message <= CONTROL_BUTTONS_RANGE.max) {
       // It's a button press
       const buttonIndex = message - CONTROL_BUTTONS_RANGE.min;
-      console.log(`[STRIKELOOP] Hardware button ${message} pressed (index ${buttonIndex})`);
+      logger.info('STRIKELOOP', `Hardware button ${message} pressed (index ${buttonIndex})`);
       validateButtonPress(buttonIndex);
     } else {
       // It's a circle hit
       processGameInput(message, 'arduino');
     }
   } else {
-    console.log('[STRIKELOOP] Arduino input received but no game running');
+    logger.info('STRIKELOOP', 'Arduino input received but no game running');
   }
 });
 
 emitter.on('circleClick', (data) => {
   if (isRunning) {
-    console.log('[STRIKELOOP] Circle clicked - ID:', data.circleId);
+    logger.trace('STRIKELOOP', `Input: ${data.circleId}`);
 
     // Validate and parse the circle ID
     const clickedId = parseInt(data.circleId);
     if (isNaN(clickedId) || clickedId < 1 || clickedId > 28) {
-      console.error('[STRIKELOOP] ❌ Invalid circle ID received:', data.circleId);
+      logger.error('STRIKELOOP', `Invalid input ID: ${data.circleId}`);
       return;
     }
 
@@ -678,14 +679,14 @@ emitter.on('circleClick', (data) => {
     if (clickedId >= CONTROL_BUTTONS_RANGE.min && clickedId <= CONTROL_BUTTONS_RANGE.max) {
       // It's a button click
       const buttonIndex = clickedId - CONTROL_BUTTONS_RANGE.min;
-      console.log(`[STRIKELOOP] Control button ${clickedId} pressed (index ${buttonIndex})`);
+      logger.trace('STRIKELOOP', `Button ${clickedId} pressed`);
       validateButtonPress(buttonIndex);
     } else {
       // It's a circle click
       processGameInput(data.circleId, 'simulator');
     }
   } else {
-    console.log('[STRIKELOOP] Circle clicked but no game running');
+    logger.warn('STRIKELOOP', 'Input received but game not running');
   }
 });
 
@@ -697,13 +698,13 @@ function startOverallGameTimer() {
   gameStartTime = Date.now();
   const maxGameTimeMs = gameState.totalGameTimeMinutes * 60 * 1000; // 15 minutes in milliseconds
 
-  console.log(`[STRIKELOOP] Overall game timer started - Maximum game time: ${gameState.totalGameTimeMinutes} minutes`);
+  logger.info('STRIKELOOP', `Overall game timer started - Maximum game time: ${gameState.totalGameTimeMinutes} minutes`);
 
   overallGameTimer = setInterval(() => {
     const elapsedTime = Date.now() - gameStartTime;
 
     if (elapsedTime >= maxGameTimeMs) {
-      console.log(`[STRIKELOOP] 15 minutes elapsed - resetting game to initial state`);
+      logger.info('STRIKELOOP', `15 minutes elapsed - resetting game to initial state`);
       stopOverallGameTimer();
       resetGameToInitialState();
     }
@@ -719,7 +720,7 @@ function stopOverallGameTimer() {
 }
 
 function resetGameToInitialState() {
-  console.log('[STRIKELOOP] Resetting game to initial state...');
+  logger.info('STRIKELOOP', 'Resetting game to initial state...');
 
   // Stop everything
   isRunning = false;
@@ -743,7 +744,7 @@ function resetGameToInitialState() {
   // Notify displays
   emitter.emit('reset');
 
-  console.log('[STRIKELOOP] Game reset complete - ready to start new game');
+  logger.info('STRIKELOOP', 'Game reset complete - ready to start new game');
 }
 
 function startRoundBasedGame() {
@@ -754,13 +755,13 @@ function startRoundBasedGame() {
 
   // ⚠️ TESTING MODE: Swap rounds if flag is enabled
   if (TESTING_MODE_SWAP_ROUNDS) {
-    console.log('[STRIKELOOP] ⚠️  TESTING MODE: Swapping rounds - Round 3 will play first!');
+    logger.info('STRIKELOOP', '⚠️  TESTING MODE: Swapping rounds - Round 3 will play first!');
     const round1Levels = gameRounds.filter(level => level.round === 1);
     const round3Levels = gameRounds.filter(level => level.round === 3);
     const otherLevels = gameRounds.filter(level => level.round !== 1 && level.round !== 3);
     gameRounds = [...round3Levels, ...round1Levels, ...otherLevels];
   } else {
-    console.log('[STRIKELOOP] Starting game: 3 rounds, 10 levels each');
+    logger.info('STRIKELOOP', 'Starting game: 3 rounds, 10 levels each');
   }
 
 
@@ -785,18 +786,16 @@ function startNextLevel(isRetry = false) {
   const currentLevel = gameRounds[currentLevelIndex];
   currentRoundTimeLeft = currentLevel.duration;
 
-  console.log(`[STRIKELOOP] Starting Round ${currentLevel.round} - Level ${currentLevel.level}${isRetry ? ' (RETRY)' : ''}`);
-  console.log(`[STRIKELOOP] Mission: ${currentLevel.mission}`);
-  console.log(`[STRIKELOOP] Duration: ${currentLevel.duration} seconds`);
-  console.log(`[STRIKELOOP] Goal: ${currentLevel.goalScore} points`);
+  logger.info('STRIKELOOP', `Round ${currentLevel.round}-${currentLevel.level}${isRetry ? ' (RETRY)' : ''} | Goal: ${currentLevel.goalScore}pts in ${currentLevel.duration}s`);
+  logger.debug('STRIKELOOP', `Mission: ${currentLevel.mission.substring(0, 50)}...`);
 
 
   if (!isRetry) {
     localScore = 0;
     goalAchieved = false;
-    console.log(`[STRIKELOOP] New level - Local score reset to 0`);
+    logger.debug('STRIKELOOP', 'Score reset to 0');
   } else {
-    console.log(`[STRIKELOOP] Retry - Keeping local score: ${localScore}`);
+    logger.debug('STRIKELOOP', `Retry - keeping score: ${localScore}`);
   }
 
 
@@ -839,7 +838,7 @@ function startNextLevel(isRetry = false) {
 function initializeMission(levelConfig, isRetry = false) {
   // Clear any blinking intervals from PREVIOUS level BEFORE overwriting activeMission
   if (activeMission?.blinkIntervals) {
-    console.log(`[STRIKELOOP] Clearing ${activeMission.blinkIntervals.length} blink intervals from previous level`);
+    logger.info('STRIKELOOP', `Clearing ${activeMission.blinkIntervals.length} blink intervals from previous level`);
     activeMission.blinkIntervals.forEach(interval => clearInterval(interval));
     activeMission.blinkIntervals = [];
   }
@@ -918,7 +917,7 @@ function initializeMission(levelConfig, isRetry = false) {
   // On retry, the same level pattern will be reactivated, so we save ~17 serial writes
   // IMPORTANT: For Round 3 hole sequence modes, also preserve sequence state on retry
   if (!isRetry) {
-    console.log('[STRIKELOOP] New level - resetting all LEDs');
+    logger.info('STRIKELOOP', 'New level - resetting all LEDs');
     // Turn off all LEDs before starting new level
     // Note: Skip 10-13 as they have no LEDs (input only)
     for (let i = 1; i <= 8; i++) {
@@ -927,11 +926,11 @@ function initializeMission(levelConfig, isRetry = false) {
     // Turn off central circle (9)
     controlLED(9, 'o');
   } else {
-    console.log('[STRIKELOOP] Retry mode - keeping existing LED pattern and validation state');
+    logger.info('STRIKELOOP', 'Retry mode - keeping existing LED pattern and validation state');
     // SKIP calling startArcadeLEDs() on retry to prevent clearing sequence state and redundant serial writes
   }
 
-  console.log(`[STRIKELOOP] Mission initialized:`, {
+  logger.info('STRIKELOOP', `Mission initialized:`, {
     arcadeMode: levelConfig.arcadeMode,
     goalScore: levelConfig.goalScore,
     duration: levelConfig.duration
@@ -942,7 +941,7 @@ function initializeMission(levelConfig, isRetry = false) {
   if (!isRetry) {
     startArcadeLEDs();
   } else {
-    console.log('[STRIKELOOP] Retry - skipping startArcadeLEDs() to preserve state and reduce serial writes');
+    logger.info('STRIKELOOP', 'Retry - skipping startArcadeLEDs() to preserve state and reduce serial writes');
   }
 
   startLEDRefresh();
@@ -1014,9 +1013,9 @@ function startLEDRefresh() {
       }
     }, refreshDelay);
 
-    console.log(`[STRIKELOOP] LED refresh started every ${Math.floor(refreshDelay/1000)} seconds`);
+    logger.info('STRIKELOOP', `LED refresh started every ${Math.floor(refreshDelay/1000)} seconds`);
   } else {
-    console.log(`[STRIKELOOP] LED refresh skipped for ${activeMission?.arcadeMode || 'unknown'} mode (static LEDs)`);
+    logger.info('STRIKELOOP', `LED refresh skipped for ${activeMission?.arcadeMode || 'unknown'} mode (static LEDs)`);
   }
 }
 
@@ -1039,9 +1038,9 @@ function stopLEDRefresh(clearLEDs = true) {
     }
     controlLED(CENTRAL_CIRCLE_ID, 'o');
     activeTargets = [];
-    console.log('[STRIKELOOP] LED refresh stopped, all LEDs cleared');
+    logger.info('STRIKELOOP', 'LED refresh stopped, all LEDs cleared');
   } else {
-    console.log('[STRIKELOOP] LED refresh stopped, LEDs preserved');
+    logger.info('STRIKELOOP', 'LED refresh stopped, LEDs preserved');
   }
 }
 
@@ -1049,11 +1048,11 @@ function stopLEDRefresh(clearLEDs = true) {
 function startArcadeLEDs() {
   if (!activeMission || !activeMission.arcadeMode) return;
 
-  console.log(`[STRIKELOOP] Starting arcade LEDs for mode: ${activeMission.arcadeMode}`);
+  logger.info('STRIKELOOP', `Starting arcade LEDs for mode: ${activeMission.arcadeMode}`);
 
   
   if (activeMission.arcadeMode === 'sequence') {
-    console.log('[STRIKELOOP] Sequence mode detected - using static colored targets');
+    logger.info('STRIKELOOP', 'Sequence mode detected - using static colored targets');
     activateArcadeLEDs();
   } else {
     
@@ -1074,7 +1073,7 @@ function showSequenceTarget() {
   
   const targetCircle = Math.floor(Math.random() * 8) + 1;
 
-  console.log(`[STRIKELOOP] Sequence ${sequenceStep + 1}/${activeMission.sequence.length}: Circle ${targetCircle} -> ${targetColor.toUpperCase()}`);
+  logger.info('STRIKELOOP', `Sequence ${sequenceStep + 1}/${activeMission.sequence.length}: Circle ${targetCircle} -> ${targetColor.toUpperCase()}`);
 
   
   for (let circleId = 1; circleId <= 8; circleId++) {
@@ -1111,7 +1110,7 @@ function showSequenceTarget() {
   const targetIndex = activeTargets.findIndex(t => t.elementId === targetCircle);
   activeTargets[targetIndex].isSequenceTarget = true;
 
-  console.log(`[STRIKELOOP] Sequence LED Pattern:`, activeTargets.map(t =>
+  logger.info('STRIKELOOP', `Sequence LED Pattern:`, activeTargets.map(t =>
     `${t.elementId}:${t.colorCode ? t.colorCode.toUpperCase() : 'UNDEFINED'}${t.isSequenceTarget ? '*' : ''}`
   ).join(' '));
 }
@@ -1171,7 +1170,7 @@ function activateRandomLEDs() {
     
     if (!color) {
       color = allColors[Math.floor(Math.random() * 4)];
-      console.warn(`[STRIKELOOP] Color was undefined, using fallback: ${color}`);
+      logger.warn('STRIKELOOP', `Color was undefined, using fallback: ${color}`);
     }
 
     controlLED(circleId, color);
@@ -1182,8 +1181,8 @@ function activateRandomLEDs() {
   const targetCircles = activeTargets.filter(t => activeMission.targetColors && activeMission.targetColors.includes(t.colorCode));
   const avoidCircles = activeTargets.filter(t => activeMission.avoidColors && activeMission.avoidColors.includes(t.colorCode));
 
-  console.log(`[STRIKELOOP] All 8 LEDs activated! Targets: ${targetCircles.length}, Avoid: ${avoidCircles.length}, Neutral: ${8 - targetCircles.length - avoidCircles.length}`);
-  console.log(`[STRIKELOOP] LED Pattern:`, activeTargets.map(t => `${t.elementId}:${t.colorCode ? t.colorCode.toUpperCase() : 'UNDEFINED'}`).join(' '));
+  logger.info('STRIKELOOP', `All 8 LEDs activated! Targets: ${targetCircles.length}, Avoid: ${avoidCircles.length}, Neutral: ${8 - targetCircles.length - avoidCircles.length}`);
+  logger.info('STRIKELOOP', `LED Pattern:`, activeTargets.map(t => `${t.elementId}:${t.colorCode ? t.colorCode.toUpperCase() : 'UNDEFINED'}`).join(' '));
 }
 
 
@@ -1197,18 +1196,18 @@ function processGameInput(inputId, source) {
   const clickedTarget = activeTargets.find(target => target.elementId == inputId);
 
   if (!clickedTarget) {
-    console.log(`[STRIKELOOP] Input ${inputId} not found in active targets`);
+    logger.debug('STRIKELOOP', `Input ${inputId} not in active targets`);
     return;
   }
 
-  console.log(`[STRIKELOOP] Input detected: Circle ${inputId} (${clickedTarget.colorCode.toUpperCase()}) from ${source}`);
+  logger.trace('STRIKELOOP', `${inputId}:${clickedTarget.colorCode.toUpperCase()} ${source}`);
 
-  
+
   if (activeMission.arcadeMode) {
-    console.log(`[STRIKELOOP] Using ARCADE validation for ${activeMission.arcadeMode} mode`);
+    logger.trace('STRIKELOOP', `Arcade validation: ${activeMission.arcadeMode}`);
     validateArcadeInput(clickedTarget, currentTime);
   } else {
-    console.log(`[STRIKELOOP] Using ORIGINAL validation (no arcade mode)`);
+    logger.trace('STRIKELOOP', `Original validation`);
     validateInput(clickedTarget, currentTime);
   }
 }
@@ -1230,12 +1229,12 @@ function validateInput(target, timestamp) {
       valid = true;
       sequenceProgress++;
 
-      console.log(`[STRIKELOOP] ✓ Sequence progress: ${sequenceProgress}/${activeMission.sequence.length}`);
+      logger.info('STRIKELOOP', `✓ Sequence progress: ${sequenceProgress}/${activeMission.sequence.length}`);
 
       if (sequenceProgress >= activeMission.sequence.length) {
         
         pointsAwarded = activeMission.pointsPerSequence || 100;
-        console.log(`[STRIKELOOP] 🎉 SEQUENCE COMPLETED! +${pointsAwarded} points`);
+        logger.info('STRIKELOOP', `🎉 SEQUENCE COMPLETED! +${pointsAwarded} points`);
 
         
         sequenceProgress = 0;
@@ -1248,9 +1247,9 @@ function validateInput(target, timestamp) {
     } else {
       
       if (target.isSequenceTarget) {
-        console.log(`[STRIKELOOP] ❌ Wrong color! Expected ${expectedColor.toUpperCase()}, got ${colorCode.toUpperCase()}`);
+        logger.info('STRIKELOOP', `❌ Wrong color! Expected ${expectedColor.toUpperCase()}, got ${colorCode.toUpperCase()}`);
       } else {
-        console.log(`[STRIKELOOP] ❌ Wrong circle! Need to click the ${expectedColor.toUpperCase()} circle`);
+        logger.info('STRIKELOOP', `❌ Wrong circle! Need to click the ${expectedColor.toUpperCase()} circle`);
       }
 
       
@@ -1275,22 +1274,22 @@ function validateInput(target, timestamp) {
         if (timeSinceLastHit < 2000) { 
           const speedMultiplier = activeMission.speedMultiplier || 1.5;
           pointsAwarded = Math.floor(pointsAwarded * speedMultiplier);
-          console.log(`[STRIKELOOP] SPEED BONUS! x${speedMultiplier}`);
+          logger.info('STRIKELOOP', `SPEED BONUS! x${speedMultiplier}`);
         }
       }
 
-      console.log(`[STRIKELOOP] ✅ TARGET HIT! ${colorCode.toUpperCase()} circle +${pointsAwarded} points`);
+      logger.info('STRIKELOOP', `✅ TARGET HIT! ${colorCode.toUpperCase()} circle +${pointsAwarded} points`);
       missionTargetsHit++;
     }
     
     else if (activeMission.avoidColors && activeMission.avoidColors.includes(colorCode)) {
       valid = false;
       pointsAwarded = activeMission.penaltyPerMiss || -10;
-      console.log(`[STRIKELOOP] ❌ PENALTY! ${colorCode.toUpperCase()} circle ${pointsAwarded} points`);
+      logger.info('STRIKELOOP', `❌ PENALTY! ${colorCode.toUpperCase()} circle ${pointsAwarded} points`);
     }
     
     else {
-      console.log(`[STRIKELOOP] ⚪ Neutral: ${colorCode.toUpperCase()} circle (no points)`);
+      logger.info('STRIKELOOP', `⚪ Neutral: ${colorCode.toUpperCase()} circle (no points)`);
     }
 
     
@@ -1331,9 +1330,8 @@ function startLevelTimer() {
       });
 
 
-      if (currentRoundTimeLeft % 10 === 0) {
-        console.log(`[STRIKELOOP] Round ${gameRounds[currentLevelIndex].round} Level ${gameRounds[currentLevelIndex].level} time remaining: ${timeString}`);
-      }
+      // Log time at intervals using logger's built-in method
+      logger.roundTimer(gameRounds[currentLevelIndex].round, gameRounds[currentLevelIndex].level, timeString, 10);
     } else {
 
       stopLevelTimer();
@@ -1341,7 +1339,7 @@ function startLevelTimer() {
 
       if (goalAchieved) {
 
-        console.log(`[STRIKELOOP] ✅ Level ${currentLevel.level} COMPLETED! Goal: ${currentLevel.goalScore}, Score: ${localScore}`);
+        logger.success('STRIKELOOP', `Level ${currentLevel.level} COMPLETED! ${localScore}/${currentLevel.goalScore}`);
 
 
         stopLEDRefresh();
@@ -1353,12 +1351,12 @@ function startLevelTimer() {
           startNextLevel(false);
         } else {
 
-          console.log(`[STRIKELOOP] 🎉 ALL 10 LEVELS COMPLETED! Final score: ${localScore}`);
+          logger.info('STRIKELOOP', `🎉 ALL 10 LEVELS COMPLETED! Final score: ${localScore}`);
           finishGame();
         }
       } else {
 
-        console.log(`[STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (${localScore}/${currentLevel.goalScore}). Retrying level...`);
+        logger.info('STRIKELOOP', `⏱️ Time expired! Goal NOT achieved (${localScore}/${currentLevel.goalScore}). Retrying level...`);
 
         // OPTIMIZATION: Don't clear LEDs on retry to preserve state and reduce serial writes
         stopLEDRefresh(false);
@@ -1383,7 +1381,7 @@ function finishGame() {
   stopLEDRefresh();
   stopOverallGameTimer(); // Stop the 15-minute timer
   activeMission = null;
-  console.log('[STRIKELOOP] All 30 levels (3 rounds × 10 levels) completed - game finished');
+  logger.info('STRIKELOOP', 'All 30 levels (3 rounds × 10 levels) completed - game finished');
   emitter.emit('gameFinished');
 
 
@@ -1400,7 +1398,7 @@ function cleanupGameEventListeners() {
   if (isGameCleanedUp) return;
   isGameCleanedUp = true;
 
-  console.log('[STRIKELOOP] Cleaning up game event listeners...');
+  logger.info('STRIKELOOP', 'Cleaning up game event listeners...');
   gameEventListeners.forEach(({ emitter, event, handler }) => {
     emitter.removeListener(event, handler);
   });
@@ -1419,22 +1417,22 @@ function initializeGameState() {
     totalGameTimeMinutes: 15
   };
 
-  console.log('[STRIKELOOP] Game state initialized:', gameState);
-  console.log('[STRIKELOOP] Total rounds configured:', gameRounds.length);
-  console.log('[STRIKELOOP] Total game duration:', totalDuration, 'seconds');
+  logger.info('STRIKELOOP', 'Game state initialized:', gameState);
+  logger.info('STRIKELOOP', 'Total rounds configured:', gameRounds.length);
+  logger.info('STRIKELOOP', 'Total game duration:', totalDuration, 'seconds');
 }
 
 
 function updateScore(newScore) {
   localScore = Math.max(0, newScore);
   gameState.score = localScore;
-  console.log('[STRIKELOOP] Local score updated to:', localScore);
+  logger.info('STRIKELOOP', 'Local score updated to:', localScore);
   emitter.emit('scoreUpdate', localScore);
 
   const currentLevel = gameRounds[currentLevelIndex];
   if (currentLevel && !goalAchieved && localScore >= currentLevel.goalScore) {
     goalAchieved = true;
-    console.log(`[STRIKELOOP] 🎉 GOAL ACHIEVED! ${localScore}/${currentLevel.goalScore} - Level can be completed`);
+    logger.info('STRIKELOOP', `🎉 GOAL ACHIEVED! ${localScore}/${currentLevel.goalScore} - Level can be completed`);
   }
 }
 
@@ -1442,7 +1440,7 @@ function updateScore(newScore) {
 function updateMission(missionNumber, description) {
   gameState.missionNumber = missionNumber;
   gameState.missionDescription = description;
-  console.log('[STRIKELOOP] Mission updated:', { number: missionNumber, description });
+  logger.info('STRIKELOOP', 'Mission updated:', { number: missionNumber, description });
   emitter.emit('missionUpdate', {
     number: missionNumber,
     description: description
@@ -1453,14 +1451,14 @@ function updateMission(missionNumber, description) {
 function updateRound(round, level) {
   gameState.round = round;
   gameState.level = level;
-  console.log('[STRIKELOOP] Round updated:', { round, level });
+  logger.info('STRIKELOOP', 'Round updated:', { round, level });
   emitter.emit('roundUpdate', { round, level });
 }
 
 
 function updateMultiplier(multiplier) {
   gameState.multiplier = multiplier;
-  console.log('[STRIKELOOP] Multiplier updated to:', multiplier);
+  logger.info('STRIKELOOP', 'Multiplier updated to:', multiplier);
   emitter.emit('multiplierUpdate', multiplier);
 }
 
@@ -1473,7 +1471,7 @@ function stopGame() {
     stopLEDRefresh(); 
     cleanupArcadeGame(); 
     activeMission = null; 
-    console.log('[STRIKELOOP] Game stopped - Keyboard controls disabled');
+    logger.info('STRIKELOOP', 'Game stopped - Keyboard controls disabled');
     emitter.emit('gameStopped');
     cleanupGameEventListeners();
   }
@@ -1511,15 +1509,15 @@ function setGameRounds(customRounds) {
   if (!isRunning) {
     gameRounds = customRounds;
     const totalDuration = gameRounds.reduce((sum, round) => sum + round.duration, 0);
-    console.log(`[STRIKELOOP] Custom rounds set: ${gameRounds.length} rounds, ${totalDuration} seconds total`);
+    logger.info('STRIKELOOP', `Custom rounds set: ${gameRounds.length} rounds, ${totalDuration} seconds total`);
   } else {
-    console.log('[STRIKELOOP] Cannot change rounds while game is running');
+    logger.info('STRIKELOOP', 'Cannot change rounds while game is running');
   }
 }
 
 function disableKeyboardListener() {
   keyboardListenerActive = false;
-  console.log('[STRIKELOOP] Keyboard controls disabled - Game ended');
+  logger.info('STRIKELOOP', 'Keyboard controls disabled - Game ended');
 }
 
 
@@ -1533,7 +1531,7 @@ function controlOutput(outputNum, value) {
 function controlLED(elementId, colorCode) {
   // Filter out LED control for holes 10-13 (they have no LEDs, input only)
   if (elementId >= 10 && elementId <= 13) {
-    console.log(`[STRIKELOOP] Ignoring LED control for element ${elementId} (input-only hole)`);
+    //logger.info('STRIKELOOP', `Ignoring LED control for element ${elementId} (input-only hole)`);
     return;
   }
 
@@ -1561,24 +1559,24 @@ function getControlButtonColor(elementId) {
 
 function setupKeyboardListener() {
   keyboardListenerActive = true;
-  console.log('[STRIKELOOP] Keyboard listener active! Type commands and press Enter');
-  console.log('[STRIKELOOP] Examples: 1b (circle 1 blue), 9r (central circle red), 15 (button 15 on), 15o (button 15 off)');
-  console.log('[STRIKELOOP] Outer Circles (1-8): [id][color] - Colors: b=blue, g=green, r=red, y=yellow, o=off');
-  console.log('[STRIKELOOP] Central Circle: 9[color] - Colors: b=blue, g=green, r=red, y=yellow, o=off');
-  console.log('[STRIKELOOP] Control Buttons (14-28): [id] (on) or [id]o (off)');
-  console.log('[STRIKELOOP] Inner Circles (10-13): Clickable only, no LED control');
+  logger.info('STRIKELOOP', 'Keyboard listener active! Type commands and press Enter');
+  logger.info('STRIKELOOP', 'Examples: 1b (circle 1 blue), 9r (central circle red), 15 (button 15 on), 15o (button 15 off)');
+  logger.info('STRIKELOOP', 'Outer Circles (1-8): [id][color] - Colors: b=blue, g=green, r=red, y=yellow, o=off');
+  logger.info('STRIKELOOP', 'Central Circle: 9[color] - Colors: b=blue, g=green, r=red, y=yellow, o=off');
+  logger.info('STRIKELOOP', 'Control Buttons (14-28): [id] (on) or [id]o (off)');
+  logger.info('STRIKELOOP', 'Inner Circles (10-13): Clickable only, no LED control');
   
   rl.on('line', (input) => {
     
     if (!keyboardListenerActive) {
-      console.log('[STRIKELOOP] Game not running. Keyboard commands disabled. Start a new game to enable controls.');
+      logger.info('STRIKELOOP', 'Game not running. Keyboard commands disabled. Start a new game to enable controls.');
       return;
     }
     
     const command = input.trim();
     
     if (command.length < 1) {
-      console.log('[STRIKELOOP] Invalid command. Use format: [circleId][color] or [buttonId] or [buttonId]o');
+      logger.info('STRIKELOOP', 'Invalid command. Use format: [circleId][color] or [buttonId] or [buttonId]o');
       return;
     }
     
@@ -1589,7 +1587,7 @@ function setupKeyboardListener() {
       
       const twoDigitId = parseInt(command.substring(0, 2));
       if (twoDigitId >= CONTROL_BUTTONS_RANGE.min && twoDigitId <= CONTROL_BUTTONS_RANGE.max) {
-        console.log(`[STRIKELOOP] Control button ${twoDigitId} -> OFF`);
+        logger.info('STRIKELOOP', `Control button ${twoDigitId} -> OFF`);
         controlLED(twoDigitId, 'o');
         return;
       }
@@ -1598,7 +1596,7 @@ function setupKeyboardListener() {
       const twoDigitId = parseInt(command.substring(0, 2));
       if (twoDigitId >= CONTROL_BUTTONS_RANGE.min && twoDigitId <= CONTROL_BUTTONS_RANGE.max) {
         
-        console.log(`[STRIKELOOP] Control button ${twoDigitId} -> ON`);
+        logger.info('STRIKELOOP', `Control button ${twoDigitId} -> ON`);
         controlLED(twoDigitId, '1');
         return;
       } else if (twoDigitId >= 10 && twoDigitId <= 13) {
@@ -1616,34 +1614,34 @@ function setupKeyboardListener() {
       } else if (circleId === CENTRAL_CIRCLE_ID) {
         colorCode = command[1] ? command[1].toLowerCase() : 'o';
       }
-      console.log(`[STRIKELOOP] Single digit parsing: circleId=${circleId}, colorCode=${colorCode}, command=${command}`);
+      logger.info('STRIKELOOP', `Single digit parsing: circleId=${circleId}, colorCode=${colorCode}, command=${command}`);
     }
     
     
     if (circleId >= OUTER_CIRCLES_RANGE.min && circleId <= OUTER_CIRCLES_RANGE.max) {
       
       if (COLORS[colorCode]) {
-        console.log(`[STRIKELOOP] Circle ${circleId} -> ${colorCode.toUpperCase()}`);
+        logger.info('STRIKELOOP', `Circle ${circleId} -> ${colorCode.toUpperCase()}`);
         controlLED(circleId, colorCode);
       } else {
-        console.log(`[STRIKELOOP] Invalid color for circle ${circleId}. Use: b/g/r/y/o`);
+        logger.info('STRIKELOOP', `Invalid color for circle ${circleId}. Use: b/g/r/y/o`);
       }
     } else if (circleId === CENTRAL_CIRCLE_ID) {
       
-      console.log(`[STRIKELOOP] Processing central circle: circleId=${circleId}, colorCode=${colorCode}, COLORS[colorCode]=${COLORS[colorCode]}`);
+      logger.info('STRIKELOOP', `Processing central circle: circleId=${circleId}, colorCode=${colorCode}, COLORS[colorCode]=${COLORS[colorCode]}`);
       if (COLORS[colorCode]) {
-        console.log(`[STRIKELOOP] Central circle -> ${colorCode.toUpperCase()}`);
+        logger.info('STRIKELOOP', `Central circle -> ${colorCode.toUpperCase()}`);
         controlLED(CENTRAL_CIRCLE_ID, colorCode);
       } else {
-        console.log(`[STRIKELOOP] Invalid color for central circle. Use: b/g/r/y/o`);
+        logger.info('STRIKELOOP', `Invalid color for central circle. Use: b/g/r/y/o`);
       }
     } else if (circleId >= INNER_CIRCLES_RANGE.min && circleId <= INNER_CIRCLES_RANGE.max) {
       
-      console.log(`[STRIKELOOP] Inner circle ${circleId} is clickable only. Use ${CENTRAL_CIRCLE_ID}[color] for central circle LED control.`);
+      logger.info('STRIKELOOP', `Inner circle ${circleId} is clickable only. Use ${CENTRAL_CIRCLE_ID}[color] for central circle LED control.`);
     } else if (circleId >= CONTROL_BUTTONS_RANGE.min && circleId <= CONTROL_BUTTONS_RANGE.max) {
-      console.log(`[STRIKELOOP] Control button ${circleId} commands should use simple format: ${circleId} or ${circleId}o`);
+      logger.info('STRIKELOOP', `Control button ${circleId} commands should use simple format: ${circleId} or ${circleId}o`);
     } else {
-      console.log(`[STRIKELOOP] Invalid command. Use: [${OUTER_CIRCLES_RANGE.min}-${OUTER_CIRCLES_RANGE.max}][color] or ${CENTRAL_CIRCLE_ID}[color] or [${CONTROL_BUTTONS_RANGE.min}-${CONTROL_BUTTONS_RANGE.max}] or [${CONTROL_BUTTONS_RANGE.min}-${CONTROL_BUTTONS_RANGE.max}]o`);
+      logger.info('STRIKELOOP', `Invalid command. Use: [${OUTER_CIRCLES_RANGE.min}-${OUTER_CIRCLES_RANGE.max}][color] or ${CENTRAL_CIRCLE_ID}[color] or [${CONTROL_BUTTONS_RANGE.min}-${CONTROL_BUTTONS_RANGE.max}] or [${CONTROL_BUTTONS_RANGE.min}-${CONTROL_BUTTONS_RANGE.max}]o`);
     }
   });
 }
@@ -1778,7 +1776,7 @@ function activateArcadeLEDs() {
   const validTargets = activeTargets.filter(t => t.isValid || t.isActive).length;
   const trapCount = trapPositions.length;
   const ledPattern = activeTargets.map(t => `${t.elementId}:${t.colorCode?.toUpperCase()}${t.isTrap ? '(trap)' : ''}${t.isActive ? '*' : ''}`).join(' ');
-  console.log(`[STRIKELOOP] Arcade LEDs (${mode}): ${validTargets} targets, ${trapCount} traps | Pattern: ${ledPattern}`);
+  logger.info('STRIKELOOP', `Arcade LEDs (${mode}): ${validTargets} targets, ${trapCount} traps | Pattern: ${ledPattern}`);
 }
 
 function activateModeGreenBlueCombo() {
@@ -1844,7 +1842,7 @@ function activateModeRotatingGreen() {
     // OPTIMIZATION: Only update LEDs that changed
     if (previousGreenPos === null) {
       // FIRST TIME: Set all positions
-      console.log(`[STRIKELOOP] Rotating green: Initial setup - position ${greenPos} active`);
+      logger.info('STRIKELOOP', `Rotating green: Initial setup - position ${greenPos} active`);
       controlLED(greenPos, 'g');
       const allPositions = [1, 2, 3, 4, 5, 6, 7, 8];
       allPositions.forEach(pos => {
@@ -1854,11 +1852,11 @@ function activateModeRotatingGreen() {
       });
     } else if (greenPos !== previousGreenPos) {
       // SUBSEQUENT ROTATIONS: Only update changed positions (2 serial writes instead of 8)
-      console.log(`[STRIKELOOP] Rotating green: ${previousGreenPos} → ${greenPos} (optimized: 2 writes)`);
+      logger.info('STRIKELOOP', `Rotating green: ${previousGreenPos} → ${greenPos} (optimized: 2 writes)`);
       controlLED(previousGreenPos, 'r');  // Old green → red
       controlLED(greenPos, 'g');          // New position → green
     } else {
-      console.log(`[STRIKELOOP] Rotating green: Same position ${greenPos}, no LED changes needed`);
+      logger.info('STRIKELOOP', `Rotating green: Same position ${greenPos}, no LED changes needed`);
     }
 
     currentRotatingTargets.green = greenPos;
@@ -1900,7 +1898,7 @@ function activateModeRotatingGreenBlue() {
     // OPTIMIZATION: Only update LEDs that changed
     if (previousGreenPos === null || previousBluePos === null) {
       // FIRST TIME: Set all positions
-      console.log(`[STRIKELOOP] Rotating green-blue: Initial setup - green ${greenPos}, blue ${bluePos}`);
+      logger.info('STRIKELOOP', `Rotating green-blue: Initial setup - green ${greenPos}, blue ${bluePos}`);
       controlLED(greenPos, 'g');
       controlLED(bluePos, 'b');
       const otherPositions = [1, 2, 3, 4, 5, 6, 7, 8].filter(p => p !== greenPos && p !== bluePos);
@@ -1925,9 +1923,9 @@ function activateModeRotatingGreenBlue() {
       }
 
       if (changes.length > 0) {
-        console.log(`[STRIKELOOP] Rotating green-blue: ${changes.join(', ')} (optimized: ${changes.length * 2} writes)`);
+        logger.info('STRIKELOOP', `Rotating green-blue: ${changes.join(', ')} (optimized: ${changes.length * 2} writes)`);
       } else {
-        console.log(`[STRIKELOOP] Rotating green-blue: Same positions, no LED changes needed`);
+        logger.info('STRIKELOOP', `Rotating green-blue: Same positions, no LED changes needed`);
       }
     }
 
@@ -1966,7 +1964,7 @@ function activateModeRotatingBlue() {
     // OPTIMIZATION: Only update LEDs that changed
     if (previousBluePos === null) {
       // FIRST TIME: Set all positions
-      console.log(`[STRIKELOOP] Rotating blue: Initial setup - position ${bluePos} active`);
+      logger.info('STRIKELOOP', `Rotating blue: Initial setup - position ${bluePos} active`);
       controlLED(bluePos, 'b');
       const allPositions = [1, 2, 3, 4, 5, 6, 7, 8];
       allPositions.forEach(pos => {
@@ -1976,11 +1974,11 @@ function activateModeRotatingBlue() {
       });
     } else if (bluePos !== previousBluePos) {
       // SUBSEQUENT ROTATIONS: Only update changed positions (2 serial writes instead of 8)
-      console.log(`[STRIKELOOP] Rotating blue: ${previousBluePos} → ${bluePos} (optimized: 2 writes)`);
+      logger.info('STRIKELOOP', `Rotating blue: ${previousBluePos} → ${bluePos} (optimized: 2 writes)`);
       controlLED(previousBluePos, 'r');  // Old blue → red
       controlLED(bluePos, 'b');          // New position → blue
     } else {
-      console.log(`[STRIKELOOP] Rotating blue: Same position ${bluePos}, no LED changes needed`);
+      logger.info('STRIKELOOP', `Rotating blue: Same position ${bluePos}, no LED changes needed`);
     }
 
     currentRotatingTargets.blue = bluePos;
@@ -2052,10 +2050,10 @@ function activateModeBlinkingGreenBonus() {
 }
 
 function activateModeBlinkingBlueBonus() {
-  console.log('[STRIKELOOP] Activating Blinking Blue Bonus mode');
+  logger.info('STRIKELOOP', 'Activating Blinking Blue Bonus mode');
 
   // Red traps (1-4) solid
-  console.log('[STRIKELOOP] Setting red traps (1-4) to SOLID RED');
+  logger.info('STRIKELOOP', 'Setting red traps (1-4) to SOLID RED');
   activeMission.redTraps.forEach(pos => {
     const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
     activeTargets.push(trap);
@@ -2064,7 +2062,7 @@ function activateModeBlinkingBlueBonus() {
   });
 
   // Blue targets (5-8) blink at 1 sec on/off
-  console.log('[STRIKELOOP] Setting blue targets (5-8) to BLINKING BLUE');
+  logger.info('STRIKELOOP', 'Setting blue targets (5-8) to BLINKING BLUE');
   activeMission.blueTargets.forEach(pos => {
     const target = { elementId: pos, colorCode: 'b', isValid: true };
     activeTargets.push(target);
@@ -2072,7 +2070,7 @@ function activateModeBlinkingBlueBonus() {
   startBlinkingTargets(activeMission.blueTargets, 'b', 1000);
 
   // Bonus section (9-13) solid yellow
-  console.log('[STRIKELOOP] Setting bonus section (9-13) to SOLID YELLOW');
+  logger.info('STRIKELOOP', 'Setting bonus section (9-13) to SOLID YELLOW');
   activateBonusSection();
 }
 
@@ -2121,7 +2119,7 @@ function activateModeSnakeGreen3() {
     // Bonus section
     activateBonusSection();
 
-    console.log(`[STRIKELOOP] Snake green-3: pattern ${snakePatternIndex}: ${activePositions.join(',')}`);
+    logger.info('STRIKELOOP', `Snake green-3: pattern ${snakePatternIndex}: ${activePositions.join(',')}`);
     snakePatternIndex = (snakePatternIndex + 1) % pattern.length;
   };
 
@@ -2174,7 +2172,7 @@ function activateModeSnakeBlue3() {
     // Bonus section
     activateBonusSection();
 
-    console.log(`[STRIKELOOP] Snake blue-3: pattern ${snakePatternIndex}: ${activePositions.join(',')}`);
+    logger.info('STRIKELOOP', `Snake blue-3: pattern ${snakePatternIndex}: ${activePositions.join(',')}`);
     snakePatternIndex = (snakePatternIndex + 1) % pattern.length;
   };
 
@@ -2227,7 +2225,7 @@ function activateModeSnakeGreen2() {
     // Bonus section
     activateBonusSection();
 
-    console.log(`[STRIKELOOP] Snake green-2: pattern ${snakePatternIndex}: ${activePositions.join(',')}`);
+    logger.info('STRIKELOOP', `Snake green-2: pattern ${snakePatternIndex}: ${activePositions.join(',')}`);
     snakePatternIndex = (snakePatternIndex + 1) % pattern.length;
   };
 
@@ -2280,7 +2278,7 @@ function activateModeSnakeBlue2() {
     // Bonus section
     activateBonusSection();
 
-    console.log(`[STRIKELOOP] Snake blue-2: pattern ${snakePatternIndex}: ${activePositions.join(',')}`);
+    logger.info('STRIKELOOP', `Snake blue-2: pattern ${snakePatternIndex}: ${activePositions.join(',')}`);
     snakePatternIndex = (snakePatternIndex + 1) % pattern.length;
   };
 
@@ -2333,7 +2331,7 @@ function activateModeMemorySequence() {
     // Generate random sequence only once per level
     if (memorySequence.length === 0) {
       memorySequence = generateRandomSequence();
-      console.log(`[STRIKELOOP] Generated memory sequence:`, memorySequence);
+      logger.info('STRIKELOOP', `Generated memory sequence:`, memorySequence);
     }
 
     // Display sequence
@@ -2352,7 +2350,7 @@ function activateModeMemorySequence() {
     // Bonus section still active and always valid
     activateBonusSection();
 
-    console.log(`[STRIKELOOP] Memory sequence reproduction phase - waiting for user input`);
+    logger.info('STRIKELOOP', `Memory sequence reproduction phase - waiting for user input`);
   }
 }
 
@@ -2374,7 +2372,7 @@ function generateRandomSequence() {
 }
 
 function displayMemorySequence() {
-  console.log(`[STRIKELOOP] Displaying memory sequence: ${memorySequence.join(' -> ')}`);
+  logger.info('STRIKELOOP', `Displaying memory sequence: ${memorySequence.join(' -> ')}`);
 
   let currentIndex = 0;
 
@@ -2388,7 +2386,7 @@ function displayMemorySequence() {
 
       // Flash target
       controlLED(targetId, color);
-      console.log(`[STRIKELOOP] Showing sequence step ${currentIndex + 1}/${memorySequence.length}: Target ${targetId} (${color.toUpperCase()})`);
+      logger.info('STRIKELOOP', `Showing sequence step ${currentIndex + 1}/${memorySequence.length}: Target ${targetId} (${color.toUpperCase()})`);
 
       // Turn off after 1 sec
       setTimeout(() => {
@@ -2402,7 +2400,7 @@ function displayMemorySequence() {
       }, 1000);
     } else {
       // Sequence display complete - start reproduction phase
-      console.log(`[STRIKELOOP] Sequence display complete - starting reproduction phase`);
+      logger.info('STRIKELOOP', `Sequence display complete - starting reproduction phase`);
       memorySequenceDisplayed = true;
       memoryReproductionStep = 0;
 
@@ -2448,7 +2446,7 @@ function activateBonusSection() {
     });
 
     // Emit bonus active event to frontend
-    console.log('[STRIKELOOP] Bonus section activated');
+    logger.info('STRIKELOOP', 'Bonus section activated');
     emitter.emit('bonusActive', true);
   }
 }
@@ -2469,7 +2467,7 @@ function turnAllHolesRed() {
   for (let i = 1; i <= 9; i++) {
     controlLED(i, 'r');
   }
-  console.log('[STRIKELOOP] All 9 holes (including bonus zone) turned RED - hardware in button input mode');
+  logger.info('STRIKELOOP', 'All 9 holes (including bonus zone) turned RED - hardware in button input mode');
 }
 
 function restoreHoleColors() {
@@ -2477,7 +2475,7 @@ function restoreHoleColors() {
   // Called after button validation completes or times out
   if (!activeMission || !activeMission.arcadeMode) return;
 
-  console.log('[STRIKELOOP] Restoring hole colors for mode:', activeMission.arcadeMode);
+  logger.info('STRIKELOOP', 'Restoring hole colors for mode:', activeMission.arcadeMode);
 
   // Directly restore colors without turning OFF first (optimization)
   // This reduces serial writes by 50% (no unnecessary OFF commands)
@@ -2619,7 +2617,7 @@ function handleTwoStepValidation(hitColor) {
     // IMPORTANT: For sequence modes, allow new hit to abort current sequence and start fresh
     // This allows player to restart if they made a mistake or if they didn't complete in time
     if (activeMission.buttonMode === 'sequence-green' || activeMission.buttonMode === 'sequence-blue') {
-      console.log('[STRIKELOOP] New hit during sequence validation - aborting current sequence and starting fresh');
+      logger.info('STRIKELOOP', 'New hit during sequence validation - aborting current sequence and starting fresh');
       // Clear current sequence state
       sequenceToMatch = [];
       sequencePlayerInput = [];
@@ -2629,7 +2627,7 @@ function handleTwoStepValidation(hitColor) {
       // Now continue with new validation below
     } else {
       // For multi-button modes, ignore new hits while validation is pending
-      console.log('[STRIKELOOP] Validation already pending, ignoring hit');
+      logger.info('STRIKELOOP', 'Validation already pending, ignoring hit');
       return false;
     }
   }
@@ -2640,7 +2638,7 @@ function handleTwoStepValidation(hitColor) {
   // Light up buttons based on button mode
   const buttonMode = activeMission.buttonMode;
 
-  console.log(`[STRIKELOOP] Starting validation - Mode: ${buttonMode}, Hit Color: ${hitColor}`);
+  logger.info('STRIKELOOP', `Starting validation - Mode: ${buttonMode}, Hit Color: ${hitColor}`);
 
   // Turn all holes red for ALL button modes (Levels 1-6) to signal button mode
   // This provides visual feedback that hardware has switched to button input mode
@@ -2652,7 +2650,7 @@ function handleTwoStepValidation(hitColor) {
       buttonsToValidate = [...BUTTONS_BY_COLOR.green];
       buttonsValidated = [];
       turnOnAllButtonsOfColor('green');
-      console.log('[STRIKELOOP] Lit all 4 green buttons:', buttonsToValidate);
+      logger.info('STRIKELOOP', 'Lit all 4 green buttons:', buttonsToValidate);
       break;
 
     case 'all-blue':
@@ -2660,7 +2658,7 @@ function handleTwoStepValidation(hitColor) {
       buttonsToValidate = [...BUTTONS_BY_COLOR.blue];
       buttonsValidated = [];
       turnOnAllButtonsOfColor('blue');
-      console.log('[STRIKELOOP] Lit all 4 blue buttons:', buttonsToValidate);
+      logger.info('STRIKELOOP', 'Lit all 4 blue buttons:', buttonsToValidate);
       break;
 
     case 'sequence-green':
@@ -2676,7 +2674,7 @@ function handleTwoStepValidation(hitColor) {
     case 'all-colors-match':
       // Buttons already lit (all colors), player must press matching color
       // No change needed - buttons stay lit
-      console.log('[STRIKELOOP] All buttons already lit, waiting for color match');
+      logger.info('STRIKELOOP', 'All buttons already lit, waiting for color match');
       break;
 
     case 'random-one-per-color':
@@ -2685,7 +2683,7 @@ function handleTwoStepValidation(hitColor) {
       break;
 
     default:
-      console.error('[STRIKELOOP] Unknown button mode:', buttonMode);
+      logger.error('STRIKELOOP', 'Unknown button mode:', buttonMode);
       validationPending = false;
       return false;
   }
@@ -2706,7 +2704,7 @@ function startSequenceValidation(colorName) {
   sequencePlayerInput = [];
   sequenceDisplaying = true;
 
-  console.log('[STRIKELOOP] Starting sequence display:', sequenceToMatch);
+  logger.info('STRIKELOOP', 'Starting sequence display:', sequenceToMatch);
 
   // Display sequence
   displayButtonSequence(sequenceToMatch, colorName);
@@ -2723,12 +2721,12 @@ function displayButtonSequence(sequence, colorName) {
 
       // Turn on button
       controlLED(buttonId, colorCode);
-      console.log(`[STRIKELOOP] Sequence step ${index + 1}/${sequence.length}: Button ${buttonId} ON`);
+      logger.info('STRIKELOOP', `Sequence step ${index + 1}/${sequence.length}: Button ${buttonId} ON`);
 
       setTimeout(() => {
         // Turn off button
         controlLED(buttonId, 'o');
-        console.log(`[STRIKELOOP] Sequence step ${index + 1}/${sequence.length}: Button ${buttonId} OFF`);
+        logger.info('STRIKELOOP', `Sequence step ${index + 1}/${sequence.length}: Button ${buttonId} OFF`);
 
         // Wait 1 second before next
         setTimeout(() => {
@@ -2740,7 +2738,7 @@ function displayButtonSequence(sequence, colorName) {
       // Sequence display complete - now player must reproduce
       sequenceDisplaying = false;
       sequenceValidationActive = true;
-      console.log('[STRIKELOOP] Sequence display complete - waiting for player input');
+      logger.info('STRIKELOOP', 'Sequence display complete - waiting for player input');
 
       // Start 5-second timeout for sequence reproduction
       startSequenceTimeout();
@@ -2757,10 +2755,10 @@ function startSequenceTimeout() {
     clearTimeout(validationTimeout);
   }
 
-  console.log(`[STRIKELOOP] Starting ${BUTTON_SEQUENCE_TIMEOUT_MS / 1000}-second timeout for sequence reproduction`);
+  logger.info('STRIKELOOP', `Starting ${BUTTON_SEQUENCE_TIMEOUT_MS / 1000}-second timeout for sequence reproduction`);
 
   validationTimeout = setTimeout(() => {
-    console.log('[STRIKELOOP] ⏱️ Sequence timeout! Player failed to reproduce sequence in time');
+    logger.info('STRIKELOOP', '⏱️ Sequence timeout! Player failed to reproduce sequence in time');
 
     // Clear sequence state
     sequenceToMatch = [];
@@ -2781,10 +2779,10 @@ function startHoleSequenceTimeout() {
     clearTimeout(validationTimeout);
   }
 
-  console.log(`[STRIKELOOP] Starting ${BUTTON_SEQUENCE_TIMEOUT_MS / 1000}-second timeout for button sequence validation`);
+  logger.info('STRIKELOOP', `Starting ${BUTTON_SEQUENCE_TIMEOUT_MS / 1000}-second timeout for button sequence validation`);
 
   validationTimeout = setTimeout(() => {
-    console.log('[STRIKELOOP] ⏱️ Button sequence timeout! Player failed to complete button sequence in time');
+    logger.info('STRIKELOOP', '⏱️ Button sequence timeout! Player failed to complete button sequence in time');
 
     // Reset hole sequence state
     holeSequenceActive = true;  // Set to true to accept new hole hits
@@ -2819,7 +2817,7 @@ function lightOneRandomButtonPerColor() {
     const index = randomButton - 14;
     activeButtonColors[index] = colorCode;
 
-    console.log(`[STRIKELOOP] Lit random ${colorName} button: ${randomButton}`);
+    logger.info('STRIKELOOP', `Lit random ${colorName} button: ${randomButton}`);
   });
 
   buttonsValidated = [];
@@ -2859,7 +2857,7 @@ function validateButtonPress(buttonIndex) {
   // Called when a button is pressed
   const buttonId = buttonIndex + 14; // Convert index (0-14) to button ID (14-28)
 
-  console.log(`[STRIKELOOP] Button press: Index ${buttonIndex}, ID ${buttonId}`);
+  logger.info('STRIKELOOP', `Button press: Index ${buttonIndex}, ID ${buttonId}`);
 
   // Handle hole sequence matching (Levels 7-10) - PRIORITY CHECK
   if (buttonSequenceActive) {
@@ -2882,7 +2880,7 @@ function validateButtonPress(buttonIndex) {
     return validateColorMatchButtonPress(buttonId);
   }
 
-  console.log('[STRIKELOOP] No validation pending');
+  logger.info('STRIKELOOP', 'No validation pending');
   return false;
 }
 
@@ -2890,18 +2888,18 @@ function validateButtonPress(buttonIndex) {
 function validateSequenceButtonPress(buttonId) {
   const expectedButton = sequenceToMatch[sequencePlayerInput.length];
 
-  console.log(`[STRIKELOOP] Sequence validation: Pressed ${buttonId}, Expected ${expectedButton}`);
-  console.log(`[STRIKELOOP] Sequence state: sequenceToMatch=${JSON.stringify(sequenceToMatch)}, playerInput=${JSON.stringify(sequencePlayerInput)}`);
+  logger.info('STRIKELOOP', `Sequence validation: Pressed ${buttonId}, Expected ${expectedButton}`);
+  logger.info('STRIKELOOP', `Sequence state: sequenceToMatch=${JSON.stringify(sequenceToMatch)}, playerInput=${JSON.stringify(sequencePlayerInput)}`);
 
   if (!sequenceToMatch || sequenceToMatch.length === 0) {
-    console.log(`[STRIKELOOP] ❌ No sequence to match! Player must hit circle first.`);
+    logger.info('STRIKELOOP', `❌ No sequence to match! Player must hit circle first.`);
     return false;
   }
 
   if (buttonId === expectedButton) {
     // Correct button!
     sequencePlayerInput.push(buttonId);
-    console.log(`[STRIKELOOP] ✅ Correct! Progress: ${sequencePlayerInput.length}/${sequenceToMatch.length}`);
+    logger.info('STRIKELOOP', `✅ Correct! Progress: ${sequencePlayerInput.length}/${sequenceToMatch.length}`);
 
     // Check if sequence complete
     if (sequencePlayerInput.length === sequenceToMatch.length) {
@@ -2911,7 +2909,7 @@ function validateSequenceButtonPress(buttonId) {
       const points = activeMission.pointsPerValidated || 100;
       const newScore = localScore + points;
       updateScore(newScore);
-      console.log(`[STRIKELOOP] 🎉 SEQUENCE COMPLETED! +${points} points`);
+      logger.info('STRIKELOOP', `🎉 SEQUENCE COMPLETED! +${points} points`);
 
       // Clear sequence state for next round
       sequenceToMatch = [];
@@ -2927,7 +2925,7 @@ function validateSequenceButtonPress(buttonId) {
     return true;
   } else {
     // Wrong button - reset and player must hit circle again
-    console.log(`[STRIKELOOP] ❌ Wrong button! Resetting sequence...`);
+    logger.info('STRIKELOOP', `❌ Wrong button! Resetting sequence...`);
 
     // Clear sequence state - player must hit circle again
     sequenceToMatch = [];
@@ -2951,13 +2949,13 @@ function validateSequenceButtonPress(buttonId) {
 function validateMultiButtonPress(buttonId) {
   // Check if this button is in the list to validate
   if (!buttonsToValidate.includes(buttonId)) {
-    console.log(`[STRIKELOOP] ❌ Button ${buttonId} not in validation list`);
+    logger.info('STRIKELOOP', `❌ Button ${buttonId} not in validation list`);
     return false;
   }
 
   // Check if already validated
   if (buttonsValidated.includes(buttonId)) {
-    console.log(`[STRIKELOOP] Button ${buttonId} already validated`);
+    logger.info('STRIKELOOP', `Button ${buttonId} already validated`);
     return false;
   }
 
@@ -2969,7 +2967,7 @@ function validateMultiButtonPress(buttonId) {
   const index = buttonId - 14;
   activeButtonColors[index] = 'o';
 
-  console.log(`[STRIKELOOP] ✅ Button ${buttonId} validated! Progress: ${buttonsValidated.length}/${buttonsToValidate.length}`);
+  logger.info('STRIKELOOP', `✅ Button ${buttonId} validated! Progress: ${buttonsValidated.length}/${buttonsToValidate.length}`);
 
   // Check if all buttons validated
   if (buttonsValidated.length === buttonsToValidate.length) {
@@ -2979,7 +2977,7 @@ function validateMultiButtonPress(buttonId) {
     const points = activeMission.pointsPerValidated || 100;
     const newScore = localScore + points;
     updateScore(newScore);
-    console.log(`[STRIKELOOP] 🎉 ALL BUTTONS VALIDATED! +${points} points`);
+    logger.info('STRIKELOOP', `🎉 ALL BUTTONS VALIDATED! +${points} points`);
 
     // Reset for next round
     resetValidationState();
@@ -2996,7 +2994,7 @@ function validateMultiButtonPress(buttonId) {
 // Validate color-matching button press (Levels 9-10)
 function validateColorMatchButtonPress(buttonId) {
   if (!validationPending) {
-    console.log('[STRIKELOOP] No validation pending');
+    logger.info('STRIKELOOP', 'No validation pending');
     return false;
   }
 
@@ -3005,13 +3003,13 @@ function validateColorMatchButtonPress(buttonId) {
   const buttonColor = activeButtonColors[index];
 
   if (buttonColor === 'o' || !buttonColor) {
-    console.log(`[STRIKELOOP] ❌ Button ${buttonId} not lit`);
+    logger.info('STRIKELOOP', `❌ Button ${buttonId} not lit`);
     return false;
   }
 
   // Check if button color matches the hit circle color
   if (buttonColor !== validationHitColor) {
-    console.log(`[STRIKELOOP] ❌ Wrong color! Expected ${validationHitColor}, got ${buttonColor}`);
+    logger.info('STRIKELOOP', `❌ Wrong color! Expected ${validationHitColor}, got ${buttonColor}`);
     return false;
   }
 
@@ -3021,7 +3019,7 @@ function validateColorMatchButtonPress(buttonId) {
   const points = activeMission.pointsPerValidated || 100;
   const newScore = localScore + points;
   updateScore(newScore);
-  console.log(`[STRIKELOOP] ✅ COLOR MATCH! +${points} points`);
+  logger.info('STRIKELOOP', `✅ COLOR MATCH! +${points} points`);
 
   // For Level 10 (random-one-per-color), light new random buttons
   if (activeMission.buttonMode === 'random-one-per-color') {
@@ -3036,7 +3034,7 @@ function validateColorMatchButtonPress(buttonId) {
 // Validate hole sequence button press (Levels 7-10)
 function validateHoleSequenceButtonPress(buttonId) {
   if (!buttonSequenceActive || buttonSequenceToMatch.length === 0) {
-    console.log('[STRIKELOOP] ❌ No button sequence active!');
+    logger.info('STRIKELOOP', '❌ No button sequence active!');
     return false;
   }
 
@@ -3046,13 +3044,13 @@ function validateHoleSequenceButtonPress(buttonId) {
   // Get the color of the pressed button
   const buttonColor = getButtonColorCode(buttonId);
 
-  console.log(`[STRIKELOOP] Button ${buttonId} pressed (color: ${buttonColor?.toUpperCase()}), Expected: ${expectedColor.toUpperCase()}`);
-  console.log(`[STRIKELOOP] Progress: ${currentStep + 1}/${buttonSequenceToMatch.length}`);
+  logger.info('STRIKELOOP', `Button ${buttonId} pressed (color: ${buttonColor?.toUpperCase()}), Expected: ${expectedColor.toUpperCase()}`);
+  logger.info('STRIKELOOP', `Progress: ${currentStep + 1}/${buttonSequenceToMatch.length}`);
 
   if (buttonColor !== expectedColor) {
     // Wrong button! Reset everything
-    console.log(`[STRIKELOOP] ❌ WRONG BUTTON! Expected ${expectedColor.toUpperCase()}, got ${buttonColor?.toUpperCase()}`);
-    console.log('[STRIKELOOP] Resetting - hit holes again to retry');
+    logger.info('STRIKELOOP', `❌ WRONG BUTTON! Expected ${expectedColor.toUpperCase()}, got ${buttonColor?.toUpperCase()}`);
+    logger.info('STRIKELOOP', 'Resetting - hit holes again to retry');
 
     // Clear timeout
     if (validationTimeout) {
@@ -3075,7 +3073,7 @@ function validateHoleSequenceButtonPress(buttonId) {
 
   // Check if same button was just pressed (prevent tapping same button twice)
   if (buttonSequencePressed.length > 0 && buttonSequencePressed[buttonSequencePressed.length - 1] === buttonId) {
-    console.log(`[STRIKELOOP] ❌ Same button pressed twice! Must press different buttons.`);
+    logger.info('STRIKELOOP', `❌ Same button pressed twice! Must press different buttons.`);
     return false;
   }
 
@@ -3084,7 +3082,7 @@ function validateHoleSequenceButtonPress(buttonId) {
 
   // Turn off the button that was just pressed
   controlLED(buttonId, 'o');
-  console.log(`[STRIKELOOP] ✅ Correct! Button ${buttonId} turned OFF`);
+  logger.info('STRIKELOOP', `✅ Correct! Button ${buttonId} turned OFF`);
 
   // Check if sequence is complete
   if (buttonSequencePressed.length >= buttonSequenceToMatch.length) {
@@ -3100,9 +3098,9 @@ function validateHoleSequenceButtonPress(buttonId) {
     const newScore = localScore + points;
     updateScore(newScore);
 
-    console.log(`[STRIKELOOP] 🎉 BUTTON SEQUENCE COMPLETED! +${points} points`);
-    console.log(`[STRIKELOOP] Holes hit: ${holeSequenceHit.join(', ')}`);
-    console.log(`[STRIKELOOP] Buttons pressed: ${buttonSequencePressed.join(', ')}`);
+    logger.info('STRIKELOOP', `🎉 BUTTON SEQUENCE COMPLETED! +${points} points`);
+    logger.info('STRIKELOOP', `Holes hit: ${holeSequenceHit.join(', ')}`);
+    logger.info('STRIKELOOP', `Buttons pressed: ${buttonSequencePressed.join(', ')}`);
 
     // Reset for next sequence
     holeSequenceActive = true;  // Set to true to accept new hole hits
@@ -3119,7 +3117,7 @@ function validateHoleSequenceButtonPress(buttonId) {
     return true;
   }
 
-  console.log(`[STRIKELOOP] Button sequence progress: ${buttonSequencePressed.length}/${buttonSequenceToMatch.length}`);
+  logger.info('STRIKELOOP', `Button sequence progress: ${buttonSequencePressed.length}/${buttonSequenceToMatch.length}`);
   return true;
 }
 
@@ -3279,7 +3277,7 @@ function activateModeTwoStepRandomButtonGreen() {
   // Rotate button positions every 5 seconds
   if (buttonRotationInterval) clearInterval(buttonRotationInterval);
   buttonRotationInterval = setInterval(() => {
-    console.log('[STRIKELOOP] Rotating button positions...');
+    logger.info('STRIKELOOP', 'Rotating button positions...');
     setAllButtonsRandomColors();
   }, 5000);
 }
@@ -3307,7 +3305,7 @@ function activateModeTwoStepRandomButtonBlue() {
   // Rotate button positions every 5 seconds
   if (buttonRotationInterval) clearInterval(buttonRotationInterval);
   buttonRotationInterval = setInterval(() => {
-    console.log('[STRIKELOOP] Rotating button positions...');
+    logger.info('STRIKELOOP', 'Rotating button positions...');
     setAllButtonsRandomColors();
   }, 5000);
 }
@@ -3516,7 +3514,7 @@ function activateModeTwoStepUltimate() {
 function turnOnAllButtonsOfColor(colorName) {
   const buttons = BUTTONS_BY_COLOR[colorName];
   if (!buttons) {
-    console.error(`[STRIKELOOP] Invalid color name: ${colorName}`);
+    logger.error('STRIKELOOP', `Invalid color name: ${colorName}`);
     return [];
   }
 
@@ -3534,13 +3532,13 @@ function turnOnAllButtonsOfColor(colorName) {
     activeButtonColors[index] = colorCode;
   });
 
-  console.log(`[STRIKELOOP] Turned on all ${colorName} buttons:`, buttons);
+  logger.info('STRIKELOOP', `Turned on all ${colorName} buttons:`, buttons);
   return buttons;
 }
 
 // Level 1: Fixed Green + All 4 Green Buttons
 function activateModeTwoStepAllButtonsGreen() {
-  console.log('[STRIKELOOP] Activating Level 1: Fixed Green + All 4 Green Buttons');
+  logger.info('STRIKELOOP', 'Activating Level 1: Fixed Green + All 4 Green Buttons');
 
   // Setup green circles (1-4) - always lit
   activeMission.greenTargets.forEach(pos => {
@@ -3568,7 +3566,7 @@ function activateModeTwoStepAllButtonsGreen() {
 
 // Level 2: Fixed Blue + All 4 Blue Buttons
 function activateModeTwoStepAllButtonsBlue() {
-  console.log('[STRIKELOOP] Activating Level 2: Fixed Blue + All 4 Blue Buttons');
+  logger.info('STRIKELOOP', 'Activating Level 2: Fixed Blue + All 4 Blue Buttons');
 
   // Setup blue circles (5-8) - always lit
   activeMission.blueTargets.forEach(pos => {
@@ -3595,7 +3593,7 @@ function activateModeTwoStepAllButtonsBlue() {
 
 // Level 3: Alternating Green + All 4 Green Buttons
 function activateModeTwoStepAlternatingAllButtonsGreen() {
-  console.log('[STRIKELOOP] Activating Level 3: Alternating Green + All 4 Green Buttons');
+  logger.info('STRIKELOOP', 'Activating Level 3: Alternating Green + All 4 Green Buttons');
 
   if (alternateInterval) clearInterval(alternateInterval);
   alternatePatternIndex = 0;
@@ -3604,7 +3602,7 @@ function activateModeTwoStepAlternatingAllButtonsGreen() {
     // Don't update pattern if validation is pending (buttons are active)
     // This prevents overwriting the red holes during button validation
     if (validationPending) {
-      console.log('[STRIKELOOP] Pattern update skipped - validation in progress');
+      logger.info('STRIKELOOP', 'Pattern update skipped - validation in progress');
       return;
     }
 
@@ -3646,7 +3644,7 @@ function activateModeTwoStepAlternatingAllButtonsGreen() {
 
 // Level 4: Alternating Blue + All 4 Blue Buttons
 function activateModeTwoStepAlternatingAllButtonsBlue() {
-  console.log('[STRIKELOOP] Activating Level 4: Alternating Blue + All 4 Blue Buttons');
+  logger.info('STRIKELOOP', 'Activating Level 4: Alternating Blue + All 4 Blue Buttons');
 
   if (alternateInterval) clearInterval(alternateInterval);
   alternatePatternIndex = 0;
@@ -3655,7 +3653,7 @@ function activateModeTwoStepAlternatingAllButtonsBlue() {
     // Don't update pattern if validation is pending (buttons are active)
     // This prevents overwriting the red holes during button validation
     if (validationPending) {
-      console.log('[STRIKELOOP] Pattern update skipped - validation in progress');
+      logger.info('STRIKELOOP', 'Pattern update skipped - validation in progress');
       return;
     }
 
@@ -3697,7 +3695,7 @@ function activateModeTwoStepAlternatingAllButtonsBlue() {
 
 // Level 5: Sequence Reproduction - Green
 function activateModeTwoStepSequenceGreen() {
-  console.log('[STRIKELOOP] Activating Level 5: Sequence Reproduction - Green');
+  logger.info('STRIKELOOP', 'Activating Level 5: Sequence Reproduction - Green');
 
   // Setup green circles (1-4) - always lit
   activeMission.greenTargets.forEach(pos => {
@@ -3723,7 +3721,7 @@ function activateModeTwoStepSequenceGreen() {
 
 // Level 6: Sequence Reproduction - Blue
 function activateModeTwoStepSequenceBlue() {
-  console.log('[STRIKELOOP] Activating Level 6: Sequence Reproduction - Blue');
+  logger.info('STRIKELOOP', 'Activating Level 6: Sequence Reproduction - Blue');
 
   // Setup blue circles (5-8) - always lit
   activeMission.blueTargets.forEach(pos => {
@@ -3749,7 +3747,7 @@ function activateModeTwoStepSequenceBlue() {
 
 // Level 7: Random Green + All 4 Green Buttons
 function activateModeTwoStepRandomAllButtonsGreen() {
-  console.log('[STRIKELOOP] Activating Level 7: Random Green + All 4 Green Buttons');
+  logger.info('STRIKELOOP', 'Activating Level 7: Random Green + All 4 Green Buttons');
 
   if (randomTargetInterval) clearInterval(randomTargetInterval);
 
@@ -3795,7 +3793,7 @@ function activateModeTwoStepRandomAllButtonsGreen() {
 
 // Level 8: Mixed Colors Alternating + All 4 Blue Buttons
 function activateModeTwoStepMixedAllButtonsBlue() {
-  console.log('[STRIKELOOP] Activating Level 8: Mixed Colors + All 4 Blue Buttons');
+  logger.info('STRIKELOOP', 'Activating Level 8: Mixed Colors + All 4 Blue Buttons');
 
   if (alternateInterval) clearInterval(alternateInterval);
   alternatePatternIndex = 0;
@@ -3832,7 +3830,7 @@ function activateModeTwoStepMixedAllButtonsBlue() {
 
 // Level 9: Color Rotation (Circles 1-4) + All Buttons Match Color
 function activateModeTwoStepColorRotation1To4() {
-  console.log('[STRIKELOOP] Activating Level 9: Color Rotation 1-4');
+  logger.info('STRIKELOOP', 'Activating Level 9: Color Rotation 1-4');
 
   if (colorRotationInterval) clearInterval(colorRotationInterval);
   currentRotationIndex = 0;
@@ -3895,7 +3893,7 @@ function activateModeTwoStepColorRotation1To4() {
     activeButtonColors[buttonId - 14] = 'd';
   });
 
-  console.log('[STRIKELOOP] All buttons lit with their fixed colors');
+  logger.info('STRIKELOOP', 'All buttons lit with their fixed colors');
 
   rotateColors();
   colorRotationInterval = setInterval(rotateColors, activeMission.rotationDelay || 2000);
@@ -3905,7 +3903,7 @@ function activateModeTwoStepColorRotation1To4() {
 
 // Level 10: Color Rotation (Circles 5-8) + Random One Button Per Color
 function activateModeTwoStepColorRotation5To8() {
-  console.log('[STRIKELOOP] Activating Level 10: Color Rotation 5-8');
+  logger.info('STRIKELOOP', 'Activating Level 10: Color Rotation 5-8');
 
   if (colorRotationInterval) clearInterval(colorRotationInterval);
   currentRotationIndex = 0;
@@ -3953,7 +3951,7 @@ function activateModeTwoStepColorRotation5To8() {
 
 // Level 7: All 8 holes lit (4 green + 4 blue), hit 2 holes, validate with matching buttons in order
 function activateModeSequenceMatch2Holes() {
-  console.log('[STRIKELOOP] Activating Level 7: Sequence Match - 2 Holes (All 8 lit)');
+  logger.info('STRIKELOOP', 'Activating Level 7: Sequence Match - 2 Holes (All 8 lit)');
 
   // Light all 4 green holes
   activeMission.greenTargets.forEach(pos => {
@@ -3977,7 +3975,7 @@ function activateModeSequenceMatch2Holes() {
       controlLED(buttonId, color);
     });
     buttonsInitialized = true;
-    console.log('[STRIKELOOP] All 15 buttons initialized with fixed colors');
+    logger.info('STRIKELOOP', 'All 15 buttons initialized with fixed colors');
   }
 
   // Initialize hole sequence tracking
@@ -3992,7 +3990,7 @@ function activateModeSequenceMatch2Holes() {
 
 // Level 8: Only 4 holes lit (2 green + 2 blue + 4 red traps), same mechanic
 function activateModeSequenceMatch2HolesHard() {
-  console.log('[STRIKELOOP] Activating Level 8: Sequence Match - 2 Holes (4 lit + traps)');
+  logger.info('STRIKELOOP', 'Activating Level 8: Sequence Match - 2 Holes (4 lit + traps)');
 
   // Light 2 green holes
   activeMission.greenTargets.forEach(pos => {
@@ -4024,7 +4022,7 @@ function activateModeSequenceMatch2HolesHard() {
       controlLED(buttonId, color);
     });
     buttonsInitialized = true;
-    console.log('[STRIKELOOP] All 15 buttons initialized with fixed colors');
+    logger.info('STRIKELOOP', 'All 15 buttons initialized with fixed colors');
   }
 
   // Initialize hole sequence tracking
@@ -4039,7 +4037,7 @@ function activateModeSequenceMatch2HolesHard() {
 
 // Level 9: All 8 holes lit (2G + 2B + 2Y + 2W), hit 3 holes, validate with matching buttons in order
 function activateModeSequenceMatch3Holes() {
-  console.log('[STRIKELOOP] Activating Level 9: Sequence Match - 3 Holes (All 8 lit)');
+  logger.info('STRIKELOOP', 'Activating Level 9: Sequence Match - 3 Holes (All 8 lit)');
 
   // Light 2 green holes
   activeMission.greenTargets.forEach(pos => {
@@ -4077,7 +4075,7 @@ function activateModeSequenceMatch3Holes() {
       controlLED(buttonId, color);
     });
     buttonsInitialized = true;
-    console.log('[STRIKELOOP] All 15 buttons initialized with fixed colors');
+    logger.info('STRIKELOOP', 'All 15 buttons initialized with fixed colors');
   }
 
   // Initialize hole sequence tracking
@@ -4092,7 +4090,7 @@ function activateModeSequenceMatch3Holes() {
 
 // Level 10: Only 4 holes lit (1G + 1B + 1Y + 1W + 4 red traps), same mechanic
 function activateModeSequenceMatch3HolesHard() {
-  console.log('[STRIKELOOP] Activating Level 10: Sequence Match - 3 Holes (4 lit + traps)');
+  logger.info('STRIKELOOP', 'Activating Level 10: Sequence Match - 3 Holes (4 lit + traps)');
 
   // Light 1 green hole
   activeMission.greenTargets.forEach(pos => {
@@ -4138,7 +4136,7 @@ function activateModeSequenceMatch3HolesHard() {
       controlLED(buttonId, color);
     });
     buttonsInitialized = true;
-    console.log('[STRIKELOOP] All 15 buttons initialized with fixed colors');
+    logger.info('STRIKELOOP', 'All 15 buttons initialized with fixed colors');
   }
 
   // Initialize hole sequence tracking
@@ -4206,7 +4204,7 @@ function setupTrapPosition(position) {
 
   
   // OPTIMIZATION: Always use constant red for traps (no blinking to reduce serial writes)
-  console.log(`[STRIKELOOP] Setting up constant red trap at position ${position}`);
+  logger.info('STRIKELOOP', `Setting up constant red trap at position ${position}`);
   controlLED(position, 'r');
 }
 
@@ -4224,7 +4222,7 @@ function setupAdditionalTraps(trapConfig) {
   const neededTraps = trapConfig.count - trapPositions.length;
   const trapsToAdd = Math.min(neededTraps, availablePositions.length);
 
-  console.log(`[STRIKELOOP] Setting up additional traps: need ${neededTraps}, available positions: [${availablePositions.join(',')}], adding ${trapsToAdd}`);
+  logger.info('STRIKELOOP', `Setting up additional traps: need ${neededTraps}, available positions: [${availablePositions.join(',')}], adding ${trapsToAdd}`);
 
   for (let i = 0; i < trapsToAdd; i++) {
     const position = availablePositions[Math.floor(Math.random() * availablePositions.length)];
@@ -4279,7 +4277,7 @@ function activateMultiplier(level) {
 
     
     multiplierTimer = setTimeout(() => {
-      console.log(`[STRIKELOOP] Multiplier x${currentMultiplier} expired`);
+      logger.info('STRIKELOOP', `Multiplier x${currentMultiplier} expired`);
       currentMultiplier = 1;
       multiplierActive = false;
       consecutiveValidHits = 0; 
@@ -4289,7 +4287,7 @@ function activateMultiplier(level) {
       emitter.emit('multiplierUpdate', gameState.multiplier);
     }, duration);
 
-    console.log(`[STRIKELOOP] Multiplier ACTIVATED: x${currentMultiplier} for ${duration/1000}s`);
+    logger.info('STRIKELOOP', `Multiplier ACTIVATED: x${currentMultiplier} for ${duration/1000}s`);
 
     
     gameState.multiplier = `x${currentMultiplier}`;
@@ -4300,7 +4298,7 @@ function activateMultiplier(level) {
 
 function cancelMultiplier() {
   if (multiplierActive) {
-    console.log(`[STRIKELOOP] Multiplier x${currentMultiplier} CANCELLED by trap hit!`);
+    logger.info('STRIKELOOP', `Multiplier x${currentMultiplier} CANCELLED by trap hit!`);
 
     if (multiplierTimer) {
       clearTimeout(multiplierTimer);
@@ -4325,12 +4323,12 @@ function validateArcadeInput(target, timestamp) {
   let pointsAwarded = 0;
   let wasValidHit = false;
 
-  console.log(`[STRIKELOOP] Arcade validation - Circle ${elementId}: color=${colorCode}, isTrap=${isTrap}, isValid=${isValid}`);
+  logger.trace('STRIKELOOP', `Arcade: ${elementId} ${colorCode} trap=${isTrap} valid=${isValid}`);
 
 
   if (isTrap === true || colorCode === 'r') {
     const penalty = activeMission.penaltyRed || activeMission.traps?.penalty || -100;
-    console.log(`[STRIKELOOP] ❌ TRAP HIT! Circle ${elementId} - Penalty: ${penalty}`);
+    logger.info('STRIKELOOP', `❌ TRAP ${elementId} ${penalty}pts`);
     pointsAwarded = penalty;
 
 
@@ -4339,7 +4337,7 @@ function validateArcadeInput(target, timestamp) {
 
     if (activeMission.traps?.reactivateDelay > 0) {
       setTimeout(() => {
-        console.log(`[STRIKELOOP] Trap ${elementId} reactivated`);
+        logger.info('STRIKELOOP', `Trap ${elementId} reactivated`);
         controlLED(elementId, 'r'); // OPTIMIZATION: Constant red (was blinking)
       }, activeMission.traps.reactivateDelay * 1000);
     }
@@ -4364,14 +4362,15 @@ function validateArcadeInput(target, timestamp) {
 
   if (wasValidHit && multiplierActive && pointsAwarded > 0) {
     pointsAwarded = Math.floor(pointsAwarded * currentMultiplier);
-    console.log(`[STRIKELOOP] Multiplier x${currentMultiplier} applied: ${pointsAwarded} points`);
+    logger.info('STRIKELOOP', `Multiplier x${currentMultiplier} applied: ${pointsAwarded} points`);
   }
 
 
   if (pointsAwarded !== 0) {
+    const oldScore = localScore - pointsAwarded;
     const newScore = localScore + pointsAwarded;
     updateScore(newScore);
-    console.log(`[STRIKELOOP] Score: ${localScore - pointsAwarded} -> ${localScore} (${pointsAwarded > 0 ? '+' : ''}${pointsAwarded})`);
+    logger.scoreUpdate(oldScore, localScore, pointsAwarded);
   }
 
 
@@ -4477,7 +4476,7 @@ function processArcadeMode(target, timestamp) {
     case 'sequence-match-3-holes-hard':
       return processHoleSequenceMatchMode(target);
     default:
-      console.log(`[STRIKELOOP] Unknown arcade mode: ${mode}`);
+      logger.info('STRIKELOOP', `Unknown arcade mode: ${mode}`);
       return false;
   }
 }
@@ -4485,10 +4484,10 @@ function processArcadeMode(target, timestamp) {
 
 function processGreenBlueComboMode(target) {
   if (target.colorCode === 'g') {
-    console.log(`[STRIKELOOP] ✅ GREEN HIT! Circle ${target.elementId} +${activeMission.pointsPerGreen} points`);
+    logger.info('STRIKELOOP', `✅ GREEN HIT! Circle ${target.elementId} +${activeMission.pointsPerGreen} points`);
     return true;
   } else if (target.colorCode === 'b') {
-    console.log(`[STRIKELOOP] ✅ BLUE HIT! Circle ${target.elementId} +${activeMission.pointsPerBlue} points`);
+    logger.info('STRIKELOOP', `✅ BLUE HIT! Circle ${target.elementId} +${activeMission.pointsPerBlue} points`);
     return true;
   }
   return false;
@@ -4496,7 +4495,7 @@ function processGreenBlueComboMode(target) {
 
 function processGreenAvoidRedMode(target) {
   if (target.colorCode === 'g') {
-    console.log(`[STRIKELOOP] ✅ GREEN HIT! Circle ${target.elementId} +${activeMission.pointsPerGreen} points`);
+    logger.info('STRIKELOOP', `✅ GREEN HIT! Circle ${target.elementId} +${activeMission.pointsPerGreen} points`);
     return true;
   }
   return false;
@@ -4504,7 +4503,7 @@ function processGreenAvoidRedMode(target) {
 
 function processBlueAvoidRedMode(target) {
   if (target.colorCode === 'b') {
-    console.log(`[STRIKELOOP] ✅ BLUE HIT! Circle ${target.elementId} +${activeMission.pointsPerBlue} points`);
+    logger.info('STRIKELOOP', `✅ BLUE HIT! Circle ${target.elementId} +${activeMission.pointsPerBlue} points`);
     return true;
   }
   return false;
@@ -4512,7 +4511,7 @@ function processBlueAvoidRedMode(target) {
 
 function processRotatingGreenMode(target) {
   if (target.colorCode === 'g' && target.isActive) {
-    console.log(`[STRIKELOOP] ✅ GREEN HIT! Circle ${target.elementId} +${activeMission.pointsPerGreen} points`);
+    logger.info('STRIKELOOP', `✅ GREEN HIT! Circle ${target.elementId} +${activeMission.pointsPerGreen} points`);
     return true;
   }
   return false;
@@ -4521,7 +4520,7 @@ function processRotatingGreenMode(target) {
 function processRotatingGreenBlueMode(target) {
   if ((target.colorCode === 'g' || target.colorCode === 'b') && target.isActive) {
     const points = target.colorCode === 'g' ? activeMission.pointsPerGreen : activeMission.pointsPerBlue;
-    console.log(`[STRIKELOOP] ✅ ${target.colorCode.toUpperCase()} HIT! Circle ${target.elementId} +${points} points`);
+    logger.info('STRIKELOOP', `✅ ${target.colorCode.toUpperCase()} HIT! Circle ${target.elementId} +${points} points`);
     return true;
   }
   return false;
@@ -4529,7 +4528,7 @@ function processRotatingGreenBlueMode(target) {
 
 function processRotatingBlueMode(target) {
   if (target.colorCode === 'b' && target.isActive) {
-    console.log(`[STRIKELOOP] ✅ BLUE HIT! Circle ${target.elementId} +${activeMission.pointsPerBlue} points`);
+    logger.info('STRIKELOOP', `✅ BLUE HIT! Circle ${target.elementId} +${activeMission.pointsPerBlue} points`);
     return true;
   }
   return false;
@@ -4546,10 +4545,10 @@ function processMultiHitGreenMode(target) {
     }
     multiHitTracker[targetId]++;
 
-    console.log(`[STRIKELOOP] GREEN HIT ${multiHitTracker[targetId]}/${activeMission.requiredHits}! Circle ${targetId}`);
+    logger.info('STRIKELOOP', `GREEN HIT ${multiHitTracker[targetId]}/${activeMission.requiredHits}! Circle ${targetId}`);
 
     if (multiHitTracker[targetId] >= activeMission.requiredHits) {
-      console.log(`[STRIKELOOP] ✅ TARGET COMPLETED! ${activeMission.requiredHits}x hits on green ${targetId} +${activeMission.pointsPerCompletion} points`);
+      logger.info('STRIKELOOP', `✅ TARGET COMPLETED! ${activeMission.requiredHits}x hits on green ${targetId} +${activeMission.pointsPerCompletion} points`);
       multiHitTracker[targetId] = 0;
       return true;
     }
@@ -4574,10 +4573,10 @@ function processMultiHitBlueMode(target) {
     }
     multiHitTracker[targetId]++;
 
-    console.log(`[STRIKELOOP] BLUE HIT ${multiHitTracker[targetId]}/${activeMission.requiredHits}! Circle ${targetId}`);
+    logger.info('STRIKELOOP', `BLUE HIT ${multiHitTracker[targetId]}/${activeMission.requiredHits}! Circle ${targetId}`);
 
     if (multiHitTracker[targetId] >= activeMission.requiredHits) {
-      console.log(`[STRIKELOOP] ✅ TARGET COMPLETED! ${activeMission.requiredHits}x hits on blue ${targetId} +${activeMission.pointsPerCompletion} points`);
+      logger.info('STRIKELOOP', `✅ TARGET COMPLETED! ${activeMission.requiredHits}x hits on blue ${targetId} +${activeMission.pointsPerCompletion} points`);
       multiHitTracker[targetId] = 0;
       return true;
     }
@@ -4595,10 +4594,10 @@ function processMultiHitBlueMode(target) {
 
 function processGreenOnlyMode(target) {
   if (target.colorCode === 'g') {
-    console.log(`[STRIKELOOP] ✅ GREEN HIT! Circle ${target.elementId}`);
+    logger.info('STRIKELOOP', `✅ GREEN HIT! Circle ${target.elementId}`);
     return true;
   } else {
-    console.log(`[STRIKELOOP] ⚪ NEUTRAL HIT: ${target.colorCode?.toUpperCase()} (ignored, no penalty)`);
+    logger.info('STRIKELOOP', `⚪ NEUTRAL HIT: ${target.colorCode?.toUpperCase()} (ignored, no penalty)`);
 
     return false;
   }
@@ -4611,7 +4610,7 @@ function processSequenceMode(target) {
 
   
   if (target.isTrap || target.colorCode === 'r') {
-    console.log(`[STRIKELOOP] ❌ TRAP HIT in sequence! Resetting sequence progress.`);
+    logger.info('STRIKELOOP', `❌ TRAP HIT in sequence! Resetting sequence progress.`);
     sequenceStep = 0;
     consecutiveValidHits = 0; 
     return false;
@@ -4619,19 +4618,19 @@ function processSequenceMode(target) {
 
   
   if (target.colorCode === expectedColor) {
-    console.log(`[STRIKELOOP] ✅ SEQUENCE ${sequenceStep + 1}/${sequence.length}: ${expectedColor.toUpperCase()} HIT!`);
+    logger.info('STRIKELOOP', `✅ SEQUENCE ${sequenceStep + 1}/${sequence.length}: ${expectedColor.toUpperCase()} HIT!`);
     sequenceStep++;
 
     if (sequenceStep >= sequence.length) {
-      console.log(`[STRIKELOOP] 🎉 SEQUENCE COMPLETED! Restarting...`);
+      logger.info('STRIKELOOP', `🎉 SEQUENCE COMPLETED! Restarting...`);
       sequenceStep = 0;
       consecutiveValidHits++; 
-      console.log(`[STRIKELOOP] Consecutive complete sequences: ${consecutiveValidHits}`);
+      logger.info('STRIKELOOP', `Consecutive complete sequences: ${consecutiveValidHits}`);
       return true; 
     }
     return false; 
   } else {
-    console.log(`[STRIKELOOP] ❌ Wrong sequence! Expected ${expectedColor.toUpperCase()}, got ${target.colorCode?.toUpperCase()}`);
+    logger.info('STRIKELOOP', `❌ Wrong sequence! Expected ${expectedColor.toUpperCase()}, got ${target.colorCode?.toUpperCase()}`);
     sequenceStep = 0; 
     consecutiveValidHits = 0; 
     return false;
@@ -4642,10 +4641,10 @@ function processSequenceMode(target) {
 function processChainActivationMode(target) {
   if (target.isValid && (target.colorCode === 'g' || target.colorCode === 'b')) {
     activationHits++;
-    console.log(`[STRIKELOOP] ✅ CHAIN HIT ${activationHits}! (${target.colorCode?.toUpperCase()})`);
+    logger.info('STRIKELOOP', `✅ CHAIN HIT ${activationHits}! (${target.colorCode?.toUpperCase()})`);
 
     if (activationHits >= (activeMission.activationRequirement || 3)) {
-      console.log(`[STRIKELOOP] 🎉 CHAIN ACTIVATION ACHIEVED!`);
+      logger.info('STRIKELOOP', `🎉 CHAIN ACTIVATION ACHIEVED!`);
     }
     return true;
   }
@@ -4662,10 +4661,10 @@ function processCumulativeBonusMode(target) {
     }
     cumulativeHitCounts[targetId]++;
 
-    console.log(`[STRIKELOOP] ✅ CUMULATIVE HIT! Circle ${targetId} - Count: ${cumulativeHitCounts[targetId]}`);
+    logger.info('STRIKELOOP', `✅ CUMULATIVE HIT! Circle ${targetId} - Count: ${cumulativeHitCounts[targetId]}`);
 
     if (cumulativeHitCounts[targetId] >= 3) {
-      console.log(`[STRIKELOOP] 🎉 CUMULATIVE BONUS! +10 points for 3x hits on circle ${targetId}`);
+      logger.info('STRIKELOOP', `🎉 CUMULATIVE BONUS! +10 points for 3x hits on circle ${targetId}`);
       const bonusScore = gameState.score + 10;
       updateScore(bonusScore);
       cumulativeHitCounts[targetId] = 0; 
@@ -4687,15 +4686,15 @@ function processCumulativeBonusMode(target) {
 function processComboSystemMode(target) {
   if (target.isValid && (target.colorCode === 'g' || target.colorCode === 'b')) {
     comboProgress++;
-    console.log(`[STRIKELOOP] ✅ COMBO HIT ${comboProgress}! (${target.colorCode?.toUpperCase()})`);
+    logger.info('STRIKELOOP', `✅ COMBO HIT ${comboProgress}! (${target.colorCode?.toUpperCase()})`);
 
     if (comboProgress >= 3) {
-      console.log(`[STRIKELOOP] 🎉 COMBO COMPLETED! Clean 3-hit streak!`);
+      logger.info('STRIKELOOP', `🎉 COMBO COMPLETED! Clean 3-hit streak!`);
       comboProgress = 0;
     }
     return true;
   } else {
-    console.log(`[STRIKELOOP] ❌ COMBO BROKEN!`);
+    logger.info('STRIKELOOP', `❌ COMBO BROKEN!`);
     comboProgress = 0;
     consecutiveValidHits = 0;
     return false;
@@ -4711,21 +4710,21 @@ function processBlinkingGreenBonusMode(target) {
   if (target.colorCode === 'g' && target.isValid) {
     // Check if the LED is currently "on" in the blink cycle
     if (blinkStates[target.elementId]) {
-      console.log(`[STRIKELOOP] ✅ GREEN HIT! Circle ${target.elementId} +${activeMission.pointsPerGreen} points`);
+      logger.info('STRIKELOOP', `✅ GREEN HIT! Circle ${target.elementId} +${activeMission.pointsPerGreen} points`);
       return true;
     } else {
-      console.log(`[STRIKELOOP] ⚪ GREEN MISS! Circle ${target.elementId} was off (no points)`);
+      logger.info('STRIKELOOP', `⚪ GREEN MISS! Circle ${target.elementId} was off (no points)`);
       return false;
     }
   }
   // Yellow bonus: valid hits (always on, not blinking)
   if (target.isBonus && target.colorCode === 'y') {
-    console.log(`[STRIKELOOP] ✅ BONUS HIT! Circle ${target.elementId} +${activeMission.pointsPerBonus} points`);
+    logger.info('STRIKELOOP', `✅ BONUS ${target.elementId} +${activeMission.pointsPerBonus}pts`);
     return true;
   }
   // Red traps: penalty (always on, not blinking)
   if (target.colorCode === 'r') {
-    console.log(`[STRIKELOOP] ❌ RED TRAP! Circle ${target.elementId} ${activeMission.penaltyRed} points`);
+    logger.info('STRIKELOOP', `❌ RED TRAP! Circle ${target.elementId} ${activeMission.penaltyRed} points`);
   }
   return false;
 }
@@ -4735,21 +4734,21 @@ function processBlinkingBlueBonusMode(target) {
   if (target.colorCode === 'b' && target.isValid) {
     // Check if the LED is currently "on" in the blink cycle
     if (blinkStates[target.elementId]) {
-      console.log(`[STRIKELOOP] ✅ BLUE HIT! Circle ${target.elementId} +${activeMission.pointsPerBlue} points`);
+      logger.info('STRIKELOOP', `✅ BLUE HIT! Circle ${target.elementId} +${activeMission.pointsPerBlue} points`);
       return true;
     } else {
-      console.log(`[STRIKELOOP] ⚪ BLUE MISS! Circle ${target.elementId} was off (no points)`);
+      logger.info('STRIKELOOP', `⚪ BLUE MISS! Circle ${target.elementId} was off (no points)`);
       return false;
     }
   }
   // Yellow bonus: valid hits (always on, not blinking)
   if (target.isBonus && target.colorCode === 'y') {
-    console.log(`[STRIKELOOP] ✅ BONUS HIT! Circle ${target.elementId} +${activeMission.pointsPerBonus} points`);
+    logger.info('STRIKELOOP', `✅ BONUS ${target.elementId} +${activeMission.pointsPerBonus}pts`);
     return true;
   }
   // Red traps: penalty (always on, not blinking)
   if (target.colorCode === 'r') {
-    console.log(`[STRIKELOOP] ❌ RED TRAP! Circle ${target.elementId} ${activeMission.penaltyRed} points`);
+    logger.info('STRIKELOOP', `❌ RED TRAP! Circle ${target.elementId} ${activeMission.penaltyRed} points`);
   }
   return false;
 }
@@ -4757,99 +4756,99 @@ function processBlinkingBlueBonusMode(target) {
 function processSnakeGreen3Mode(target) {
   // Yellow bonus: valid hits
   if (target.isBonus && target.colorCode === 'y') {
-    console.log(`[STRIKELOOP] ✅ BONUS HIT! Circle ${target.elementId} +${activeMission.pointsPerBonus} points`);
+    logger.info('STRIKELOOP', `✅ BONUS ${target.elementId} +${activeMission.pointsPerBonus}pts`);
     return true;
   }
 
   // Check if target is one of the currently active snake positions (green and isActive)
   if (target.colorCode === 'g' && target.isActive) {
-    console.log(`[STRIKELOOP] ✅ SNAKE GREEN HIT! Circle ${target.elementId} +${activeMission.pointsPerGreen} points`);
+    logger.info('STRIKELOOP', `✅ SNAKE GREEN HIT! Circle ${target.elementId} +${activeMission.pointsPerGreen} points`);
     return true;
   }
 
   // Red traps (fixed or inactive positions): penalty
   if (target.colorCode === 'r') {
-    console.log(`[STRIKELOOP] ❌ RED TRAP HIT! Circle ${target.elementId} ${activeMission.penaltyRed} points`);
+    logger.info('STRIKELOOP', `❌ TRAP ${target.elementId} ${activeMission.penaltyRed}pts`);
     return false; // Still return false to apply penalty through calculatePoints
   }
 
-  console.log(`[STRIKELOOP] ⚪ Target ${target.elementId} ignored`);
+  logger.info('STRIKELOOP', `⚪ Target ${target.elementId} ignored`);
   return false;
 }
 
 function processSnakeBlue3Mode(target) {
   // Yellow bonus: valid hits
   if (target.isBonus && target.colorCode === 'y') {
-    console.log(`[STRIKELOOP] ✅ BONUS HIT! Circle ${target.elementId} +${activeMission.pointsPerBonus} points`);
+    logger.info('STRIKELOOP', `✅ BONUS ${target.elementId} +${activeMission.pointsPerBonus}pts`);
     return true;
   }
 
   // Check if target is one of the currently active snake positions (blue and isActive)
   if (target.colorCode === 'b' && target.isActive) {
-    console.log(`[STRIKELOOP] ✅ SNAKE BLUE HIT! Circle ${target.elementId} +${activeMission.pointsPerBlue} points`);
+    logger.info('STRIKELOOP', `✅ SNAKE BLUE HIT! Circle ${target.elementId} +${activeMission.pointsPerBlue} points`);
     return true;
   }
 
   // Red traps (fixed or inactive positions): penalty
   if (target.colorCode === 'r') {
-    console.log(`[STRIKELOOP] ❌ RED TRAP HIT! Circle ${target.elementId} ${activeMission.penaltyRed} points`);
+    logger.info('STRIKELOOP', `❌ TRAP ${target.elementId} ${activeMission.penaltyRed}pts`);
     return false; // Still return false to apply penalty through calculatePoints
   }
 
-  console.log(`[STRIKELOOP] ⚪ Target ${target.elementId} ignored`);
+  logger.info('STRIKELOOP', `⚪ Target ${target.elementId} ignored`);
   return false;
 }
 
 function processSnakeGreen2Mode(target) {
   // Yellow bonus: valid hits
   if (target.isBonus && target.colorCode === 'y') {
-    console.log(`[STRIKELOOP] ✅ BONUS HIT! Circle ${target.elementId} +${activeMission.pointsPerBonus} points`);
+    logger.info('STRIKELOOP', `✅ BONUS ${target.elementId} +${activeMission.pointsPerBonus}pts`);
     return true;
   }
 
   // Check if target is one of the currently active snake positions (green and isActive)
   if (target.colorCode === 'g' && target.isActive) {
-    console.log(`[STRIKELOOP] ✅ SNAKE GREEN HIT! Circle ${target.elementId} +${activeMission.pointsPerGreen} points`);
+    logger.info('STRIKELOOP', `✅ SNAKE GREEN HIT! Circle ${target.elementId} +${activeMission.pointsPerGreen} points`);
     return true;
   }
 
   // Red traps (fixed or inactive positions): penalty
   if (target.colorCode === 'r') {
-    console.log(`[STRIKELOOP] ❌ RED TRAP HIT! Circle ${target.elementId} ${activeMission.penaltyRed} points`);
+    logger.info('STRIKELOOP', `❌ TRAP ${target.elementId} ${activeMission.penaltyRed}pts`);
     return false; // Still return false to apply penalty through calculatePoints
   }
 
-  console.log(`[STRIKELOOP] ⚪ Target ${target.elementId} ignored`);
+  logger.info('STRIKELOOP', `⚪ Target ${target.elementId} ignored`);
   return false;
 }
 
 function processSnakeBlue2Mode(target) {
   // Yellow bonus: valid hits
   if (target.isBonus && target.colorCode === 'y') {
-    console.log(`[STRIKELOOP] ✅ BONUS HIT! Circle ${target.elementId} +${activeMission.pointsPerBonus} points`);
+    logger.info('STRIKELOOP', `✅ BONUS ${target.elementId} +${activeMission.pointsPerBonus}pts`);
     return true;
   }
 
   // Check if target is one of the currently active snake positions (blue and isActive)
   if (target.colorCode === 'b' && target.isActive) {
-    console.log(`[STRIKELOOP] ✅ SNAKE BLUE HIT! Circle ${target.elementId} +${activeMission.pointsPerBlue} points`);
+    logger.info('STRIKELOOP', `✅ SNAKE BLUE HIT! Circle ${target.elementId} +${activeMission.pointsPerBlue} points`);
     return true;
   }
 
   // Red traps (fixed or inactive positions): penalty
   if (target.colorCode === 'r') {
-    console.log(`[STRIKELOOP] ❌ RED TRAP HIT! Circle ${target.elementId} ${activeMission.penaltyRed} points`);
+    logger.info('STRIKELOOP', `❌ TRAP ${target.elementId} ${activeMission.penaltyRed}pts`);
     return false; // Still return false to apply penalty through calculatePoints
   }
 
-  console.log(`[STRIKELOOP] ⚪ Target ${target.elementId} ignored`);
+  logger.info('STRIKELOOP', `⚪ Target ${target.elementId} ignored`);
   return false;
 }
 
 function processMemorySequenceMode(target) {
   // During display phase, ignore all hits
   if (!memorySequenceDisplayed) {
-    console.log(`[STRIKELOOP] ⏸️ Sequence display in progress - hit ignored`);
+    logger.info('STRIKELOOP', `⏸️ Sequence display in progress - hit ignored`);
     return false;
   }
 
@@ -4857,7 +4856,7 @@ function processMemorySequenceMode(target) {
 
   // Check if it's a bonus target (yellow) - always valid during reproduction
   if (target.colorCode === 'y') {
-    console.log(`[STRIKELOOP] ✅ BONUS HIT! Circle ${elementId} +${activeMission.pointsPerBonus} points`);
+    logger.info('STRIKELOOP', `✅ BONUS ${elementId} +${activeMission.pointsPerBonus}pts`);
     return true;
   }
 
@@ -4866,7 +4865,7 @@ function processMemorySequenceMode(target) {
 
   // If it's not in the sequence at all, ignore it (no penalty)
   if (!isSequenceTarget) {
-    console.log(`[STRIKELOOP] ⚪ Non-sequence target hit - ignored`);
+    logger.info('STRIKELOOP', `⚪ Non-sequence target hit - ignored`);
     return false;
   }
 
@@ -4876,11 +4875,11 @@ function processMemorySequenceMode(target) {
   if (elementId === expectedId) {
     // Correct hit!
     memorySequenceIndex++;
-    console.log(`[STRIKELOOP] ✅ CORRECT! Position ${memorySequenceIndex}/${memorySequence.length}`);
+    logger.info('STRIKELOOP', `✅ CORRECT! Position ${memorySequenceIndex}/${memorySequence.length}`);
 
     // Check if sequence is complete
     if (memorySequenceIndex >= memorySequence.length) {
-      console.log(`[STRIKELOOP] 🎉 SEQUENCE COMPLETED! +${activeMission.goalScore} points`);
+      logger.info('STRIKELOOP', `🎉 SEQUENCE COMPLETED! +${activeMission.goalScore} points`);
       // Mark completion for scoring
       target.sequenceCompleted = true;
       // Reset index but keep sequence displayed (don't generate a new one)
@@ -4892,7 +4891,7 @@ function processMemorySequenceMode(target) {
   } else {
     // Wrong hit! Penalty and reset
     const penalty = activeMission.penaltyRed || -100;
-    console.log(`[STRIKELOOP] ❌ WRONG! Expected ${expectedId}, got ${elementId}. ${penalty} points. Sequence reset.`);
+    logger.info('STRIKELOOP', `❌ WRONG! Expected ${expectedId}, got ${elementId}. ${penalty} points. Sequence reset.`);
     // Mark as wrong for penalty scoring
     target.sequenceWrong = true;
     memorySequenceIndex = 0;
@@ -4907,26 +4906,26 @@ function processTwoStepMode(target) {
   
   // Check if it's a bonus target (yellow) - always valid, no validation needed
   if (colorCode === 'y') {
-    console.log(`[STRIKELOOP] ✅ BONUS HIT! Circle ${elementId} +${activeMission.pointsPerBonus} points`);
+    logger.info('STRIKELOOP', `✅ BONUS ${elementId} +${activeMission.pointsPerBonus}pts`);
     return true;
   }
   
   // Check if it's a red trap
   if (target.isTrap || colorCode === 'r') {
-    console.log(`[STRIKELOOP] ❌ TRAP HIT! Circle ${elementId} ${activeMission.penaltyRed} points`);
+    logger.info('STRIKELOOP', `❌ TRAP HIT! Circle ${elementId} ${activeMission.penaltyRed} points`);
     return false; // Return false to apply penalty
   }
   
   // Check if it's a valid target that needs validation
   if (target.needsValidation && target.isValid) {
-    console.log(`[STRIKELOOP] Target ${elementId} (${colorCode.toUpperCase()}) hit - awaiting button validation`);
+    logger.info('STRIKELOOP', `Target ${elementId} (${colorCode.toUpperCase()}) hit - awaiting button validation`);
     // Start validation process but don't award points yet
     handleTwoStepValidation(colorCode);
     return false; // No points until validated
   }
   
   // Not a valid target
-  console.log(`[STRIKELOOP] ⚪ Target ${elementId} ignored`);
+  logger.info('STRIKELOOP', `⚪ Target ${elementId} ignored`);
   return false;
 }
 
@@ -4937,14 +4936,14 @@ function processHoleSequenceMatchMode(target) {
 
   // Check if it's a red trap FIRST
   if (target.isTrap || colorCode === 'r') {
-    console.log(`[STRIKELOOP] ❌ TRAP HIT! Circle ${elementId} ${activeMission.penaltyRed} points`);
+    logger.info('STRIKELOOP', `❌ TRAP HIT! Circle ${elementId} ${activeMission.penaltyRed} points`);
     // Reset hole sequence on trap hit
     holeSequenceActive = true;  // Reset to accept new hole hits
     holeSequenceHit = [];
     buttonSequenceToMatch = [];
     buttonSequencePressed = [];
     buttonSequenceActive = false;
-    console.log('[STRIKELOOP] Hole sequence reset due to trap hit');
+    logger.info('STRIKELOOP', 'Hole sequence reset due to trap hit');
     return false;
   }
 
@@ -4955,7 +4954,7 @@ function processHoleSequenceMatchMode(target) {
 
     // If button sequence is active, ignore hole hits
     if (buttonSequenceActive) {
-      console.log(`[STRIKELOOP] ⚠️ Ignoring hole hit - button validation in progress`);
+      logger.info('STRIKELOOP', `⚠️ Ignoring hole hit - button validation in progress`);
       return false;
     }
 
@@ -4963,13 +4962,13 @@ function processHoleSequenceMatchMode(target) {
     holeSequenceHit.push(elementId);
     buttonSequenceToMatch.push(colorCode);
 
-    console.log(`[STRIKELOOP] Hole ${elementId} (${colorCode.toUpperCase()}) hit - Progress: ${holeSequenceHit.length}/${sequenceLength}`);
-    console.log(`[STRIKELOOP] Hole sequence so far: ${holeSequenceHit.join(', ')}`);
-    console.log(`[STRIKELOOP] Button colors to match: ${buttonSequenceToMatch.map(c => c.toUpperCase()).join(', ')}`);
+    logger.info('STRIKELOOP', `Hole ${elementId} (${colorCode.toUpperCase()}) hit - Progress: ${holeSequenceHit.length}/${sequenceLength}`);
+    logger.info('STRIKELOOP', `Hole sequence so far: ${holeSequenceHit.join(', ')}`);
+    logger.info('STRIKELOOP', `Button colors to match: ${buttonSequenceToMatch.map(c => c.toUpperCase()).join(', ')}`);
 
     // Check if sequence is complete
     if (holeSequenceHit.length >= sequenceLength) {
-      console.log('[STRIKELOOP] 🎯 Hole sequence complete! Now validate with buttons in SAME ORDER');
+      logger.info('STRIKELOOP', '🎯 Hole sequence complete! Now validate with buttons in SAME ORDER');
       holeSequenceActive = false;
       buttonSequenceActive = true;
 
@@ -4988,7 +4987,7 @@ function processHoleSequenceMatchMode(target) {
 
   // Check if it's a bonus target (circles 9-13 only, NOT yellow holes)
   if (elementId >= 9 && elementId <= 13 && (target.isBonus || (activeMission.bonusTargets && activeMission.bonusTargets.includes(elementId)))) {
-    console.log(`[STRIKELOOP] ✅ BONUS HIT! Circle ${elementId} +${activeMission.pointsPerBonus} points`);
+    logger.info('STRIKELOOP', `✅ BONUS ${elementId} +${activeMission.pointsPerBonus}pts`);
     const points = activeMission.pointsPerBonus || 50;
     const newScore = localScore + points;
     updateScore(newScore);
@@ -4996,7 +4995,7 @@ function processHoleSequenceMatchMode(target) {
   }
 
   // Not a valid target
-  console.log(`[STRIKELOOP] ⚪ Target ${elementId} ignored`);
+  logger.info('STRIKELOOP', `⚪ Target ${elementId} ignored`);
   return false;
 }
 
@@ -5023,11 +5022,11 @@ function calculatePoints(target) {
       let basePoints = activeMission.pointsPerHit || 60;
       if (consecutiveValidHits >= 2) {
         basePoints *= 2;
-        console.log(`[STRIKELOOP] Sequence x2 multiplier applied! (${consecutiveValidHits} consecutive sequences)`);
+        logger.info('STRIKELOOP', `Sequence x2 multiplier applied! (${consecutiveValidHits} consecutive sequences)`);
       }
       if (consecutiveValidHits >= 3) {
         basePoints = (activeMission.pointsPerHit || 60) * 3;
-        console.log(`[STRIKELOOP] Sequence x3 multiplier applied! (${consecutiveValidHits} consecutive sequences)`);
+        logger.info('STRIKELOOP', `Sequence x3 multiplier applied! (${consecutiveValidHits} consecutive sequences)`);
       }
       return basePoints;
     case 'blinking-green-bonus':
@@ -5237,7 +5236,7 @@ function handleShutdown() {
   if (isCleaningUp) return;
   isCleaningUp = true;
 
-  console.log('[STRIKELOOP] Shutting down...');
+  logger.info('STRIKELOOP', 'Shutting down...');
   stopGame();
 
   

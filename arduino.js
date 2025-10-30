@@ -22,6 +22,7 @@
 var events = require(`events`);
 let SerialPort = require(`serialport`);
 const asyncLock = require(`async-lock`);
+const logger = require('./logger.js');
 const lock = new asyncLock();
 
 //MAPING OUTPUTS
@@ -56,37 +57,37 @@ let emitter = new events.EventEmitter();
 
 SerialPort.list()
   .then((ports) => {
-    console.log(
-      `[${getCurrentTime()}]   AVAILABLE SERIAL PORTS:`,
-      ports.map((item) => item.path)
+    logger.info(
+      'ARDUINO',
+      `Available serial ports: ${ports.map((item) => item.path).join(', ')}`
     );
     ControllinoPort = ports.find(
       (port) => port.vendorId === ControllinovendorId
     );
     if (ControllinoPort) {
-      console.log(
-        `[${getCurrentTime()}]   SELECTED CONTROLLINO SERIAL PORT: ${
-          ControllinoPort.path
-        }`
+      logger.info(
+        'ARDUINO',
+        `Selected Controllino port: ${ControllinoPort.path}`
       );
     } else {
-      console.error(
-        `[${getCurrentTime()}]   CONTROLLINO SERIAL PORT NOT FOUND.`
+      logger.error(
+        'ARDUINO',
+        'Controllino serial port NOT FOUND'
       );
     }
   })
   .catch((error) => {
-    console.error(`[${getCurrentTime()}]   ERROR LISTING SERIAL PORTS:`, error);
+    logger.error('ARDUINO', 'Error listing serial ports:', error);
   });
 
 setTimeout(() => {
-  if (ControllinoPort) initControllinoSerialPort(ControllinoPort.path);
+  if (true) initControllinoSerialPort('COM4');
 }, 5000);
 
 
 
 function initControllinoSerialPort(portPath) {
-  console.log(`[${getCurrentTime()}]   INIT PORT CONTROLLINO => ` + portPath);
+  logger.info('ARDUINO', `Initializing Controllino port: ${portPath}`);
   ControllinoSerialPort = new SerialPort(portPath, {
     baudRate: 9600,
     autoOpen: false,
@@ -139,11 +140,8 @@ async function sendCmd1(mes) {
   let promise = new Promise((resolve, reject) => {
     //    setTimeout(() => , 1000)
     if (ControllinoSerialPort) {
-      // ═══════════════════════════════════════════════════════════════
-      console.log(`\x1b[36m╔════════════════════════════════════════╗\x1b[0m`);
-      console.log(`\x1b[36m║\x1b[0m \x1b[1m\x1b[33mSERIAL WRITE → Controllino:\x1b[0m \x1b[1m\x1b[32m${mes}\x1b[0m`);
-      console.log(`\x1b[36m╚════════════════════════════════════════╝\x1b[0m`);
-      // ═══════════════════════════════════════════════════════════════
+      // Colored serial command box - only shown at DEBUG level
+      logger.serial(mes);
       sendSerial(mes);
     } else {
       emitter.emit(`cmdFailedEvent`, `no serial port 1`);
@@ -289,12 +287,12 @@ function getCurrentDateTime() {
 
 
 function powerOnCell() {
-  console.log(`[${getCurrentTime()}]   TURNING ON CELL LIGHT.`);
+  logger.debug('ARDUINO', 'Turning ON cell light');
   sendCmd1(`O` + OUTPUT_POWER_CELL + OUT_ON);
 }
 
 function powerOffCell(val) {
-  console.log(`[${getCurrentTime()}]   TURNING OFF CELL LIGHT.`);
+  logger.debug('ARDUINO', 'Turning OFF cell light');
   sendCmd1(`O` + OUTPUT_POWER_CELL + OUT_OFF);
 }
 
@@ -334,7 +332,7 @@ async function get_input2() {
 //Power led bar from 0% to 100%
 function setBarled(val) {
   if (val == 0) val = 1;
-  console.log(`[ARDUINO] Bar LED → ${val}%`);
+  logger.debug('ARDUINO', `Bar LED → ${val}%`);
   sendCmd1(`L01` + String.fromCharCode(val));
 }
 
