@@ -314,14 +314,16 @@ function App() {
               <div className="left-panel">
                 <div className="control-buttons">
                   {/* Control buttons 14-28 (15 buttons total) */}
-                  {[14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].map(buttonId => (
+                  {[14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].map((buttonId, index) => (
                     <div
                       key={buttonId}
                       className={`control-button ${getButtonPulseClass(buttonId)}`}
                       style={{opacity: getButtonOpacity(buttonId), backgroundColor: getCircleColor(buttonId)}}
                       onClick={() => handleCircleClick(buttonId)}
                       title={getElementTooltip(buttonId)}
-                    ></div>
+                    >
+                      <span className="button-number">{buttonId}</span>
+                    </div>
                   ))}
                 </div>
               </div>

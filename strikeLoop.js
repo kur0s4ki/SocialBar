@@ -464,7 +464,7 @@ let gameRounds = [
     sequenceLength: 4,  // 4 buttons (randomly from buttons 14-28)
     sequenceDisplayTime: 1000,  // 1 sec on
     sequenceOffTime: 1000,  // 1 sec off
-    sequenceTimeoutMs: 10000,  // 10 seconds to reproduce AFTER display completes
+    sequenceTimeoutMs: 12000,  // 12 seconds to reproduce AFTER display completes
     validationWindow: 3000,
     pointsPerValidated: 100,
     pointsPerBonus: 50,
@@ -486,7 +486,7 @@ let gameRounds = [
     sequenceLength: 5,  // 5 buttons
     sequenceDisplayTime: 1000,  // 1 sec on
     sequenceOffTime: 1000,  // 1 sec off
-    sequenceTimeoutMs: 10000,  // 10 seconds to reproduce AFTER display completes
+    sequenceTimeoutMs: 15000,  // 15 seconds to reproduce AFTER display completes
     validationWindow: 3000,
     pointsPerValidated: 100,
     pointsPerBonus: 50,
@@ -502,16 +502,17 @@ let gameRounds = [
     blueTargets: [5],          // 1 blue hole
     yellowTargets: [3],        // 1 yellow hole
     whiteTargets: [4],         // 1 white hole
+    redTraps: [2, 6, 7, 8],    // 4 red penalty holes (4 active + 4 red = 8 total)
     bonusTargets: [9, 10, 11, 12, 13],
     buttonMode: 'sequence-all-colors',  // Sequence reproduction mode
     sequenceLength: 6,  // 6 buttons
     sequenceDisplayTime: 1000,  // 1 sec on
     sequenceOffTime: 1000,  // 1 sec off
-    sequenceTimeoutMs: 12000,  // 12 seconds to reproduce AFTER display completes
+    sequenceTimeoutMs: 17000,  // 17 seconds to reproduce AFTER display completes
     validationWindow: 3000,
     pointsPerValidated: 100,
     pointsPerBonus: 50,
-    penaltyRed: 0
+    penaltyRed: -100
   },
   {
     round: 3, level: 10,
@@ -521,16 +522,17 @@ let gameRounds = [
     arcadeMode: 'two-step-sequence-minimal-holes',
     greenTargets: [1],         // 1 green hole
     blueTargets: [5],          // 1 blue hole
+    redTraps: [2, 3, 4, 6, 7, 8],  // 6 red penalty holes (2 active + 6 red = 8 total)
     bonusTargets: [9, 10, 11, 12, 13],
     buttonMode: 'sequence-all-colors',  // Sequence reproduction mode
     sequenceLength: 7,  // 7 buttons
     sequenceDisplayTime: 1000,  // 1 sec on
     sequenceOffTime: 1000,  // 1 sec off
-    sequenceTimeoutMs: 14000,  // 14 seconds to reproduce AFTER display completes
+    sequenceTimeoutMs: 20000,  // 20 seconds to reproduce AFTER display completes
     validationWindow: 3000,
     pointsPerValidated: 100,
     pointsPerBonus: 50,
-    penaltyRed: 0
+    penaltyRed: -100
   }
 ];
 
@@ -4031,9 +4033,9 @@ function activateModeTwoStepSequenceAllColorsHard() {
   activateBonusSection();
 }
 
-// Level 9: Sequence Reproduction - 4 holes only (1 of each color)
+// Level 9: Sequence Reproduction - 4 holes + 4 red traps
 function activateModeTwoStepSequenceReducedHoles() {
-  logger.info('STRIKELOOP', 'Activating Level 9: Sequence Reproduction - 4 holes (1 of each color)');
+  logger.info('STRIKELOOP', 'Activating Level 9: Sequence Reproduction - 4 holes + 4 red traps');
 
   // Setup green circle - always lit
   activeMission.greenTargets.forEach(pos => {
@@ -4067,6 +4069,16 @@ function activateModeTwoStepSequenceReducedHoles() {
     });
   }
 
+  // Setup red traps
+  if (activeMission.redTraps) {
+    activeMission.redTraps.forEach(pos => {
+      const trap = { elementId: pos, colorCode: 'r', isTrap: true };
+      activeTargets.push(trap);
+      trapPositions.push(trap);
+      controlLED(pos, 'r');
+    });
+  }
+
   // Don't clear buttons if sequence is being displayed or validated
   if (!sequenceDisplaying && !sequenceValidationActive) {
     clearAllButtons();
@@ -4074,9 +4086,9 @@ function activateModeTwoStepSequenceReducedHoles() {
   activateBonusSection();
 }
 
-// Level 10: Sequence Reproduction - 2 holes only (1 green, 1 blue)
+// Level 10: Sequence Reproduction - 2 holes + 6 red traps
 function activateModeTwoStepSequenceMinimalHoles() {
-  logger.info('STRIKELOOP', 'Activating Level 10: Sequence Reproduction - 2 holes only');
+  logger.info('STRIKELOOP', 'Activating Level 10: Sequence Reproduction - 2 holes + 6 red traps');
 
   // Setup green circle - always lit
   activeMission.greenTargets.forEach(pos => {
@@ -4091,6 +4103,16 @@ function activateModeTwoStepSequenceMinimalHoles() {
     activeTargets.push(target);
     controlLED(pos, 'b');
   });
+
+  // Setup red traps
+  if (activeMission.redTraps) {
+    activeMission.redTraps.forEach(pos => {
+      const trap = { elementId: pos, colorCode: 'r', isTrap: true };
+      activeTargets.push(trap);
+      trapPositions.push(trap);
+      controlLED(pos, 'r');
+    });
+  }
 
   // Don't clear buttons if sequence is being displayed or validated
   if (!sequenceDisplaying && !sequenceValidationActive) {
