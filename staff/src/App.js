@@ -126,6 +126,18 @@ function App() {
     }
   };
 
+  const handleSkipLevel = () => {
+    console.log('[FRONTEND] Skip level requested (testing mode)');
+
+    // Send skip level message to server
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      ws.current.send(JSON.stringify({
+        type: 'skipLevel'
+      }));
+      console.log('[FRONTEND] Skip level message sent to server');
+    }
+  };
+
   const handleCircleClick = (circleId) => {
     console.log('[FRONTEND] Circle clicked:', circleId);
     
@@ -288,6 +300,14 @@ function App() {
                 className="reset-button"
               >
                 Reset Game
+              </button>
+              <button
+                type="button"
+                onClick={handleSkipLevel}
+                className="skip-button"
+                title="Skip current level (testing mode)"
+              >
+                ⏭️ Skip Level
               </button>
             </div>
             <div className="simulator-panels">

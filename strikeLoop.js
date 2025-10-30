@@ -645,6 +645,35 @@ emitter.on('hardReset', () => {
   resetGameToInitialState();
 });
 
+// Handle skip level command from staff interface (for testing/development)
+emitter.on('skipLevel', () => {
+  if (!isRunning) {
+    logger.warn('STRIKELOOP', 'Skip level requested but game not running');
+    return;
+  }
+
+  const currentLevel = gameRounds[currentLevelIndex];
+  logger.warn('STRIKELOOP', `⏭️  SKIP LEVEL: Skipping Round ${currentLevel.round} Level ${currentLevel.level}`);
+
+  // Stop current level timer
+  stopLevelTimer();
+
+  // Stop LED refresh
+  stopLEDRefresh();
+
+  // Move to next level
+  currentLevelIndex++;
+
+  if (currentLevelIndex < gameRounds.length) {
+    // Start next level without retry flag
+    startNextLevel(false);
+  } else {
+    // All levels completed
+    logger.info('STRIKELOOP', 'Skip level reached end of game');
+    finishGame();
+  }
+});
+
 emitter.on('EventInput', (message, value) => {
   if (isRunning) {
     logger.info('STRIKELOOP', 'Arduino input received during game:', message, 'Value:', value);

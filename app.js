@@ -71,6 +71,11 @@ staffWss.on('connection', (ws) => {
           strikeLoop.emitter.emit('hardReset');
           break;
 
+        case 'skipLevel':
+          logger.warn('STAFF-WS', `Skip level requested (testing mode)`);
+          strikeLoop.emitter.emit('skipLevel');
+          break;
+
         default:
           logger.warn('STAFF-WS', `Unknown message type: ${data.type}`);
       }
