@@ -48,15 +48,7 @@ const INNER_CIRCLES_RANGE = { min: 9, max: 13 };
 const CONTROL_BUTTONS_RANGE = { min: 14, max: 28 }; // Extended to 15 buttons
 const CENTRAL_CIRCLE_ID = 9;
 
-// Game timing and scoring constants
-const DEFAULT_VALIDATION_TIMEOUT_MS = 3000;  // 3 seconds for button validation
-const DEFAULT_ROTATION_DELAY_MS = 2000;      // 2 seconds for pattern rotation
-const DEFAULT_POINTS_VALIDATED = 100;        // Points awarded for validated target
-const DEFAULT_POINTS_BONUS = 50;             // Points awarded for bonus target
-const DEFAULT_PENALTY_RED_TRAP = -100;       // Penalty for hitting red trap
-const BUTTON_SEQUENCE_TIMEOUT_MS = 5000;     // 5 seconds for button sequence reproduction (Levels 5-10)
 
-let roundInterval;
 let isRunning = false;
 let keyboardListenerActive = false;
 let currentLevelIndex = 0;
@@ -426,6 +418,7 @@ let gameRounds = [
     sequenceLength: 3,  // 3 buttons out of 4
     sequenceDisplayTime: 1000,  // 1 sec on
     sequenceOffTime: 1000,  // 1 sec off
+    sequenceTimeoutMs: 10000,  // 10 seconds to reproduce AFTER display completes
     validationWindow: 3000,
     pointsPerValidated: 100,
     pointsPerBonus: 50,
@@ -444,6 +437,7 @@ let gameRounds = [
     sequenceLength: 3,  // 3 buttons out of 4
     sequenceDisplayTime: 1000,
     sequenceOffTime: 1000,
+    sequenceTimeoutMs: 10000,  // 10 seconds to reproduce AFTER display completes
     validationWindow: 3000,
     pointsPerValidated: 100,
     pointsPerBonus: 50,
@@ -550,7 +544,6 @@ let activeTargets = [];
 let missionTargetsHit = 0;
 
 
-let currentSequence = [];
 let sequenceProgress = 0;
 let lastHitTime = 0;
 
@@ -579,42 +572,6 @@ const COLORS = {
 };
 
 
-const CONTROL_BUTTONS = [
-  OUTPUT_IDS.CONTROL_BUTTON_1,   // 14
-  OUTPUT_IDS.CONTROL_BUTTON_2,   // 15
-  OUTPUT_IDS.CONTROL_BUTTON_3,   // 16
-  OUTPUT_IDS.CONTROL_BUTTON_4,   // 17
-  OUTPUT_IDS.CONTROL_BUTTON_5,   // 18
-  OUTPUT_IDS.CONTROL_BUTTON_6,   // 19
-  OUTPUT_IDS.CONTROL_BUTTON_7,   // 20
-  OUTPUT_IDS.CONTROL_BUTTON_8,   // 21
-  OUTPUT_IDS.CONTROL_BUTTON_9,   // 22
-  OUTPUT_IDS.CONTROL_BUTTON_10,  // 23
-  OUTPUT_IDS.CONTROL_BUTTON_11,  // 24
-  OUTPUT_IDS.CONTROL_BUTTON_12,  // 25
-  OUTPUT_IDS.CONTROL_BUTTON_13,  // 26
-  OUTPUT_IDS.CONTROL_BUTTON_14,  // 27
-  OUTPUT_IDS.CONTROL_BUTTON_15   // 28
-];
-
-// Fixed button color mapping (hardware-defined)
-const BUTTON_COLORS = {
-  14: 'y',  // Yellow
-  15: 'g',  // Green
-  16: 'b',  // Blue
-  17: 'b',  // Blue
-  18: 'd',  // White
-  19: 'd',  // White
-  20: 'y',  // Yellow
-  21: 'g',  // Green
-  22: 'g',  // Green
-  23: 'y',  // Yellow
-  24: 'b',  // Blue
-  25: 'd',  // White
-  26: 'g',  // Green
-  27: 'b',  // Blue
-  28: 'y'   // Yellow
-};
 
 // Buttons grouped by color for easy access
 const BUTTONS_BY_COLOR = {
@@ -641,17 +598,7 @@ const rl = readline.createInterface({
   output: process.stdout
 });
 
-
-
-
 const gameEventListeners = [];
-
-
-function addTrackedGameListener(emitter, event, handler) {
-  emitter.on(event, handler);
-  gameEventListeners.push({ emitter, event, handler });
-}
-
 
 // Permanent event listeners - these should NEVER be removed
 emitter.on('start', (teamData) => {
@@ -2936,7 +2883,7 @@ function startSequenceTimeout() {
   }
 
   // Get timeout from mission config or use default
-  const timeoutMs = activeMission.sequenceTimeoutMs || BUTTON_SEQUENCE_TIMEOUT_MS;
+  const timeoutMs = activeMission.sequenceTimeoutMs;
 
   logger.info('STRIKELOOP', `Starting ${timeoutMs / 1000}-second timeout for sequence reproduction`);
 
@@ -2955,14 +2902,15 @@ function startSequenceTimeout() {
   }, timeoutMs);
 }
 
-// Helper: Start 5-second timeout for hole sequence button validation (Levels 7-10)
+// Helper: Start timeout for hole sequence button validation (Levels 5-10)
 function startHoleSequenceTimeout() {
   // Clear any existing timeout
   if (validationTimeout) {
     clearTimeout(validationTimeout);
   }
 
-  logger.info('STRIKELOOP', `Starting ${BUTTON_SEQUENCE_TIMEOUT_MS / 1000}-second timeout for button sequence validation`);
+  const timeoutMs = activeMission.sequenceTimeoutMs;
+  logger.info('STRIKELOOP', `Starting ${timeoutMs / 1000}-second timeout for button sequence validation`);
 
   validationTimeout = setTimeout(() => {
     logger.info('STRIKELOOP', '⏱️ Button sequence timeout! Player failed to complete button sequence in time');
@@ -2977,7 +2925,7 @@ function startHoleSequenceTimeout() {
 
     // Restore hole colors - player can try again
     restoreHoleColors();
-  }, BUTTON_SEQUENCE_TIMEOUT_MS);
+  }, timeoutMs);
 }
 
 // Helper: Light one random button of each color (Level 10)
