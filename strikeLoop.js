@@ -73,17 +73,6 @@ let gameRounds = [
   },
   {
     round: 1, level: 4,
-    mission: 'Touchez uniquement les verts !',
-    duration: 30,
-    goalScore: 1600,
-    arcadeMode: 'rotating-green',
-    greenTargets: [1, 2, 3, 4],
-    pointsPerGreen: 80,
-    penaltyRed: -100,
-    rotationDelay: 2000
-  },
-  {
-    round: 1, level: 5,
     mission: 'Touchez uniquement les verts et les bleus !',
     duration: 30,
     goalScore: 1800,
@@ -92,6 +81,17 @@ let gameRounds = [
     blueTargets: [5, 6, 7, 8],
     pointsPerGreen: 90,
     pointsPerBlue: 100,
+    penaltyRed: -100,
+    rotationDelay: 2000
+  },
+  {
+    round: 1, level: 5,
+    mission: 'Touchez uniquement les verts !',
+    duration: 30,
+    goalScore: 1600,
+    arcadeMode: 'rotating-green',
+    greenTargets: [1, 2, 3, 4],
+    pointsPerGreen: 80,
     penaltyRed: -100,
     rotationDelay: 2000
   },

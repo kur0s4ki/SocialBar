@@ -16,14 +16,14 @@ function App() {
     score: 0,
     missionNumber: 1,
     multiplier: 'x1',
-    missionDescription: 'Waiting for game to start...'
+    missionDescription: 'EN ATTENTE DE JOUEURS...'
   });
 
   // Round state managed by server
   const [currentRound, setCurrentRound] = useState({
     round: 1,
     level: 1,
-    mission: 'Waiting for game to start...',
+    mission: 'EN ATTENTE DE JOUEURS...',
     duration: 0,
     timeLeft: 0,
     timeString: '00:00',
@@ -256,12 +256,12 @@ function App() {
                 score: 0,
                 missionNumber: 1,
                 multiplier: 'x1',
-                missionDescription: 'Waiting for game to start...'
+                missionDescription: 'EN ATTENTE DE JOUEURS...'
               });
               setCurrentRound({
                 round: 1,
                 level: 1,
-                mission: 'Waiting for game to start...',
+                mission: 'EN ATTENTE DE JOUEURS...',
                 duration: 0,
                 timeLeft: 0,
                 timeString: '00:00',
