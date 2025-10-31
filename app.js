@@ -287,12 +287,17 @@ addTrackedListener(strikeLoop.emitter, 'multiplierUpdate', (multiplier) => {
 });
 
 // Keep separate score update listener for mid-round score changes
-addTrackedListener(strikeLoop.emitter, 'scoreUpdate', (score) => {
+addTrackedListener(strikeLoop.emitter, 'scoreUpdate', (scoreData) => {
   // Score updates are very frequent, suppress logging entirely
-  logger.trace('APP', `Score: ${score}`);
+  // Handle both old format (number) and new format (object with score and goalScore)
+  const score = typeof scoreData === 'number' ? scoreData : scoreData.score;
+  const goalScore = typeof scoreData === 'object' ? scoreData.goalScore : undefined;
+
+  logger.trace('APP', `Score: ${score}${goalScore ? ` / ${goalScore}` : ''}`);
   broadcastToDisplay({
     type: 'scoreUpdate',
-    score: score
+    score: score,
+    goalScore: goalScore
   });
 });
 

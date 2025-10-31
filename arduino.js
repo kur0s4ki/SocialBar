@@ -306,7 +306,7 @@ function set_output(num, val, color = 'w') {
   var c = color.toString()[0]; // Take first character of color
   if (n.length == 1) n = `0` + n;
 
-  if (v=='0') //power off led = W 
+  if (v=='0') //power off led = W
    c = 'w';
 
   // Human-readable description
@@ -316,6 +316,19 @@ function set_output(num, val, color = 'w') {
 
   // New protocol: O{NN}{0|1}{color}
   sendCmd1(`O` + n + c);
+}
+
+// Raw output command: O{NN}{state} format (for special effects, cell power, etc.)
+// Example: O991 (output 99 ON), O990 (output 99 OFF), O011 (output 1 ON)
+function set_output_raw(num, state) {
+  var n = num.toString();
+  var s = state.toString();
+  if (n.length == 1) n = `0` + n;
+
+  const stateDesc = state == 1 ? 'ON' : 'OFF';
+  logger.info('ARDUINO', `Raw output ${num} → ${stateDesc}`);
+
+  sendCmd1(`O` + n + s);
 }
 
 async function get_input1() {
@@ -350,5 +363,6 @@ module.exports = {
   get_input1,
   get_input2,
   set_output,
+  set_output_raw,
   setBarled,
 };

@@ -202,11 +202,18 @@ function App() {
               }));
               break;
             case 'scoreUpdate':
-              console.log('[GAMEINPROGRESS] Score update:', data.score);
+              console.log('[GAMEINPROGRESS] Score update:', data.score, 'goalScore:', data.goalScore);
               lastScore.current = data.score; // Store score in ref
 
               // Handle score-based sounds (point and levelup)
-              soundManager.handleScoreUpdate(data.score, currentRound.goalScore);
+              // Use goalScore from scoreUpdate if available, otherwise fallback to currentRound.goalScore
+              const goalScoreForSound = data.goalScore !== undefined ? data.goalScore : currentRound.goalScore;
+              soundManager.handleScoreUpdate(data.score, goalScoreForSound);
+
+              // Update goalScore in currentRound state if provided
+              if (data.goalScore !== undefined) {
+                setCurrentRound(prev => ({ ...prev, goalScore: data.goalScore }));
+              }
 
               setGameData(prevData => ({ ...prevData, score: data.score }));
               break;

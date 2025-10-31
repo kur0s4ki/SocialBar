@@ -1,5 +1,6 @@
 const events = require('events');
 const HAL = require('./hardwareAbstraction.js');
+const arduino = require('./arduino.js');
 const readline = require('readline');
 const logger = require('./logger.js');
 const emitter = new events.EventEmitter();
@@ -33,6 +34,7 @@ let gameState = {
 
 let localScore = 0;
 let goalAchieved = false;
+let previousRound = 0; // Track previous round for hardware effect detection
 
 
 // Game rounds in normal order: Round 1 → Round 2 → Round 3
@@ -685,6 +687,10 @@ function resetGameToInitialState() {
   stopLevelTimer();
   stopLEDRefresh();
   stopOverallGameTimer();
+
+  // Turn off cell power light (output 99, state 0) - sends O990
+  arduino.set_output_raw(99, 0);
+
   activeMission = null;
   currentLevelIndex = 0;
   localScore = 0;
@@ -724,6 +730,10 @@ function startRoundBasedGame() {
 
   initializeGameState();
 
+  // Turn on cell power light (output 99, state 1) - sends O991
+  arduino.set_output_raw(99, 1);
+  logger.info('STRIKELOOP', 'Cell power light activated (O991)');
+
   // Start overall 15-minute game timer
   startOverallGameTimer();
 
@@ -762,7 +772,44 @@ function startNextLevel(isRetry = false) {
   gameState.missionDescription = currentLevel.mission;
   gameState.score = localScore;
 
+  // Detect round or level change and trigger hardware effects (not on retry)
+  if (!isRetry) {
+    const isRoundChange = previousRound !== 0 && currentLevel.round !== previousRound;
+    const isLevelChange = previousRound !== 0 && !isRoundChange; // Level change within same round
 
+    if (isRoundChange) {
+      logger.info('STRIKELOOP', `🎭 ROUND CHANGE DETECTED (${previousRound} → ${currentLevel.round}) - Triggering hardware effect O021`);
+      arduino.set_output_raw(2, 1); // Send O021 (output 2, state 1) for round change effect
+
+      // Wait 2 seconds before continuing with level initialization
+      setTimeout(() => {
+        initializeLevelAfterEffect(currentLevel, isRetry);
+      }, 2000);
+
+      previousRound = currentLevel.round;
+      return; // Exit early, continuation happens in setTimeout
+
+    } else if (isLevelChange) {
+      logger.info('STRIKELOOP', `🎯 LEVEL CHANGE DETECTED (R${currentLevel.round}L${currentLevel.level}) - Triggering hardware effect O011`);
+      arduino.set_output_raw(1, 1); // Send O011 (output 1, state 1) for level change effect
+
+      // Wait 2 seconds before continuing with level initialization
+      setTimeout(() => {
+        initializeLevelAfterEffect(currentLevel, isRetry);
+      }, 2000);
+
+      return; // Exit early, continuation happens in setTimeout
+    }
+
+    previousRound = currentLevel.round;
+  }
+
+  // No transition effect needed (first level or retry), continue immediately
+  initializeLevelAfterEffect(currentLevel, isRetry);
+}
+
+// Helper function to continue level initialization after hardware effect delay
+function initializeLevelAfterEffect(currentLevel, isRetry) {
   initializeMission(currentLevel, isRetry);
 
 
@@ -785,7 +832,10 @@ function startNextLevel(isRetry = false) {
     totalTimeString: formatTime(getTotalRemainingTime())
   });
 
-  emitter.emit('scoreUpdate', localScore);
+  emitter.emit('scoreUpdate', {
+    score: localScore,
+    goalScore: currentLevel.goalScore
+  });
 
   emitter.emit('multiplierUpdate', gameState.multiplier);
 
@@ -1369,13 +1419,18 @@ function finishGame() {
   stopLevelTimer();
   stopLEDRefresh();
   stopOverallGameTimer(); // Stop the 15-minute timer
-  activeMission = null;
+
   logger.info('STRIKELOOP', 'All 30 levels (3 rounds × 10 levels) completed - game finished');
-  emitter.emit('gameFinished');
 
-
+  // Cleanup arcade game BEFORE setting activeMission to null
   cleanupArcadeGame();
 
+  // Turn off cell power light (output 99, state 0) - sends O990
+  arduino.set_output_raw(99, 0);
+
+  activeMission = null;
+
+  emitter.emit('gameFinished');
 
   cleanupGameEventListeners();
 }
@@ -1416,9 +1471,16 @@ function updateScore(newScore) {
   localScore = Math.max(0, newScore);
   gameState.score = localScore;
   logger.info('STRIKELOOP', 'Local score updated to:', localScore);
-  emitter.emit('scoreUpdate', localScore);
 
   const currentLevel = gameRounds[currentLevelIndex];
+  const currentGoalScore = currentLevel ? currentLevel.goalScore : 1000;
+
+  // Emit score with goalScore to prevent sound mismatch
+  emitter.emit('scoreUpdate', {
+    score: localScore,
+    goalScore: currentGoalScore
+  });
+
   if (currentLevel && !goalAchieved && localScore >= currentLevel.goalScore) {
     goalAchieved = true;
     logger.info('STRIKELOOP', `🎉 GOAL ACHIEVED! ${localScore}/${currentLevel.goalScore} - Level can be completed`);
