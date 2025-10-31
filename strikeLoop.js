@@ -815,7 +815,9 @@ function startNextLevel(isRetry = false) {
 
   emitter.emit('timeUpdate', {
     timeLeft: currentRoundTimeLeft,
-    timeString: formatTime(currentRoundTimeLeft)
+    timeString: formatTime(currentRoundTimeLeft),
+    totalTimeLeft: getTotalRemainingTime(),
+    totalTimeString: formatTime(getTotalRemainingTime())
   });
 
   emitter.emit('scoreUpdate', localScore);
@@ -1308,7 +1310,9 @@ function startLevelTimer() {
 
   emitter.emit('timeUpdate', {
     timeLeft: currentRoundTimeLeft,
-    timeString: formatTime(currentRoundTimeLeft)
+    timeString: formatTime(currentRoundTimeLeft),
+    totalTimeLeft: getTotalRemainingTime(),
+    totalTimeString: formatTime(getTotalRemainingTime())
   });
 
 

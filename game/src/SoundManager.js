@@ -22,6 +22,7 @@ class SoundManager {
     this.lastScore = 0;
     this.isBackgroundPlaying = false;
     this.isNarrationPlaying = false;
+    this.levelUpPlayed = false; // Track if levelup was played for current level
   }
 
   /**
@@ -253,12 +254,13 @@ class SoundManager {
    * @param {number} goalScore - Goal score for level
    */
   handleScoreUpdate(newScore, goalScore) {
-    console.log(`[SOUNDMANAGER] Score update: ${this.lastScore} → ${newScore}, goal: ${goalScore}`);
+    console.log(`[SOUNDMANAGER] Score update: ${this.lastScore} → ${newScore}, goal: ${goalScore}, levelUpPlayed: ${this.levelUpPlayed}`);
 
-    // Check if goal just achieved
-    if (newScore >= goalScore && this.lastScore < goalScore) {
+    // Check if goal just achieved (AND not already played for this level)
+    if (newScore >= goalScore && this.lastScore < goalScore && !this.levelUpPlayed) {
       console.log('[SOUNDMANAGER] 🎉 Goal achieved! Playing levelup sound');
       this.playLevelUp();
+      this.levelUpPlayed = true; // Mark as played for this level
     }
     // Check if score increased (points gained)
     else if (newScore > this.lastScore) {
@@ -289,6 +291,7 @@ class SoundManager {
   resetScoreTracking() {
     console.log('[SOUNDMANAGER] Resetting score tracking for new level');
     this.lastScore = 0;
+    this.levelUpPlayed = false; // Reset levelup flag for new level
   }
 
   /**

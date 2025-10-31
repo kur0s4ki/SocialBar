@@ -27,6 +27,8 @@ function App() {
     duration: 0,
     timeLeft: 0,
     timeString: '00:00',
+    totalTimeLeft: 0,
+    totalTimeString: '00:00',
     goalScore: 1000
   });
 
@@ -222,7 +224,9 @@ function App() {
               setCurrentRound(prev => ({
                 ...prev,
                 timeLeft: data.timeLeft,
-                timeString: data.timeString
+                timeString: data.timeString,
+                totalTimeLeft: data.totalTimeLeft,
+                totalTimeString: data.totalTimeString
               }));
               break;
             case 'bonusActive':
@@ -253,6 +257,8 @@ function App() {
                 duration: 0,
                 timeLeft: 0,
                 timeString: '00:00',
+                totalTimeLeft: 0,
+                totalTimeString: '00:00',
                 goalScore: 1000
               });
               setCumulativeScore(0);
@@ -369,9 +375,10 @@ function App() {
 
         {/* Bottom Row - Game Controls */}
         <div className="grid grid-cols-3 gap-8">
-          {/* Multiplier */}
-          <div className="bg-slate-900 border-8 border-cyan-400 rounded-2xl p-12 flex items-center justify-center">
-            <span className="text-yellow-400 text-9xl font-bold">{gameData.multiplier}</span>
+          {/* Session Timer */}
+          <div className="bg-slate-900 border-8 border-cyan-400 rounded-2xl p-12 flex flex-col items-center justify-center space-y-4">
+            <span className="text-cyan-400 text-4xl font-bold">TEMPS SESSION</span>
+            <span className="text-yellow-400 text-7xl font-bold font-mono">{currentRound.totalTimeString}</span>
           </div>
 
           {/* Bonus Central */}
