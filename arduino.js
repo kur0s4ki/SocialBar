@@ -64,9 +64,9 @@ SerialPort.list()
     ControllinoPort = ports.find(
       (port) => port.vendorId === ControllinovendorId
     );
-    // ControllinoPort = ports.find(
-    //   (port) => port.path === "COM4"
-    // );
+    ControllinoPort = ports.find(
+      (port) => port.path === "COM4"
+    );
     if (ControllinoPort) {
       logger.info(
         'ARDUINO',

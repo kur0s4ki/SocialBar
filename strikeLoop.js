@@ -903,8 +903,28 @@ function initializeMission(levelConfig, isRetry = false) {
 
   // OPTIMIZATION: Skip arcade LED initialization on retry to save serial writes
   // The LED pattern and validation state are already set from previous attempt
+  // EXCEPTION: Rotating and blinking modes need their intervals restarted
+  const intervalBasedModes = [
+    'rotating-green',
+    'rotating-green-blue',
+    'rotating-blue',
+    'blinking-green-bonus',
+    'blinking-blue-bonus',
+    'blinking-green-blue',
+    'snake-green-3',
+    'snake-blue-3',
+    'snake-green-2',
+    'snake-blue-2',
+    'random-4green-4red',
+    'random-mixed-reshuffle'
+  ];
+  const needsIntervalRestart = intervalBasedModes.includes(activeMission.arcadeMode);
+
   if (!isRetry) {
     startArcadeLEDs();
+  } else if (needsIntervalRestart) {
+    logger.info('STRIKELOOP', `Retry - restarting interval for ${activeMission.arcadeMode} mode`);
+    startArcadeLEDs(); // Must restart interval for animation to continue
   } else {
     logger.info('STRIKELOOP', 'Retry - skipping startArcadeLEDs() to preserve state and reduce serial writes');
   }
@@ -1805,13 +1825,16 @@ function activateModeRotatingGreen() {
   if (rotationInterval) clearInterval(rotationInterval);
 
   let previousGreenPos = null;
+  let currentIndex = 0; // Sequential rotation index
 
   const activateOne = () => {
     activeTargets = [];
     trapPositions = [];
 
-    // Pick one random green from 1-4
-    const greenPos = activeMission.greenTargets[Math.floor(Math.random() * activeMission.greenTargets.length)];
+    // Sequential rotation through green targets (1→2→3→4→1→2→3→4...)
+    const greenPos = activeMission.greenTargets[currentIndex];
+    currentIndex = (currentIndex + 1) % activeMission.greenTargets.length;
+
     const target = { elementId: greenPos, colorCode: 'g', isValid: true, isActive: true };
     activeTargets.push(target);
 
@@ -1927,13 +1950,16 @@ function activateModeRotatingBlue() {
   if (rotationInterval) clearInterval(rotationInterval);
 
   let previousBluePos = null;
+  let currentIndex = 0; // Sequential rotation index
 
   const activateOne = () => {
     activeTargets = [];
     trapPositions = [];
 
-    // Pick one random blue from 5-8
-    const bluePos = activeMission.blueTargets[Math.floor(Math.random() * activeMission.blueTargets.length)];
+    // Sequential rotation through blue targets (5→6→7→8→5→6→7→8...)
+    const bluePos = activeMission.blueTargets[currentIndex];
+    currentIndex = (currentIndex + 1) % activeMission.blueTargets.length;
+
     const target = { elementId: bluePos, colorCode: 'b', isValid: true, isActive: true };
     activeTargets.push(target);
 
