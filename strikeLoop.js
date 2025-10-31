@@ -4842,6 +4842,8 @@ function validateArcadeInput(target, timestamp) {
     logger.info('STRIKELOOP', `❌ TRAP ${elementId} ${penalty}pts`);
     pointsAwarded = penalty;
 
+    // Emit trap sound effect
+    emitter.emit('soundEffect', { effect: 'trap' });
 
     cancelMultiplier();
 
@@ -5425,6 +5427,7 @@ function processBlinkingRotatingMode(target) {
   // Check if it's a bonus target (yellow holes 9-13)
   if (target.isBonus && colorCode === 'y') {
     logger.info('STRIKELOOP', `✅ BONUS ${elementId} +${activeMission.pointsPerBonus || 50}pts`);
+    emitter.emit('soundEffect', { effect: 'bonus' });
     return true; // Return true to apply bonus points
   }
 
@@ -5463,6 +5466,8 @@ function processTwoStepMode(target) {
   // This includes yellow holes in Levels 7-10!
   if (target.needsValidation && target.isValid && elementId <= 8) {
     logger.info('STRIKELOOP', `Target ${elementId} (${colorCode.toUpperCase()}) hit - awaiting button validation`);
+    // Emit correct sound (valid hit, no points yet)
+    emitter.emit('soundEffect', { effect: 'correct' });
     // Start validation process but don't award points yet
     handleTwoStepValidation(colorCode);
     return false; // No points until validated
@@ -5472,6 +5477,7 @@ function processTwoStepMode(target) {
   // Bonus targets are always valid and don't need button validation
   if (target.isBonus && colorCode === 'y') {
     logger.info('STRIKELOOP', `✅ BONUS ${elementId} +${activeMission.pointsPerBonus}pts`);
+    emitter.emit('soundEffect', { effect: 'bonus' });
     return true;
   }
 
@@ -5488,6 +5494,7 @@ function processHoleSequenceMatchMode(target) {
   // Check if it's a red trap FIRST
   if (target.isTrap || colorCode === 'r') {
     logger.info('STRIKELOOP', `❌ TRAP HIT! Circle ${elementId} ${activeMission.penaltyRed} points`);
+    emitter.emit('soundEffect', { effect: 'trap' });
     // Reset hole sequence on trap hit
     holeSequenceActive = true;  // Reset to accept new hole hits
     holeSequenceHit = [];
@@ -5512,6 +5519,9 @@ function processHoleSequenceMatchMode(target) {
     // Add hole to sequence
     holeSequenceHit.push(elementId);
     buttonSequenceToMatch.push(colorCode);
+
+    // Emit correct sound for valid hole hit
+    emitter.emit('soundEffect', { effect: 'correct' });
 
     logger.info('STRIKELOOP', `Hole ${elementId} (${colorCode.toUpperCase()}) hit - Progress: ${holeSequenceHit.length}/${sequenceLength}`);
     logger.info('STRIKELOOP', `Hole sequence so far: ${holeSequenceHit.join(', ')}`);

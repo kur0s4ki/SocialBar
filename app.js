@@ -296,6 +296,15 @@ addTrackedListener(strikeLoop.emitter, 'scoreUpdate', (score) => {
   });
 });
 
+// Sound effect events
+addTrackedListener(strikeLoop.emitter, 'soundEffect', (soundData) => {
+  logger.trace('APP', `Sound effect: ${soundData.effect}`);
+  broadcastToDisplay({
+    type: 'soundEffect',
+    effect: soundData.effect
+  });
+});
+
 addTrackedListener(strikeLoop.emitter, 'timeUpdate', (timeData) => {
   // Send time updates only to display clients (not to staff) - no logging
   const message = {

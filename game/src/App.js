@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
+import soundManager from './SoundManager';
 
 function App() {
   // WebSocket connection state
@@ -65,6 +66,18 @@ function App() {
 
   useEffect(() => {
     document.title = 'Social Bar - Game In Progress';
+
+    // Initialize sound system
+    soundManager.init().then(() => {
+      console.log('[APP] Sound system initialized');
+    }).catch(err => {
+      console.error('[APP] Failed to initialize sound system:', err);
+    });
+
+    // Cleanup on unmount
+    return () => {
+      soundManager.cleanup();
+    };
   }, []);
 
   // Adjust mission text font size based on length
@@ -118,6 +131,10 @@ function App() {
               setClientId(data.clientId);
               console.log('[GAMEINPROGRESS] Assigned client ID:', data.clientId);
               break;
+            case 'gameStarted':
+              console.log('[GAMEINPROGRESS] Game started - starting background music');
+              soundManager.startBackgroundMusic();
+              break;
             case 'roundUpdate':
               console.log('[GAMEINPROGRESS] Round update received:', data);
 
@@ -132,6 +149,9 @@ function App() {
                 });
                 previousLevel.current = data.level;
               }
+
+              // Handle round change for narration
+              soundManager.handleRoundChange(data.round);
 
               setCurrentRound(prev => ({
                 ...prev,
@@ -168,7 +188,28 @@ function App() {
             case 'scoreUpdate':
               console.log('[GAMEINPROGRESS] Score update:', data.score);
               lastScore.current = data.score; // Store score in ref
+
+              // Handle score-based sounds (point and levelup)
+              soundManager.handleScoreUpdate(data.score, currentRound.goalScore);
+
               setGameData(prevData => ({ ...prevData, score: data.score }));
+              break;
+            case 'soundEffect':
+              console.log('[GAMEINPROGRESS] Sound effect:', data.effect);
+              // Play the specific sound effect
+              switch(data.effect) {
+                case 'trap':
+                  soundManager.playTrap();
+                  break;
+                case 'bonus':
+                  soundManager.playBonus();
+                  break;
+                case 'correct':
+                  soundManager.playCorrect();
+                  break;
+                default:
+                  console.warn('[GAMEINPROGRESS] Unknown sound effect:', data.effect);
+              }
               break;
             case 'timeUpdate':
               // No logging for time updates to reduce spam
@@ -188,6 +229,8 @@ function App() {
               break;
             case 'reset':
               console.log('[GAMEINPROGRESS] Game reset received');
+              // Stop background music
+              soundManager.stopBackgroundMusic();
               // Reset to default values
               setGameData({
                 round: 1,
