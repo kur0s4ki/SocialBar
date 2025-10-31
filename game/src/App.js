@@ -34,6 +34,7 @@ function App() {
   const [cumulativeScore, setCumulativeScore] = useState(0);
   const previousLevel = useRef(1);
   const lastScore = useRef(0); // Store last score before it gets reset
+  const previousRound = useRef(0); // Track previous round for narration (0 = no round yet)
 
   // Bonus section state
   const [bonusActive, setBonusActive] = useState(false);
@@ -148,10 +149,15 @@ function App() {
                   return newCumulative;
                 });
                 previousLevel.current = data.level;
+
+                // Reset sound manager's score tracking for new level
+                soundManager.resetScoreTracking();
               }
 
-              // Handle round change for narration
-              soundManager.handleRoundChange(data.round);
+              // Handle round change for narration (force play on first round update)
+              const isFirstRound = previousRound.current === 0;
+              soundManager.handleRoundChange(data.round, isFirstRound);
+              previousRound.current = data.round;
 
               setCurrentRound(prev => ({
                 ...prev,
@@ -251,6 +257,7 @@ function App() {
               });
               setCumulativeScore(0);
               previousLevel.current = 1;
+              previousRound.current = 0;
               lastScore.current = 0;
               setBonusActive(false);
               setTeamName('TEST');

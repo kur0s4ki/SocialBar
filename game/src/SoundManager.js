@@ -253,8 +253,11 @@ class SoundManager {
    * @param {number} goalScore - Goal score for level
    */
   handleScoreUpdate(newScore, goalScore) {
+    console.log(`[SOUNDMANAGER] Score update: ${this.lastScore} → ${newScore}, goal: ${goalScore}`);
+
     // Check if goal just achieved
     if (newScore >= goalScore && this.lastScore < goalScore) {
+      console.log('[SOUNDMANAGER] 🎉 Goal achieved! Playing levelup sound');
       this.playLevelUp();
     }
     // Check if score increased (points gained)
@@ -269,13 +272,23 @@ class SoundManager {
   /**
    * Handle round changes and play narration
    * @param {number} newRound - New round number
+   * @param {boolean} forcePlay - Force narration even if round hasn't changed (for game start)
    */
-  handleRoundChange(newRound) {
-    if (newRound !== this.currentRound && newRound >= 1 && newRound <= 3) {
+  handleRoundChange(newRound, forcePlay = false) {
+    if ((forcePlay || newRound !== this.currentRound) && newRound >= 1 && newRound <= 3) {
       console.log(`[SOUNDMANAGER] Round changed from ${this.currentRound} to ${newRound}`);
       this.playRoundNarration(newRound);
       this.currentRound = newRound;
     }
+  }
+
+  /**
+   * Reset score tracking (called on level change)
+   * This ensures levelup detection works correctly for new levels
+   */
+  resetScoreTracking() {
+    console.log('[SOUNDMANAGER] Resetting score tracking for new level');
+    this.lastScore = 0;
   }
 
   /**
