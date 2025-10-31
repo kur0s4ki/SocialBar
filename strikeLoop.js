@@ -6,7 +6,7 @@ const emitter = new events.EventEmitter();
 
 // ⚠️ TESTING FLAG: Set to true to play Round 2 first (for testing)
 // Set to false for normal game flow (Round 1 → Round 2 → Round 3)
-const TESTING_MODE_SWAP_ROUNDS = true
+const TESTING_MODE_SWAP_ROUNDS = false
 
 
 const OUTPUT_IDS = {
@@ -282,61 +282,56 @@ let gameRounds = [
   },
   {
     round: 2, level: 7,
-    mission: 'Reconstituez la séquence. Évitez les rouges !',
+    mission: 'Touchez les verts et bleus ! Évitez les rouges !',
     duration: 30,
-    goalScore: 4000,
-    arcadeMode: 'memory-sequence-4-green',
-    sequenceTargets: [1, 2, 3, 4],
-    sequenceLength: 4,
-    sequenceColor: 'g',
-    redTraps: [5, 6, 7, 8],
+    goalScore: 3800,
+    arcadeMode: 'blinking-green-blue',
+    greenTargets: [1, 2, 3, 4],
+    blueTargets: [5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
-    displayDuration: 8,
-    pointsForComplete: 3900,
+    blinkInterval: 2000,  // 2 sec on / 2 sec off
+    pointsPerGreen: 160,
+    pointsPerBlue: 160,
     pointsPerBonus: 50,
     penaltyRed: -100
   },
   {
     round: 2, level: 8,
-    mission: 'Reconstituez la séquence. Évitez les rouges !',
+    mission: 'Touchez uniquement les bleus. Évitez les rouges !',
     duration: 30,
-    goalScore: 4200,
-    arcadeMode: 'memory-sequence-4-blue',
-    sequenceTargets: [5, 6, 7, 8],
-    sequenceLength: 4,
-    sequenceColor: 'b',
+    goalScore: 4000,
+    arcadeMode: 'blinking-blue-avoid-red',
+    blueTargets: [5, 6, 7, 8],
     redTraps: [1, 2, 3, 4],
     bonusTargets: [9, 10, 11, 12, 13],
-    displayDuration: 8,
-    pointsForComplete: 4100,
+    blinkInterval: 2000,  // 2 sec on / 2 sec off
+    pointsPerBlue: 170,
     pointsPerBonus: 50,
     penaltyRed: -100
   },
   {
     round: 2, level: 9,
-    mission: 'Reconstituez la séquence. Évitez les rouges !',
+    mission: 'Touchez les verts ! Évitez les rouges !',
     duration: 30,
-    goalScore: 4400,
-    arcadeMode: 'memory-sequence-6-mixed',
-    sequenceTargets: [1, 2, 3, 4, 5, 6, 7, 8],
-    sequenceLength: 6,
+    goalScore: 4200,
+    arcadeMode: 'random-4green-4red',
+    allTargets: [1, 2, 3, 4, 5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
-    displayDuration: 12,
-    pointsForComplete: 4300,
+    rotationInterval: 2000,  // Pattern changes every 2 sec
+    pointsPerGreen: 180,
     pointsPerBonus: 50,
     penaltyRed: -100
   },
   {
     round: 2, level: 10,
-    mission: 'Reconstituez la séquence. Évitez les rouges !',
+    mission: 'Touchez les verts et bleus ! Évitez les rouges !',
     duration: 30,
-    goalScore: 4600,
-    arcadeMode: 'memory-sequence-7-mixed',
-    sequenceTargets: [1, 2, 3, 4, 5, 6, 7, 8],
-    sequenceLength: 7,
+    goalScore: 4400,
+    arcadeMode: 'random-mixed-reshuffle',
+    allTargets: [1, 2, 3, 4, 5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
-    displayDuration: 14,
-    pointsForComplete: 4400,
+    rotationInterval: 1000,  // Reshuffle every 1 sec
+    pointsPerTarget: 190,
     pointsPerBonus: 50,
     penaltyRed: -100
   },
@@ -1721,11 +1716,18 @@ function activateArcadeLEDs() {
     case 'snake-blue-2':
       activateModeSnakeBlue2();
       break;
-    case 'memory-sequence-4-green':
-    case 'memory-sequence-4-blue':
-    case 'memory-sequence-6-mixed':
-    case 'memory-sequence-7-mixed':
-      activateModeMemorySequence();
+    // Round 2 Levels 7-10 - NEW BLINKING/ROTATING MODES
+    case 'blinking-green-blue':
+      activateModeBlinkingGreenBlue();
+      break;
+    case 'blinking-blue-avoid-red':
+      activateModeBlinkingBlueAvoidRed();
+      break;
+    case 'random-4green-4red':
+      activateModeRandom4Green4Red();
+      break;
+    case 'random-mixed-reshuffle':
+      activateModeRandomMixedReshuffle();
       break;
     // Two-step validation modes (Round 3) - NEW IMPLEMENTATION
     case 'two-step-all-buttons-green':
@@ -2287,6 +2289,193 @@ function activateModeSnakeBlue2() {
 
   rotateSnake();
   rotationInterval = setInterval(rotateSnake, activeMission.rotationDelay || 3000);
+}
+
+// ========== NEW ROUND 2 LEVELS 7-10: BLINKING/ROTATING PATTERNS ==========
+
+// Level 7: Green (1-4) and Blue (5-8) both blinking 2s on/off
+function activateModeBlinkingGreenBlue() {
+  if (rotationInterval) clearInterval(rotationInterval);
+
+  activeTargets = [];
+  trapPositions = [];
+
+  let isOn = true;
+
+  const toggleLights = () => {
+    activeTargets = [];
+
+    if (isOn) {
+      // Turn on green targets (1-4)
+      activeMission.greenTargets.forEach(pos => {
+        const target = { elementId: pos, colorCode: 'g', isValid: true, isActive: true };
+        activeTargets.push(target);
+        controlLED(pos, 'g');
+      });
+
+      // Turn on blue targets (5-8)
+      activeMission.blueTargets.forEach(pos => {
+        const target = { elementId: pos, colorCode: 'b', isValid: true, isActive: true };
+        activeTargets.push(target);
+        controlLED(pos, 'b');
+      });
+
+      logger.debug('STRIKELOOP', 'Level 7: Lights ON - Green (1-4) and Blue (5-8)');
+    } else {
+      // Turn off all targets
+      [...activeMission.greenTargets, ...activeMission.blueTargets].forEach(pos => {
+        controlLED(pos, 'o');
+      });
+
+      logger.debug('STRIKELOOP', 'Level 7: Lights OFF');
+    }
+
+    // Bonus section always active
+    activateBonusSection();
+
+    isOn = !isOn;
+  };
+
+  toggleLights();
+  rotationInterval = setInterval(toggleLights, activeMission.blinkInterval || 2000);
+}
+
+// Level 8: Blue (5-8) blinking targets + Red (1-4) blinking traps
+function activateModeBlinkingBlueAvoidRed() {
+  if (rotationInterval) clearInterval(rotationInterval);
+
+  activeTargets = [];
+  trapPositions = [];
+
+  let isOn = true;
+
+  const toggleLights = () => {
+    activeTargets = [];
+    trapPositions = [];
+
+    if (isOn) {
+      // Turn on blue targets (5-8)
+      activeMission.blueTargets.forEach(pos => {
+        const target = { elementId: pos, colorCode: 'b', isValid: true, isActive: true };
+        activeTargets.push(target);
+        controlLED(pos, 'b');
+      });
+
+      // Turn on red traps (1-4)
+      activeMission.redTraps.forEach(pos => {
+        const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
+        activeTargets.push(trap);
+        trapPositions.push(trap);
+        controlLED(pos, 'r');
+      });
+
+      logger.debug('STRIKELOOP', 'Level 8: Lights ON - Blue (5-8) targets, Red (1-4) traps');
+    } else {
+      // Turn off all
+      [...activeMission.blueTargets, ...activeMission.redTraps].forEach(pos => {
+        controlLED(pos, 'o');
+      });
+
+      logger.debug('STRIKELOOP', 'Level 8: Lights OFF');
+    }
+
+    // Bonus section always active
+    activateBonusSection();
+
+    isOn = !isOn;
+  };
+
+  toggleLights();
+  rotationInterval = setInterval(toggleLights, activeMission.blinkInterval || 2000);
+}
+
+// Level 9: Random 4 green + 4 red pattern rotating every 2s
+function activateModeRandom4Green4Red() {
+  if (rotationInterval) clearInterval(rotationInterval);
+
+  activeTargets = [];
+  trapPositions = [];
+
+  const rotatePattern = () => {
+    activeTargets = [];
+    trapPositions = [];
+
+    // All 8 positions
+    const allPositions = [1, 2, 3, 4, 5, 6, 7, 8];
+
+    // Shuffle and pick 4 for green, remaining 4 for red
+    const shuffled = [...allPositions].sort(() => Math.random() - 0.5);
+    const greenPositions = shuffled.slice(0, 4);
+    const redPositions = shuffled.slice(4, 8);
+
+    // Set green targets
+    greenPositions.forEach(pos => {
+      const target = { elementId: pos, colorCode: 'g', isValid: true, isActive: true };
+      activeTargets.push(target);
+      controlLED(pos, 'g');
+    });
+
+    // Set red traps
+    redPositions.forEach(pos => {
+      const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
+      activeTargets.push(trap);
+      trapPositions.push(trap);
+      controlLED(pos, 'r');
+    });
+
+    logger.debug('STRIKELOOP', `Level 9: Green at ${greenPositions.join(',')}, Red at ${redPositions.join(',')}`);
+
+    // Bonus section always active
+    activateBonusSection();
+  };
+
+  rotatePattern();
+  rotationInterval = setInterval(rotatePattern, activeMission.rotationDelay || 2000);
+}
+
+// Level 10: Mixed colors (green/blue targets, red traps) reshuffling every 1s
+function activateModeRandomMixedReshuffle() {
+  if (rotationInterval) clearInterval(rotationInterval);
+
+  activeTargets = [];
+  trapPositions = [];
+
+  const rotatePattern = () => {
+    activeTargets = [];
+    trapPositions = [];
+
+    // All 8 positions
+    const allPositions = [1, 2, 3, 4, 5, 6, 7, 8];
+
+    // Shuffle and pick 4 for targets (mix of green/blue), 4 for red traps
+    const shuffled = [...allPositions].sort(() => Math.random() - 0.5);
+    const targetPositions = shuffled.slice(0, 4);
+    const redPositions = shuffled.slice(4, 8);
+
+    // Set targets with random green or blue colors
+    targetPositions.forEach(pos => {
+      const color = Math.random() < 0.5 ? 'g' : 'b';
+      const target = { elementId: pos, colorCode: color, isValid: true, isActive: true };
+      activeTargets.push(target);
+      controlLED(pos, color);
+    });
+
+    // Set red traps
+    redPositions.forEach(pos => {
+      const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
+      activeTargets.push(trap);
+      trapPositions.push(trap);
+      controlLED(pos, 'r');
+    });
+
+    logger.debug('STRIKELOOP', `Level 10: Targets at ${targetPositions.join(',')}, Red at ${redPositions.join(',')}`);
+
+    // Bonus section always active
+    activateBonusSection();
+  };
+
+  rotatePattern();
+  rotationInterval = setInterval(rotatePattern, activeMission.rotationDelay || 1000);
 }
 
 // Memory sequence state
@@ -4774,11 +4963,12 @@ function processArcadeMode(target, timestamp) {
       return processSnakeGreen2Mode(target);
     case 'snake-blue-2':
       return processSnakeBlue2Mode(target);
-    case 'memory-sequence-4-green':
-    case 'memory-sequence-4-blue':
-    case 'memory-sequence-6-mixed':
-    case 'memory-sequence-7-mixed':
-      return processMemorySequenceMode(target);
+    // Round 2 Levels 7-10 - NEW BLINKING/ROTATING MODES
+    case 'blinking-green-blue':
+    case 'blinking-blue-avoid-red':
+    case 'random-4green-4red':
+    case 'random-mixed-reshuffle':
+      return processBlinkingRotatingMode(target);
     // Two-step validation modes (Round 3) - NEW IMPLEMENTATION
     case 'two-step-all-buttons-green':
     case 'two-step-all-buttons-blue':
@@ -5220,6 +5410,44 @@ function processMemorySequenceMode(target) {
   }
 }
 
+function processBlinkingRotatingMode(target) {
+  // Handle new Round 2 Levels 7-10: Blinking/Rotating patterns
+  const elementId = target.elementId;
+  const colorCode = target.colorCode;
+
+  // Check if it's a red trap - apply penalty
+  if (target.isTrap || colorCode === 'r') {
+    const penalty = activeMission.penaltyRed || -100;
+    logger.info('STRIKELOOP', `❌ RED TRAP ${elementId} ${penalty}pts`);
+    return true; // Return true to apply penalty
+  }
+
+  // Check if it's a bonus target (yellow holes 9-13)
+  if (target.isBonus && colorCode === 'y') {
+    logger.info('STRIKELOOP', `✅ BONUS ${elementId} +${activeMission.pointsPerBonus || 50}pts`);
+    return true; // Return true to apply bonus points
+  }
+
+  // Check if it's a valid target (green or blue)
+  if (target.isValid && target.isActive) {
+    let points = 0;
+
+    // Determine points based on color
+    if (colorCode === 'g') {
+      points = activeMission.pointsPerGreen || 160;
+    } else if (colorCode === 'b') {
+      points = activeMission.pointsPerBlue || 160;
+    }
+
+    logger.info('STRIKELOOP', `✅ HIT ${elementId} (${colorCode.toUpperCase()}) +${points}pts`);
+    return true; // Return true to apply points
+  }
+
+  // Target not active or invalid - ignore hit
+  logger.debug('STRIKELOOP', `⚪ Inactive target ${elementId} - ignored`);
+  return false;
+}
+
 function processTwoStepMode(target) {
   // Handle two-step validation modes
   const elementId = target.elementId;
@@ -5435,6 +5663,58 @@ function calculatePoints(target) {
         return activeMission.penaltyRed || -100;
       }
       // Valid targets need validation, no immediate points
+      return 0;
+    // New Round 2 Levels 7-10: Blinking/Rotating patterns
+    case 'blinking-green-blue':
+      // Level 7: Green and Blue targets both give points
+      if (target.isBonus && target.colorCode === 'y') {
+        return activeMission.pointsPerBonus || 50;
+      }
+      if (target.colorCode === 'g') {
+        return activeMission.pointsPerGreen || 160;
+      }
+      if (target.colorCode === 'b') {
+        return activeMission.pointsPerBlue || 160;
+      }
+      return 0;
+    case 'blinking-blue-avoid-red':
+      // Level 8: Blue targets give points, red traps give penalty
+      if (target.isBonus && target.colorCode === 'y') {
+        return activeMission.pointsPerBonus || 50;
+      }
+      if (target.colorCode === 'b') {
+        return activeMission.pointsPerBlue || 170;
+      }
+      if (target.isTrap || target.colorCode === 'r') {
+        return activeMission.penaltyRed || -100;
+      }
+      return 0;
+    case 'random-4green-4red':
+      // Level 9: Green targets give points, red traps give penalty
+      if (target.isBonus && target.colorCode === 'y') {
+        return activeMission.pointsPerBonus || 50;
+      }
+      if (target.colorCode === 'g') {
+        return activeMission.pointsPerGreen || 180;
+      }
+      if (target.isTrap || target.colorCode === 'r') {
+        return activeMission.penaltyRed || -100;
+      }
+      return 0;
+    case 'random-mixed-reshuffle':
+      // Level 10: Mixed color targets give points, red traps give penalty
+      if (target.isBonus && target.colorCode === 'y') {
+        return activeMission.pointsPerBonus || 50;
+      }
+      if (target.colorCode === 'g') {
+        return activeMission.pointsPerGreen || 190;
+      }
+      if (target.colorCode === 'b') {
+        return activeMission.pointsPerBlue || 190;
+      }
+      if (target.isTrap || target.colorCode === 'r') {
+        return activeMission.penaltyRed || -100;
+      }
       return 0;
     default:
       let defaultPoints = activeMission.pointsPerHit || 50;
