@@ -318,8 +318,8 @@ function set_output(num, val, color = 'w') {
   sendCmd1(`O` + n + c);
 }
 
-// Raw output command: O{NN}{state} format (for special effects, cell power, etc.)
-// Example: O991 (output 99 ON), O990 (output 99 OFF), O011 (output 1 ON)
+// Raw output command: O{NN}{state} format (for cell power, etc.)
+// Example: O991 (output 99 ON), O990 (output 99 OFF)
 function set_output_raw(num, state) {
   var n = num.toString();
   var s = state.toString();
@@ -329,6 +329,18 @@ function set_output_raw(num, state) {
   logger.info('ARDUINO', `Raw output ${num} → ${stateDesc}`);
 
   sendCmd1(`O` + n + s);
+}
+
+// Send special effect command: O{NNN} format (for hardware transition effects)
+// Example: O001 (level change effect), O002 (round change effect)
+function send_effect(effectCode) {
+  var code = effectCode.toString();
+  // Pad to 3 digits
+  while (code.length < 3) code = `0` + code;
+
+  logger.info('ARDUINO', `Special effect code: ${code}`);
+
+  sendCmd1(`O` + code);
 }
 
 async function get_input1() {
@@ -364,5 +376,6 @@ module.exports = {
   get_input2,
   set_output,
   set_output_raw,
+  send_effect,
   setBarled,
 };

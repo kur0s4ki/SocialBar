@@ -778,8 +778,8 @@ function startNextLevel(isRetry = false) {
     const isLevelChange = previousRound !== 0 && !isRoundChange; // Level change within same round
 
     if (isRoundChange) {
-      logger.info('STRIKELOOP', `🎭 ROUND CHANGE DETECTED (${previousRound} → ${currentLevel.round}) - Triggering hardware effect O021`);
-      arduino.set_output_raw(2, 1); // Send O021 (output 2, state 1) for round change effect
+      logger.info('STRIKELOOP', `🎭 ROUND CHANGE DETECTED (${previousRound} → ${currentLevel.round}) - Triggering hardware effect O002`);
+      arduino.send_effect(2); // Send O002 for round change effect
 
       // Wait 2 seconds before continuing with level initialization
       setTimeout(() => {
@@ -790,8 +790,8 @@ function startNextLevel(isRetry = false) {
       return; // Exit early, continuation happens in setTimeout
 
     } else if (isLevelChange) {
-      logger.info('STRIKELOOP', `🎯 LEVEL CHANGE DETECTED (R${currentLevel.round}L${currentLevel.level}) - Triggering hardware effect O011`);
-      arduino.set_output_raw(1, 1); // Send O011 (output 1, state 1) for level change effect
+      logger.info('STRIKELOOP', `🎯 LEVEL CHANGE DETECTED (R${currentLevel.round}L${currentLevel.level}) - Triggering hardware effect O001`);
+      arduino.send_effect(1); // Send O001 for level change effect
 
       // Wait 2 seconds before continuing with level initialization
       setTimeout(() => {
