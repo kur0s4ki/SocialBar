@@ -1328,7 +1328,9 @@ function startLevelTimer() {
 
       emitter.emit('timeUpdate', {
         timeLeft: currentRoundTimeLeft,
-        timeString: timeString
+        timeString: timeString,
+        totalTimeLeft: getTotalRemainingTime(),
+        totalTimeString: formatTime(getTotalRemainingTime())
       });
 
 

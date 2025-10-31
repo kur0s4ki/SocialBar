@@ -310,7 +310,9 @@ addTrackedListener(strikeLoop.emitter, 'timeUpdate', (timeData) => {
   const message = {
     type: 'timeUpdate',
     timeLeft: timeData.timeLeft,
-    timeString: timeData.timeString
+    timeString: timeData.timeString,
+    totalTimeLeft: timeData.totalTimeLeft,
+    totalTimeString: timeData.totalTimeString
   };
 
   broadcastToDisplay(message);

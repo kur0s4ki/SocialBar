@@ -186,6 +186,35 @@ class SoundManager {
   }
 
   /**
+   * Stop all sounds immediately (for reset)
+   * Stops background music and any playing narration
+   */
+  stopAllSounds() {
+    console.log('[SOUNDMANAGER] Stopping all sounds (reset triggered)');
+
+    // Stop background music
+    this.stopBackgroundMusic();
+
+    // Stop narration if playing
+    if (this.isNarrationPlaying) {
+      // Find and stop all audio elements that might be playing narration
+      const audioElements = document.querySelectorAll('audio');
+      audioElements.forEach(audio => {
+        if (!audio.paused && audio !== this.backgroundMusic) {
+          audio.pause();
+          audio.currentTime = 0;
+        }
+      });
+      this.isNarrationPlaying = false;
+    }
+
+    // Reset states
+    this.currentRound = 1;
+    this.lastScore = 0;
+    this.levelUpPlayed = false;
+  }
+
+  /**
    * Duck background music (reduce volume temporarily)
    * @param {number} duration - Duration in ms to keep ducked
    */
@@ -209,8 +238,10 @@ class SoundManager {
   /**
    * Play round narration with audio ducking
    * @param {number} roundNumber - Round number (1, 2, or 3)
+   * @param {Function} onStart - Callback when narration starts
+   * @param {Function} onEnd - Callback when narration ends
    */
-  playRoundNarration(roundNumber) {
+  playRoundNarration(roundNumber, onStart = null, onEnd = null) {
     if (!this.isInitialized || this.isMuted) return;
 
     const narrationSound = this.sounds[`round${roundNumber}`];
@@ -228,6 +259,9 @@ class SoundManager {
 
     this.isNarrationPlaying = true;
 
+    // Notify that narration started
+    if (onStart) onStart();
+
     // Play narration
     const clone = narrationSound.cloneNode();
     clone.volume = this.sfxVolume * this.masterVolume;
@@ -240,11 +274,15 @@ class SoundManager {
       if (this.backgroundMusic && this.isBackgroundPlaying) {
         this.backgroundMusic.volume = this.backgroundVolume * this.masterVolume;
       }
+
+      // Notify that narration ended
+      if (onEnd) onEnd();
     });
 
     clone.play().catch(err => {
       console.warn(`[SOUNDMANAGER] Failed to play round ${roundNumber} narration:`, err);
       this.isNarrationPlaying = false;
+      if (onEnd) onEnd(); // Still call onEnd on error
     });
   }
 
@@ -275,11 +313,13 @@ class SoundManager {
    * Handle round changes and play narration
    * @param {number} newRound - New round number
    * @param {boolean} forcePlay - Force narration even if round hasn't changed (for game start)
+   * @param {Function} onStart - Callback when narration starts
+   * @param {Function} onEnd - Callback when narration ends
    */
-  handleRoundChange(newRound, forcePlay = false) {
+  handleRoundChange(newRound, forcePlay = false, onStart = null, onEnd = null) {
     if ((forcePlay || newRound !== this.currentRound) && newRound >= 1 && newRound <= 3) {
       console.log(`[SOUNDMANAGER] Round changed from ${this.currentRound} to ${newRound}`);
-      this.playRoundNarration(newRound);
+      this.playRoundNarration(newRound, onStart, onEnd);
       this.currentRound = newRound;
     }
   }

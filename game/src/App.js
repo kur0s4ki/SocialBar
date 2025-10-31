@@ -44,6 +44,9 @@ function App() {
   // Team name state
   const [teamName, setTeamName] = useState('TEST');
 
+  // Narration state
+  const [isNarrationPlaying, setIsNarrationPlaying] = useState(false);
+
   // Dynamic font sizing for mission text
   const [missionFontSize, setMissionFontSize] = useState('text-7xl');
 
@@ -158,7 +161,12 @@ function App() {
 
               // Handle round change for narration (force play on first round update)
               const isFirstRound = previousRound.current === 0;
-              soundManager.handleRoundChange(data.round, isFirstRound);
+              soundManager.handleRoundChange(
+                data.round,
+                isFirstRound,
+                () => setIsNarrationPlaying(true),  // onStart
+                () => setIsNarrationPlaying(false)  // onEnd
+              );
               previousRound.current = data.round;
 
               setCurrentRound(prev => ({
@@ -220,7 +228,7 @@ function App() {
               }
               break;
             case 'timeUpdate':
-              // No logging for time updates to reduce spam
+              console.log('[DEBUG] timeUpdate:', JSON.stringify(data));
               setCurrentRound(prev => ({
                 ...prev,
                 timeLeft: data.timeLeft,
@@ -239,8 +247,8 @@ function App() {
               break;
             case 'reset':
               console.log('[GAMEINPROGRESS] Game reset received');
-              // Stop background music
-              soundManager.stopBackgroundMusic();
+              // Stop all sounds including narration
+              soundManager.stopAllSounds();
               // Reset to default values
               setGameData({
                 round: 1,
@@ -267,6 +275,7 @@ function App() {
               lastScore.current = 0;
               setBonusActive(false);
               setTeamName('TEST');
+              setIsNarrationPlaying(false);
               break;
             default:
               console.log('[GAMEINPROGRESS] Unknown message type:', data.type);
@@ -378,7 +387,7 @@ function App() {
           {/* Session Timer */}
           <div className="bg-slate-900 border-8 border-cyan-400 rounded-2xl p-12 flex flex-col items-center justify-center space-y-4">
             <span className="text-cyan-400 text-4xl font-bold">TEMPS SESSION</span>
-            <span className="text-yellow-400 text-7xl font-bold font-mono">{currentRound.totalTimeString}</span>
+            <span className="text-yellow-400 text-7xl font-bold font-mono">{currentRound.totalTimeString || '00:00'}</span>
           </div>
 
           {/* Bonus Central */}
@@ -394,7 +403,31 @@ function App() {
             <span className="text-cyan-400 text-4xl font-bold">SCORE GLOBAL</span>
             <span className="text-yellow-400 text-7xl font-bold">{cumulativeScore}</span>
           </div>
+        </div>
+
+        {/* Narration Overlay - Shows during round description audio */}
+        {isNarrationPlaying && (
+          <div className="fixed inset-0 bg-slate-900 bg-opacity-95 flex flex-col items-center justify-center z-50 space-y-12">
+            {/* Session Timer */}
+            <div className="flex flex-col items-center space-y-4">
+              <span className="text-cyan-400 text-6xl font-bold">TEMPS SESSION</span>
+              <span className="text-yellow-400 text-9xl font-bold font-mono">{currentRound.totalTimeString || '00:00'}</span>
             </div>
+
+            {/* Narration Message */}
+            <div className="text-center space-y-8">
+              <div className="animate-pulse">
+                <span className="text-white text-8xl font-bold">🎧</span>
+              </div>
+              <h2 className="text-yellow-400 text-7xl font-bold uppercase">
+                Écoutez la description de la manche
+              </h2>
+              <p className="text-cyan-400 text-5xl font-medium">
+                Lisez les instructions de niveau dès la fin de l'audio
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
