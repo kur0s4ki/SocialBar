@@ -77,11 +77,24 @@ class Logger {
   }
 
   /**
+   * Get current timestamp with milliseconds
+   * @private
+   */
+  _getTimestamp() {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+    const milliseconds = now.getMilliseconds().toString().padStart(3, '0');
+    return `[${hours}:${minutes}:${seconds}.${milliseconds}]`;
+  }
+
+  /**
    * Log an error message
    */
   error(module, ...args) {
     if (this._shouldLog(module, LOG_LEVELS.ERROR)) {
-      console.error(`[${module}] ❌`, ...args);
+      console.error(`${this._getTimestamp()} [${module}] ❌`, ...args);
     }
   }
 
@@ -90,7 +103,7 @@ class Logger {
    */
   warn(module, ...args) {
     if (this._shouldLog(module, LOG_LEVELS.WARN)) {
-      console.warn(`[${module}] ⚠️`, ...args);
+      console.warn(`${this._getTimestamp()} [${module}] ⚠️`, ...args);
     }
   }
 
@@ -99,7 +112,7 @@ class Logger {
    */
   info(module, ...args) {
     if (this._shouldLog(module, LOG_LEVELS.INFO)) {
-      console.log(`[${module}]`, ...args);
+      console.log(`${this._getTimestamp()} [${module}]`, ...args);
     }
   }
 
@@ -108,7 +121,7 @@ class Logger {
    */
   debug(module, ...args) {
     if (this._shouldLog(module, LOG_LEVELS.DEBUG)) {
-      console.log(`[${module}]`, ...args);
+      console.log(`${this._getTimestamp()} [${module}]`, ...args);
     }
   }
 
@@ -117,7 +130,7 @@ class Logger {
    */
   trace(module, ...args) {
     if (this._shouldLog(module, LOG_LEVELS.TRACE)) {
-      console.log(`[${module}]`, ...args);
+      console.log(`${this._getTimestamp()} [${module}]`, ...args);
     }
   }
 
@@ -126,7 +139,7 @@ class Logger {
    */
   success(module, ...args) {
     if (this._shouldLog(module, LOG_LEVELS.INFO)) {
-      console.log(`[${module}] ✅`, ...args);
+      console.log(`${this._getTimestamp()} [${module}] ✅`, ...args);
     }
   }
 
@@ -148,7 +161,7 @@ class Logger {
   scoreUpdate(oldScore, newScore, delta) {
     if (this._shouldLog('STRIKELOOP', LOG_LEVELS.INFO)) {
       const sign = delta >= 0 ? '+' : '';
-      console.log(`[STRIKELOOP] Score: ${oldScore} → ${newScore} (${sign}${delta})`);
+      console.log(`${this._getTimestamp()} [STRIKELOOP] Score: ${oldScore} → ${newScore} (${sign}${delta})`);
     }
   }
 
@@ -160,7 +173,7 @@ class Logger {
     const seconds = parseInt(timeRemaining.split(':')[1]);
     if (seconds % interval === 0 || seconds === 0) {
       if (this._shouldLog('STRIKELOOP', LOG_LEVELS.INFO)) {
-        console.log(`[STRIKELOOP] Round ${round} Level ${level} time remaining: ${timeRemaining}`);
+        console.log(`${this._getTimestamp()} [STRIKELOOP] Round ${round} Level ${level} time remaining: ${timeRemaining}`);
       }
     }
   }

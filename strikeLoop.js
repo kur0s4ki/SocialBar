@@ -656,13 +656,34 @@ function startOverallGameTimer() {
 
   gameStartTime = Date.now();
   const maxGameTimeMs = gameState.totalGameTimeMinutes * 60 * 1000; // 15 minutes in milliseconds
+  
+  let lastRoundAdvanced = 0; // Track last round we advanced to (0, 1, 2, 3)
 
   logger.info('STRIKELOOP', `Overall game timer started - Maximum game time: ${gameState.totalGameTimeMinutes} minutes`);
 
   overallGameTimer = setInterval(() => {
     const elapsedTime = Date.now() - gameStartTime;
-
-    if (elapsedTime >= maxGameTimeMs) {
+    const elapsedMinutes = Math.floor(elapsedTime / 60000); // Convert to minutes
+    
+    // Check for automatic round advancement every 5 minutes
+    if (elapsedMinutes >= 5 && elapsedMinutes < 10 && lastRoundAdvanced < 2) {
+      // 5 minutes elapsed - should be in Round 2
+      const currentLevel = gameRounds[currentLevelIndex];
+      if (currentLevel && currentLevel.round === 1) {
+        logger.info('STRIKELOOP', `⏰ 5 MINUTES ELAPSED - Auto-advancing from Round 1 to Round 2`);
+        lastRoundAdvanced = 2;
+        forceSkipToRound(2);
+      }
+    } else if (elapsedMinutes >= 10 && elapsedMinutes < 15 && lastRoundAdvanced < 3) {
+      // 10 minutes elapsed - should be in Round 3
+      const currentLevel = gameRounds[currentLevelIndex];
+      if (currentLevel && currentLevel.round < 3) {
+        logger.info('STRIKELOOP', `⏰ 10 MINUTES ELAPSED - Auto-advancing to Round 3`);
+        lastRoundAdvanced = 3;
+        forceSkipToRound(3);
+      }
+    } else if (elapsedTime >= maxGameTimeMs) {
+      // 15 minutes elapsed - game over
       logger.info('STRIKELOOP', `15 minutes elapsed - resetting game to initial state`);
       stopOverallGameTimer();
       resetGameToInitialState();
@@ -676,6 +697,42 @@ function stopOverallGameTimer() {
     overallGameTimer = null;
   }
   gameStartTime = null;
+}
+
+function forceSkipToRound(targetRound) {
+  if (!isRunning) return;
+
+  const currentLevel = gameRounds[currentLevelIndex];
+  if (!currentLevel) return;
+  
+  // If already at or past target round, do nothing
+  if (currentLevel.round >= targetRound) {
+    logger.info('STRIKELOOP', `Already in Round ${currentLevel.round}, no need to skip to Round ${targetRound}`);
+    return;
+  }
+
+  logger.info('STRIKELOOP', `🚀 FORCE SKIPPING from Round ${currentLevel.round} to Round ${targetRound}`);
+
+  // Find the first level of the target round
+  const targetLevelIndex = gameRounds.findIndex(level => level.round === targetRound);
+
+  if (targetLevelIndex === -1) {
+    logger.error('STRIKELOOP', `Could not find Round ${targetRound} - continuing current round`);
+    return;
+  }
+
+  // Stop current level activities
+  stopLevelTimer();
+  stopLEDRefresh();
+
+  // Update level index to target round's first level
+  currentLevelIndex = targetLevelIndex;
+
+  // Score carries over (don't reset localScore)
+  logger.info('STRIKELOOP', `Score carries over: ${localScore} points`);
+
+  // Start the first level of the new round (not a retry, score carries over)
+  startNextLevel(false);
 }
 
 function resetGameToInitialState() {
@@ -1538,14 +1595,17 @@ function getCurrentLevel() {
 
 
 function getTotalRemainingTime() {
-  let totalRemaining = currentRoundTimeLeft;
-
-  
-  for (let i = currentLevelIndex + 1; i < gameRounds.length; i++) {
-    totalRemaining += gameRounds[i].duration;
+  // Calculate based on actual elapsed game time, not level progression
+  if (!gameStartTime) {
+    // Game hasn't started yet, return full 15 minutes
+    return gameState.totalGameTimeMinutes * 60;
   }
-
-  return totalRemaining;
+  
+  const elapsedSeconds = Math.floor((Date.now() - gameStartTime) / 1000);
+  const totalGameSeconds = gameState.totalGameTimeMinutes * 60;
+  const remainingSeconds = Math.max(0, totalGameSeconds - elapsedSeconds);
+  
+  return remainingSeconds;
 }
 
 
