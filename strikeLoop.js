@@ -257,7 +257,8 @@ let gameRounds = [
     greenTargets: [1, 2, 3, 4],
     blueTargets: [5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
-    blinkInterval: 4000,
+    blinkOnDuration: 4000,    // LEDs on for 2 seconds
+    blinkOffDuration: 1000,   // LEDs off for 2 seconds
     pointsPerGreen: 1100,
     pointsPerBlue: 1200,
     pointsPerBonus: 200,
@@ -272,7 +273,8 @@ let gameRounds = [
     blueTargets: [5, 6, 7, 8],
     redTraps: [1, 2, 3, 4],
     bonusTargets: [9, 10, 11, 12, 13],
-    blinkInterval: 4000,
+    blinkOnDuration: 4000,    // Blue LEDs on for 2 seconds (red stays constant)
+    blinkOffDuration: 1000,   // Blue LEDs off for 2 seconds (red stays constant)
     pointsPerBlue: 1300,
     pointsPerBonus: 200,
     penaltyRed: -100
@@ -2149,7 +2151,7 @@ function activateModeSnakeBlue2() {
 
 // Level 7: Green (1-4) and Blue (5-8) both blinking 2s on/off
 function activateModeBlinkingGreenBlue() {
-  if (rotationInterval) clearInterval(rotationInterval);
+  if (rotationInterval) clearTimeout(rotationInterval);
 
   activeTargets = [];
   trapPositions = [];
@@ -2191,21 +2193,39 @@ function activateModeBlinkingGreenBlue() {
   };
 
   toggleLights();
-  rotationInterval = setInterval(toggleLights, activeMission.blinkInterval);
+
+  // Use separate on/off durations with chained timeouts
+  const blinkCycle = () => {
+    const duration = isOn ? activeMission.blinkOnDuration : activeMission.blinkOffDuration;
+    rotationInterval = setTimeout(() => {
+      toggleLights();
+      blinkCycle();
+    }, duration);
+  };
+
+  blinkCycle();
 }
 
-// Level 8: Blue (5-8) blinking targets + Red (1-4) blinking traps
+// Level 8: Blue (5-8) blinking targets + Red (1-4) constant traps
 function activateModeBlinkingBlueAvoidRed() {
-  if (rotationInterval) clearInterval(rotationInterval);
+  if (rotationInterval) clearTimeout(rotationInterval);
 
   activeTargets = [];
   trapPositions = [];
 
+  // Set red traps to constant red (they never turn off)
+  activeMission.redTraps.forEach(pos => {
+    const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
+    activeTargets.push(trap);
+    trapPositions.push(trap);
+    controlLED(pos, 'r');
+  });
+
   let isOn = true;
 
   const toggleLights = () => {
-    activeTargets = [];
-    trapPositions = [];
+    // Keep activeTargets with red traps
+    activeTargets = [...trapPositions];
 
     if (isOn) {
       // Turn on blue targets (5-8)
@@ -2215,22 +2235,14 @@ function activateModeBlinkingBlueAvoidRed() {
         controlLED(pos, 'b');
       });
 
-      // Turn on red traps (1-4)
-      activeMission.redTraps.forEach(pos => {
-        const trap = { elementId: pos, colorCode: 'r', isTrap: true, isActive: true };
-        activeTargets.push(trap);
-        trapPositions.push(trap);
-        controlLED(pos, 'r');
-      });
-
-      logger.debug('STRIKELOOP', 'Level 8: Lights ON - Blue (5-8) targets, Red (1-4) traps');
+      logger.debug('STRIKELOOP', 'Level 8: Blue ON - Blue (5-8) targets, Red (1-4) constant traps');
     } else {
-      // Turn off all
-      [...activeMission.blueTargets, ...activeMission.redTraps].forEach(pos => {
+      // Turn off only blue targets (red stays on)
+      activeMission.blueTargets.forEach(pos => {
         controlLED(pos, 'o');
       });
 
-      logger.debug('STRIKELOOP', 'Level 8: Lights OFF');
+      logger.debug('STRIKELOOP', 'Level 8: Blue OFF - Red (1-4) constant traps remain');
     }
 
     // Bonus section always active
@@ -2240,7 +2252,17 @@ function activateModeBlinkingBlueAvoidRed() {
   };
 
   toggleLights();
-  rotationInterval = setInterval(toggleLights, activeMission.blinkInterval);
+
+  // Use separate on/off durations with chained timeouts
+  const blinkCycle = () => {
+    const duration = isOn ? activeMission.blinkOnDuration : activeMission.blinkOffDuration;
+    rotationInterval = setTimeout(() => {
+      toggleLights();
+      blinkCycle();
+    }, duration);
+  };
+
+  blinkCycle();
 }
 
 // Level 9: Random 4 green + 4 red pattern rotating every 2s
@@ -3891,6 +3913,12 @@ function validateArcadeInput(target, timestamp) {
     'snake-blue-3',
     'snake-green-2',
     'snake-blue-2',
+    // Blinking modes manage their own timing (Levels 7-8)
+    'blinking-green-blue',
+    'blinking-blue-avoid-red',
+    // Random modes manage their own rotation (Levels 9-10)
+    'random-4green-4red',
+    'random-mixed-reshuffle',
     // Two-step modes manage their own patterns - NEW
     'two-step-all-buttons-green',
     'two-step-all-buttons-blue',
