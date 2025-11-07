@@ -494,11 +494,6 @@ let timeUpdateInterval;
 
 let activeMission = null;
 let activeTargets = [];
-let missionTargetsHit = 0;
-
-
-let sequenceProgress = 0;
-let lastHitTime = 0;
 
 
 let consecutiveValidHits = 0;
@@ -506,10 +501,6 @@ let currentMultiplier = 1;
 let multiplierTimer = null;
 let multiplierActive = false;
 let trapPositions = [];
-let cumulativeHitCounts = {};
-let comboProgress = 0;
-let activationHits = 0;
-let sequenceStep = 0;
 
 
 let ledRefreshInterval;
@@ -922,18 +913,12 @@ function initializeMission(levelConfig, isRetry = false) {
   }
 
   missionTargetsHit = 0;
-  sequenceProgress = 0;
-  currentSequence = levelConfig.sequence || [];
 
 
   consecutiveValidHits = 0;
   currentMultiplier = 1;
   multiplierActive = false;
   trapPositions = [];
-  cumulativeHitCounts = {};
-  comboProgress = 0;
-  activationHits = 0;
-  sequenceStep = 0;
   multiHitTracker = {};
 
   // Clear memory sequence state
@@ -1144,129 +1129,6 @@ function startArcadeLEDs() {
 }
 
 
-function showSequenceTarget() {
-  if (!activeMission.sequence || sequenceStep >= activeMission.sequence.length) return;
-
-  const targetColor = activeMission.sequence[sequenceStep];
-  const allColors = ['r', 'g', 'b', 'y'];
-
-
-  activeTargets = [];
-
-
-  const targetCircle = Math.floor(Math.random() * 8) + 1;
-
-  logger.info('STRIKELOOP', `Sequence ${sequenceStep + 1}/${activeMission.sequence.length}: Circle ${targetCircle} -> ${targetColor.toUpperCase()}`);
-
-
-  for (let circleId = 1; circleId <= 8; circleId++) {
-    let color;
-
-    if (circleId === targetCircle) {
-
-      color = targetColor;
-    } else {
-
-
-      if (Math.random() < 0.6) {
-
-        const sequenceColors = [...new Set(activeMission.sequence)];
-        const wrongColors = sequenceColors.filter(c => c !== targetColor);
-        if (wrongColors.length > 0) {
-          color = wrongColors[Math.floor(Math.random() * wrongColors.length)];
-        } else {
-
-          color = allColors.filter(c => c !== targetColor)[Math.floor(Math.random() * 3)];
-        }
-      } else {
-
-        const distractorColors = allColors.filter(c => c !== targetColor);
-        color = distractorColors[Math.floor(Math.random() * distractorColors.length)];
-      }
-    }
-
-    controlLED(circleId, color);
-    activeTargets.push({ elementId: circleId, colorCode: color });
-  }
-
-
-  const targetIndex = activeTargets.findIndex(t => t.elementId === targetCircle);
-  activeTargets[targetIndex].isSequenceTarget = true;
-
-  logger.info('STRIKELOOP', `Sequence LED Pattern:`, activeTargets.map(t =>
-    `${t.elementId}:${t.colorCode ? t.colorCode.toUpperCase() : 'UNDEFINED'}${t.isSequenceTarget ? '*' : ''}`
-  ).join(' '));
-}
-
-
-function activateRandomLEDs() {
-  if (!activeMission.targetColors) return;
-
-
-  activeTargets = [];
-
-  const allColors = ['r', 'g', 'b', 'y'];
-
-
-  for (let circleId = 1; circleId <= 8; circleId++) {
-    let color;
-
-
-    if (activeMission.targetColors && activeMission.avoidColors) {
-
-      const shouldBeTarget = Math.random() < 0.4;
-      if (shouldBeTarget) {
-        color = activeMission.targetColors[Math.floor(Math.random() * activeMission.targetColors.length)];
-      } else {
-
-        const distractors = [...activeMission.avoidColors];
-
-        allColors.forEach(c => {
-          if (!activeMission.targetColors.includes(c) && !activeMission.avoidColors.includes(c)) {
-            distractors.push(c);
-          }
-        });
-        color = distractors[Math.floor(Math.random() * distractors.length)];
-      }
-    }
-    else if (activeMission.targetColors) {
-
-      const shouldBeTarget = Math.random() < 0.3;
-      if (shouldBeTarget) {
-        color = activeMission.targetColors[Math.floor(Math.random() * activeMission.targetColors.length)];
-      } else {
-
-        const distractors = allColors.filter(c => !activeMission.targetColors.includes(c));
-        if (distractors.length > 0) {
-          color = distractors[Math.floor(Math.random() * distractors.length)];
-        } else {
-
-          color = activeMission.targetColors[Math.floor(Math.random() * activeMission.targetColors.length)];
-        }
-      }
-    }
-    else {
-
-      color = allColors[Math.floor(Math.random() * 4)];
-    }
-
-
-    if (!color) {
-      color = allColors[Math.floor(Math.random() * 4)];
-      logger.warn('STRIKELOOP', `Color was undefined, using fallback: ${color}`);
-    }
-
-    controlLED(circleId, color);
-    activeTargets.push({ elementId: circleId, colorCode: color });
-  }
-
-
-  const targetCircles = activeTargets.filter(t => activeMission.targetColors && activeMission.targetColors.includes(t.colorCode));
-  const avoidCircles = activeTargets.filter(t => activeMission.avoidColors && activeMission.avoidColors.includes(t.colorCode));
-
-  logger.info('STRIKELOOP', `All 8 LEDs activated! Targets: ${targetCircles.length}, Avoid: ${avoidCircles.length}, Neutral: ${8 - targetCircles.length - avoidCircles.length}`);
-  logger.info('STRIKELOOP', `LED Pattern:`, activeTargets.map(t => `${t.elementId}:${t.colorCode ? t.colorCode.toUpperCase() : 'UNDEFINED'}`).join(' '));
-}
 
 
 function processGameInput(inputId, source) {
@@ -1289,104 +1151,7 @@ function processGameInput(inputId, source) {
   if (activeMission.arcadeMode) {
     logger.trace('STRIKELOOP', `Arcade validation: ${activeMission.arcadeMode}`);
     validateArcadeInput(clickedTarget, currentTime);
-  } else {
-    logger.trace('STRIKELOOP', `Original validation`);
-    validateInput(clickedTarget, currentTime);
   }
-}
-
-
-function validateInput(target, timestamp) {
-  if (!activeMission) return;
-
-  const { elementId, colorCode } = target;
-  let pointsAwarded = 0;
-  let valid = false;
-
-
-  if (activeMission.sequence) {
-    const expectedColor = activeMission.sequence[sequenceProgress];
-
-
-    if (colorCode === expectedColor && target.isSequenceTarget) {
-      valid = true;
-      sequenceProgress++;
-
-      logger.info('STRIKELOOP', `✓ Sequence progress: ${sequenceProgress}/${activeMission.sequence.length}`);
-
-      if (sequenceProgress >= activeMission.sequence.length) {
-
-        pointsAwarded = activeMission.pointsPerSequence || 100;
-        logger.info('STRIKELOOP', `🎉 SEQUENCE COMPLETED! +${pointsAwarded} points`);
-
-
-        sequenceProgress = 0;
-        setTimeout(() => showSequenceTarget(), 1000);
-      } else {
-
-        setTimeout(() => showSequenceTarget(), 500);
-        pointsAwarded = Math.floor((activeMission.pointsPerSequence || 100) / activeMission.sequence.length);
-      }
-    } else {
-
-      if (target.isSequenceTarget) {
-        logger.info('STRIKELOOP', `❌ Wrong color! Expected ${expectedColor.toUpperCase()}, got ${colorCode.toUpperCase()}`);
-      } else {
-        logger.info('STRIKELOOP', `❌ Wrong circle! Need to click the ${expectedColor.toUpperCase()} circle`);
-      }
-
-
-      if (activeMission.penaltyPerMiss) {
-        pointsAwarded = activeMission.penaltyPerMiss;
-      }
-
-      sequenceProgress = 0;
-      setTimeout(() => showSequenceTarget(), 1000);
-    }
-  }
-
-  else {
-
-    if (activeMission.targetColors && activeMission.targetColors.includes(colorCode)) {
-      valid = true;
-      pointsAwarded = activeMission.pointsPerHit || 10;
-
-
-      if (activeMission.speedBonus) {
-        const timeSinceLastHit = timestamp - (lastHitTime - 1000);
-        if (timeSinceLastHit < 2000) {
-          const speedMultiplier = activeMission.speedMultiplier || 1.5;
-          pointsAwarded = Math.floor(pointsAwarded * speedMultiplier);
-          logger.info('STRIKELOOP', `SPEED BONUS! x${speedMultiplier}`);
-        }
-      }
-
-      logger.info('STRIKELOOP', `✅ TARGET HIT! ${colorCode.toUpperCase()} circle +${pointsAwarded} points`);
-      missionTargetsHit++;
-    }
-
-    else if (activeMission.avoidColors && activeMission.avoidColors.includes(colorCode)) {
-      valid = false;
-      pointsAwarded = activeMission.penaltyPerMiss || -10;
-      logger.info('STRIKELOOP', `❌ PENALTY! ${colorCode.toUpperCase()} circle ${pointsAwarded} points`);
-    }
-
-    else {
-      logger.info('STRIKELOOP', `⚪ Neutral: ${colorCode.toUpperCase()} circle (no points)`);
-    }
-
-
-    setTimeout(() => activateRandomLEDs(), 500);
-  }
-
-
-  if (pointsAwarded !== 0) {
-    const newScore = gameState.score + pointsAwarded;
-    updateScore(newScore);
-  }
-
-
-  controlLED(elementId, 'o');
 }
 
 function startLevelTimer() {
@@ -2591,7 +2356,7 @@ function activateModeRandomMixedReshuffle() {
 // Memory sequence state
 let memorySequence = [];
 let memorySequenceDisplayed = false;
-let memoryReproductionStep = 0;
+let memorySequenceIndex = 0;
 
 // Track which targets are currently "on" in blinking modes
 let blinkStates = {}; // { elementId: true/false }
@@ -2606,7 +2371,6 @@ let alternateInterval = null; // For pattern switching
 let randomTargetInterval = null; // For random target changes
 let buttonRotationInterval = null; // For rotating button positions
 let colorRotationInterval = null; // For color rotation in levels 9-10
-let currentActiveTargets = []; // Track which targets are currently active in patterns
 let currentRotationIndex = 0; // For tracking rotation position in levels 9-10
 
 // Multi-button validation state (Levels 1-4, 7-8)
@@ -2704,7 +2468,6 @@ function displayMemorySequence() {
       // Sequence display complete - start reproduction phase
       logger.info('STRIKELOOP', `Sequence display complete - starting reproduction phase`);
       memorySequenceDisplayed = true;
-      memoryReproductionStep = 0;
 
       // Re-activate LEDs for reproduction (including bonus section)
       activateArcadeLEDs();
@@ -4878,49 +4641,6 @@ function startBlinkingLED(position, color, interval = 400) {
 }
 
 
-function activateMultiplier(level) {
-  if (!activeMission?.multiplier) return;
-
-  const multiplierConfig = activeMission.multiplier;
-  let newMultiplier = 1;
-  let duration = 0;
-
-  if (level === 2 && consecutiveValidHits >= multiplierConfig.x2After) {
-    newMultiplier = 2;
-    duration = multiplierConfig.x2Duration * 1000;
-  } else if (level === 3 && consecutiveValidHits >= multiplierConfig.x3After) {
-    newMultiplier = 3;
-    duration = multiplierConfig.x3Duration * 1000;
-  }
-
-  if (newMultiplier > currentMultiplier) {
-    currentMultiplier = newMultiplier;
-    multiplierActive = true;
-
-
-    if (multiplierTimer) {
-      clearTimeout(multiplierTimer);
-    }
-
-
-    multiplierTimer = setTimeout(() => {
-      logger.info('STRIKELOOP', `Multiplier x${currentMultiplier} expired`);
-      currentMultiplier = 1;
-      multiplierActive = false;
-      consecutiveValidHits = 0;
-
-
-      gameState.multiplier = 'x1';
-      emitter.emit('multiplierUpdate', gameState.multiplier);
-    }, duration);
-
-    logger.info('STRIKELOOP', `Multiplier ACTIVATED: x${currentMultiplier} for ${duration / 1000}s`);
-
-
-    gameState.multiplier = `x${currentMultiplier}`;
-    emitter.emit('multiplierUpdate', gameState.multiplier);
-  }
-}
 
 
 function cancelMultiplier() {
@@ -4977,14 +4697,6 @@ function validateArcadeInput(target, timestamp) {
     if (wasValidHit) {
       pointsAwarded = calculatePoints(target);
       consecutiveValidHits++;
-
-
-      if (activeMission.multiplier && consecutiveValidHits >= (activeMission.multiplier.x2After || 2)) {
-        activateMultiplier(2);
-      }
-      if (activeMission.multiplier && consecutiveValidHits >= (activeMission.multiplier.x3After || 3)) {
-        activateMultiplier(3);
-      }
     }
   }
 
@@ -5061,14 +4773,6 @@ function processArcadeMode(target, timestamp) {
       return processMultiHitBlueMode(target);
     case 'green-only':
       return processGreenOnlyMode(target);
-    case 'sequence':
-      return processSequenceMode(target);
-    case 'chain-activation':
-      return processChainActivationMode(target);
-    case 'cumulative-bonus':
-      return processCumulativeBonusMode(target);
-    case 'combo-system':
-      return processComboSystemMode(target);
     case 'blinking-green-bonus':
       return processBlinkingGreenBonusMode(target);
     case 'blinking-blue-bonus':
@@ -5232,103 +4936,6 @@ function processGreenOnlyMode(target) {
   }
 }
 
-
-function processSequenceMode(target) {
-  const sequence = activeMission.sequence || ['g', 'b', 'g'];
-  const expectedColor = sequence[sequenceStep % sequence.length];
-
-
-  if (target.isTrap || target.colorCode === 'r') {
-    logger.info('STRIKELOOP', `❌ TRAP HIT in sequence! Resetting sequence progress.`);
-    sequenceStep = 0;
-    consecutiveValidHits = 0;
-    return false;
-  }
-
-
-  if (target.colorCode === expectedColor) {
-    logger.info('STRIKELOOP', `✅ SEQUENCE ${sequenceStep + 1}/${sequence.length}: ${expectedColor.toUpperCase()} HIT!`);
-    sequenceStep++;
-
-    if (sequenceStep >= sequence.length) {
-      logger.info('STRIKELOOP', `🎉 SEQUENCE COMPLETED! Restarting...`);
-      sequenceStep = 0;
-      consecutiveValidHits++;
-      logger.info('STRIKELOOP', `Consecutive complete sequences: ${consecutiveValidHits}`);
-      return true;
-    }
-    return false;
-  } else {
-    logger.info('STRIKELOOP', `❌ Wrong sequence! Expected ${expectedColor.toUpperCase()}, got ${target.colorCode?.toUpperCase()}`);
-    sequenceStep = 0;
-    consecutiveValidHits = 0;
-    return false;
-  }
-}
-
-
-function processChainActivationMode(target) {
-  if (target.isValid && (target.colorCode === 'g' || target.colorCode === 'b')) {
-    activationHits++;
-    logger.info('STRIKELOOP', `✅ CHAIN HIT ${activationHits}! (${target.colorCode?.toUpperCase()})`);
-
-    if (activationHits >= (activeMission.activationRequirement || 3)) {
-      logger.info('STRIKELOOP', `🎉 CHAIN ACTIVATION ACHIEVED!`);
-    }
-    return true;
-  }
-  return false;
-}
-
-
-function processCumulativeBonusMode(target) {
-  if (target.isValid && (target.colorCode === 'g' || target.colorCode === 'b')) {
-    const targetId = target.elementId;
-
-    if (!cumulativeHitCounts[targetId]) {
-      cumulativeHitCounts[targetId] = 0;
-    }
-    cumulativeHitCounts[targetId]++;
-
-    logger.info('STRIKELOOP', `✅ CUMULATIVE HIT! Circle ${targetId} - Count: ${cumulativeHitCounts[targetId]}`);
-
-    if (cumulativeHitCounts[targetId] >= 3) {
-      logger.info('STRIKELOOP', `🎉 CUMULATIVE BONUS! +10 points for 3x hits on circle ${targetId}`);
-      const bonusScore = gameState.score + 10;
-      updateScore(bonusScore);
-      cumulativeHitCounts[targetId] = 0;
-    }
-
-
-    Object.keys(cumulativeHitCounts).forEach(id => {
-      if (id != targetId) {
-        cumulativeHitCounts[id] = 0;
-      }
-    });
-
-    return true;
-  }
-  return false;
-}
-
-
-function processComboSystemMode(target) {
-  if (target.isValid && (target.colorCode === 'g' || target.colorCode === 'b')) {
-    comboProgress++;
-    logger.info('STRIKELOOP', `✅ COMBO HIT ${comboProgress}! (${target.colorCode?.toUpperCase()})`);
-
-    if (comboProgress >= 3) {
-      logger.info('STRIKELOOP', `🎉 COMBO COMPLETED! Clean 3-hit streak!`);
-      comboProgress = 0;
-    }
-    return true;
-  } else {
-    logger.info('STRIKELOOP', `❌ COMBO BROKEN!`);
-    comboProgress = 0;
-    consecutiveValidHits = 0;
-    return false;
-  }
-}
 
 // ============================================
 // ROUND 2 PROCESSOR FUNCTIONS
@@ -5695,17 +5302,6 @@ function calculatePoints(target) {
     case 'multi-hit-green':
     case 'multi-hit-blue':
       return activeMission.pointsPerCompletion;
-    case 'sequence':
-      let basePoints = activeMission.pointsPerHit;
-      if (consecutiveValidHits >= 2) {
-        basePoints *= 2;
-        logger.info('STRIKELOOP', `Sequence x2 multiplier applied! (${consecutiveValidHits} consecutive sequences)`);
-      }
-      if (consecutiveValidHits >= 3) {
-        basePoints = (activeMission.pointsPerHit) * 3;
-        logger.info('STRIKELOOP', `Sequence x3 multiplier applied! (${consecutiveValidHits} consecutive sequences)`);
-      }
-      return basePoints;
     case 'blinking-green-bonus':
       // Bonus targets give pointsPerBonus, green targets give pointsPerGreen, red traps give penalty
       if (target.isBonus && target.colorCode === 'y') {
@@ -5843,11 +5439,7 @@ function calculatePoints(target) {
       }
       return 0;
     default:
-      let defaultPoints = activeMission.pointsPerHit;
-      if (target.size === 'large') {
-        defaultPoints += 10;
-      }
-      return defaultPoints;
+      return 0;
   }
 }
 
@@ -5876,10 +5468,6 @@ function cleanupArcadeGame() {
   currentMultiplier = 1;
   multiplierActive = false;
   trapPositions = [];
-  cumulativeHitCounts = {};
-  comboProgress = 0;
-  activationHits = 0;
-  sequenceStep = 0;
   multiHitTracker = {};
 
   // Round 2: Clear memory sequence state
@@ -5920,7 +5508,6 @@ function cleanupArcadeGame() {
   validationHitColor = null;
   activeButtonColors = [];
   alternatePatternIndex = 0;
-  currentActiveTargets = [];
   currentRotationIndex = 0;
 
   // Clear new Round 3 state variables
