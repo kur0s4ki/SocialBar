@@ -1986,7 +1986,7 @@ function activateModeRotatingGreen() {
   };
 
   activateOne();
-  rotationInterval = setInterval(activateOne, activeMission.rotationDelay || 2000);
+  rotationInterval = setInterval(activateOne, activeMission.rotationDelay);
 }
 
 function activateModeRotatingGreenBlue() {
@@ -2056,7 +2056,7 @@ function activateModeRotatingGreenBlue() {
   };
 
   activateTwo();
-  rotationInterval = setInterval(activateTwo, activeMission.rotationDelay || 2000);
+  rotationInterval = setInterval(activateTwo, activeMission.rotationDelay);
 }
 
 function activateModeRotatingBlue() {
@@ -2111,7 +2111,7 @@ function activateModeRotatingBlue() {
   };
 
   activateOne();
-  rotationInterval = setInterval(activateOne, activeMission.rotationDelay || 2000);
+  rotationInterval = setInterval(activateOne, activeMission.rotationDelay);
 }
 
 function activateModeMultiHitGreen() {
@@ -2150,7 +2150,7 @@ function activateModeBlinkingGreenBonus() {
     const target = { elementId: pos, colorCode: 'g', isValid: true };
     activeTargets.push(target);
   });
-  startBlinkingTargets(activeMission.greenTargets, 'g', activeMission.blinkInterval || 1000);
+  startBlinkingTargets(activeMission.greenTargets, 'g', activeMission.blinkInterval);
 
   // Red traps (5-8) solid
   activeMission.redTraps.forEach(pos => {
@@ -2182,7 +2182,7 @@ function activateModeBlinkingBlueBonus() {
     const target = { elementId: pos, colorCode: 'b', isValid: true };
     activeTargets.push(target);
   });
-  startBlinkingTargets(activeMission.blueTargets, 'b', activeMission.blinkInterval || 1000);
+  startBlinkingTargets(activeMission.blueTargets, 'b', activeMission.blinkInterval);
 
   // Bonus section (9-13) solid yellow
   logger.info('STRIKELOOP', 'Setting bonus section (9-13) to SOLID YELLOW');
@@ -2239,7 +2239,7 @@ function activateModeSnakeGreen3() {
   };
 
   rotateSnake();
-  rotationInterval = setInterval(rotateSnake, activeMission.rotationDelay || 3000);
+  rotationInterval = setInterval(rotateSnake, activeMission.rotationDelay);
 }
 
 function activateModeSnakeBlue3() {
@@ -2292,7 +2292,7 @@ function activateModeSnakeBlue3() {
   };
 
   rotateSnake();
-  rotationInterval = setInterval(rotateSnake, activeMission.rotationDelay || 3000);
+  rotationInterval = setInterval(rotateSnake, activeMission.rotationDelay);
 }
 
 function activateModeSnakeGreen2() {
@@ -2345,7 +2345,7 @@ function activateModeSnakeGreen2() {
   };
 
   rotateSnake();
-  rotationInterval = setInterval(rotateSnake, activeMission.rotationDelay || 3000);
+  rotationInterval = setInterval(rotateSnake, activeMission.rotationDelay);
 }
 
 function activateModeSnakeBlue2() {
@@ -2398,7 +2398,7 @@ function activateModeSnakeBlue2() {
   };
 
   rotateSnake();
-  rotationInterval = setInterval(rotateSnake, activeMission.rotationDelay || 3000);
+  rotationInterval = setInterval(rotateSnake, activeMission.rotationDelay);
 }
 
 // ========== NEW ROUND 2 LEVELS 7-10: BLINKING/ROTATING PATTERNS ==========
@@ -2447,7 +2447,7 @@ function activateModeBlinkingGreenBlue() {
   };
 
   toggleLights();
-  rotationInterval = setInterval(toggleLights, activeMission.blinkInterval || 2000);
+  rotationInterval = setInterval(toggleLights, activeMission.blinkInterval);
 }
 
 // Level 8: Blue (5-8) blinking targets + Red (1-4) blinking traps
@@ -2496,7 +2496,7 @@ function activateModeBlinkingBlueAvoidRed() {
   };
 
   toggleLights();
-  rotationInterval = setInterval(toggleLights, activeMission.blinkInterval || 2000);
+  rotationInterval = setInterval(toggleLights, activeMission.blinkInterval);
 }
 
 // Level 9: Random 4 green + 4 red pattern rotating every 2s
@@ -2540,7 +2540,7 @@ function activateModeRandom4Green4Red() {
   };
 
   rotatePattern();
-  rotationInterval = setInterval(rotatePattern, activeMission.rotationDelay || 2000);
+  rotationInterval = setInterval(rotatePattern, activeMission.rotationDelay);
 }
 
 // Level 10: Mixed colors (green/blue targets, red traps) reshuffling every 1s
@@ -2585,7 +2585,7 @@ function activateModeRandomMixedReshuffle() {
   };
 
   rotatePattern();
-  rotationInterval = setInterval(rotatePattern, activeMission.rotationDelay || 1000);
+  rotationInterval = setInterval(rotatePattern, activeMission.rotationDelay);
 }
 
 // Memory sequence state
@@ -3074,7 +3074,7 @@ function startSequenceValidationAllColors() {
   }
 
   // Get sequence length from mission config (4-7 buttons)
-  const sequenceLength = activeMission.sequenceLength || 4;
+  const sequenceLength = activeMission.sequenceLength;
 
   // Generate sequence with no consecutive colors
   sequenceToMatch = generateButtonSequenceNoConsecutive(sequenceLength);
@@ -3122,6 +3122,9 @@ function displayButtonSequence(sequence, colorName) {
   const colorCode = colorName === 'green' ? 'g' : 'b';
   let index = 0;
 
+  const displayTime = activeMission.sequenceDisplayTime;
+  const offTime = activeMission.sequenceOffTime;
+
   const showNext = () => {
     if (index < sequence.length) {
       const buttonId = sequence[index];
@@ -3135,12 +3138,12 @@ function displayButtonSequence(sequence, colorName) {
         controlLED(buttonId, 'o');
         logger.info('STRIKELOOP', `Sequence step ${index + 1}/${sequence.length}: Button ${buttonId} OFF`);
 
-        // Wait 1 second before next
+        // Wait before next
         setTimeout(() => {
           index++;
           showNext();
-        }, 1000);
-      }, 1000);
+        }, offTime);
+      }, displayTime);
     } else {
       // Sequence display complete - now player must reproduce
       sequenceDisplaying = false;
@@ -3159,6 +3162,9 @@ function displayButtonSequence(sequence, colorName) {
 function displayButtonSequenceAllColors(sequence) {
   let index = 0;
 
+  const displayTime = activeMission.sequenceDisplayTime;
+  const offTime = activeMission.sequenceOffTime;
+
   const showNext = () => {
     if (index < sequence.length) {
       const buttonId = sequence[index];
@@ -3175,12 +3181,12 @@ function displayButtonSequenceAllColors(sequence) {
         controlLED(buttonId, 'o');
         logger.info('STRIKELOOP', `Sequence step ${index + 1}/${sequence.length}: Button ${buttonId} OFF`);
 
-        // Wait 1 second before next
+        // Wait before next
         setTimeout(() => {
           index++;
           showNext();
-        }, 1000);
-      }, 1000);
+        }, offTime);
+      }, displayTime);
     } else {
       // Sequence display complete - now player must reproduce
       sequenceDisplaying = false;
@@ -3665,7 +3671,7 @@ function activateModeTwoStepAlternatingGreen() {
   };
 
   updatePattern();
-  alternateInterval = setInterval(updatePattern, activeMission.alternateInterval || 3000);
+  alternateInterval = setInterval(updatePattern, activeMission.alternateInterval);
 
   // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
   setAllButtonsRandomColors();
@@ -3707,7 +3713,7 @@ function activateModeTwoStepAlternatingBlue() {
   };
 
   updatePattern();
-  alternateInterval = setInterval(updatePattern, activeMission.alternateInterval || 3000);
+  alternateInterval = setInterval(updatePattern, activeMission.alternateInterval);
 
   // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
   setAllButtonsRandomColors();
@@ -3852,7 +3858,7 @@ function activateModeTwoStepMixedColors() {
   };
 
   updatePattern();
-  alternateInterval = setInterval(updatePattern, activeMission.alternateInterval || 3000);
+  alternateInterval = setInterval(updatePattern, activeMission.alternateInterval);
 
   // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
   setAllButtonsRandomColors();
@@ -3895,7 +3901,7 @@ function activateModeTwoStepRotatingGreen() {
   };
 
   rotateTargets();
-  rotationInterval = setInterval(rotateTargets, activeMission.rotationDelay || 2000);
+  rotationInterval = setInterval(rotateTargets, activeMission.rotationDelay);
 
   // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
   setAllButtonsRandomColors();
@@ -3948,7 +3954,7 @@ function activateModeTwoStepUltimate() {
   };
 
   updateTargets();
-  rotationInterval = setInterval(updateTargets, activeMission.rotationDelay || 2000);
+  rotationInterval = setInterval(updateTargets, activeMission.rotationDelay);
 
   // Random green bursts
   if (activeMission.randomBurstInterval) {
@@ -4092,7 +4098,7 @@ function activateModeTwoStepAlternatingAllButtonsGreen() {
   });
 
   updatePattern();
-  alternateInterval = setInterval(updatePattern, activeMission.alternateInterval || 3000);
+  alternateInterval = setInterval(updatePattern, activeMission.alternateInterval);
 
   if (buttonsToValidate.length === 0) {
     clearAllButtons();
@@ -4143,7 +4149,7 @@ function activateModeTwoStepAlternatingAllButtonsBlue() {
   });
 
   updatePattern();
-  alternateInterval = setInterval(updatePattern, activeMission.alternateInterval || 3000);
+  alternateInterval = setInterval(updatePattern, activeMission.alternateInterval);
 
   if (buttonsToValidate.length === 0) {
     clearAllButtons();
@@ -4465,7 +4471,7 @@ function activateModeTwoStepMixedAllButtonsBlue() {
   };
 
   updatePattern();
-  alternateInterval = setInterval(updatePattern, activeMission.alternateInterval || 3000);
+  alternateInterval = setInterval(updatePattern, activeMission.alternateInterval);
 
   if (buttonsToValidate.length === 0) {
     clearAllButtons();
@@ -4541,7 +4547,7 @@ function activateModeTwoStepColorRotation1To4() {
   logger.info('STRIKELOOP', 'All buttons lit with their fixed colors');
 
   rotateColors();
-  colorRotationInterval = setInterval(rotateColors, activeMission.rotationDelay || 2000);
+  colorRotationInterval = setInterval(rotateColors, activeMission.rotationDelay);
 
   activateBonusSection();
 }
@@ -4587,7 +4593,7 @@ function activateModeTwoStepColorRotation5To8() {
   clearAllButtons();
 
   rotateColors();
-  colorRotationInterval = setInterval(rotateColors, activeMission.rotationDelay || 2000);
+  colorRotationInterval = setInterval(rotateColors, activeMission.rotationDelay);
 
   activateBonusSection();
 }
@@ -4948,7 +4954,7 @@ function validateArcadeInput(target, timestamp) {
 
 
   if (isTrap === true || colorCode === 'r') {
-    const penalty = activeMission.penaltyRed || activeMission.traps?.penalty || -100;
+    const penalty = activeMission.penaltyRed;
     logger.info('STRIKELOOP', `❌ TRAP ${elementId} ${penalty}pts`);
     pointsAwarded = penalty;
 
@@ -5513,7 +5519,7 @@ function processMemorySequenceMode(target) {
     return false; // Partial completion, no points yet
   } else {
     // Wrong hit! Penalty and reset
-    const penalty = activeMission.penaltyRed || -100;
+    const penalty = activeMission.penaltyRed;
     logger.info('STRIKELOOP', `❌ WRONG! Expected ${expectedId}, got ${elementId}. ${penalty} points. Sequence reset.`);
     // Mark as wrong for penalty scoring
     target.sequenceWrong = true;
@@ -5529,14 +5535,14 @@ function processBlinkingRotatingMode(target) {
 
   // Check if it's a red trap - apply penalty
   if (target.isTrap || colorCode === 'r') {
-    const penalty = activeMission.penaltyRed || -100;
+    const penalty = activeMission.penaltyRed;
     logger.info('STRIKELOOP', `❌ RED TRAP ${elementId} ${penalty}pts`);
     return true; // Return true to apply penalty
   }
 
   // Check if it's a bonus target (yellow holes 9-13)
   if (target.isBonus && colorCode === 'y') {
-    logger.info('STRIKELOOP', `✅ BONUS ${elementId} +${activeMission.pointsPerBonus || 50}pts`);
+    logger.info('STRIKELOOP', `✅ BONUS ${elementId} +${activeMission.pointsPerBonus}pts`);
     emitter.emit('soundEffect', { effect: 'bonus' });
     return true; // Return true to apply bonus points
   }
@@ -5547,9 +5553,9 @@ function processBlinkingRotatingMode(target) {
 
     // Determine points based on color
     if (colorCode === 'g') {
-      points = activeMission.pointsPerGreen || 160;
+      points = activeMission.pointsPerGreen;
     } else if (colorCode === 'b') {
-      points = activeMission.pointsPerBlue || 160;
+      points = activeMission.pointsPerBlue;
     }
 
     logger.info('STRIKELOOP', `✅ HIT ${elementId} (${colorCode.toUpperCase()}) +${points}pts`);
@@ -5618,7 +5624,7 @@ function processHoleSequenceMatchMode(target) {
   // Check if it's a valid hole target (holes 1-8, including yellow targets)
   // This MUST come before bonus check to handle yellow holes correctly
   if (target.needsValidation && target.isValid && elementId <= 8) {
-    const sequenceLength = activeMission.sequenceLength || 2;
+    const sequenceLength = activeMission.sequenceLength;
 
     // If button sequence is active, ignore hole hits
     if (buttonSequenceActive) {
@@ -5659,7 +5665,7 @@ function processHoleSequenceMatchMode(target) {
   // Check if it's a bonus target (circles 9-13 only, NOT yellow holes)
   if (elementId >= 9 && elementId <= 13 && (target.isBonus || (activeMission.bonusTargets && activeMission.bonusTargets.includes(elementId)))) {
     logger.info('STRIKELOOP', `✅ BONUS ${elementId} +${activeMission.pointsPerBonus}pts`);
-    const points = activeMission.pointsPerBonus || 50;
+    const points = activeMission.pointsPerBonus;
     const newScore = localScore + points;
     updateScore(newScore);
     return true;
@@ -5690,13 +5696,13 @@ function calculatePoints(target) {
     case 'multi-hit-blue':
       return activeMission.pointsPerCompletion;
     case 'sequence':
-      let basePoints = activeMission.pointsPerHit || 60;
+      let basePoints = activeMission.pointsPerHit;
       if (consecutiveValidHits >= 2) {
         basePoints *= 2;
         logger.info('STRIKELOOP', `Sequence x2 multiplier applied! (${consecutiveValidHits} consecutive sequences)`);
       }
       if (consecutiveValidHits >= 3) {
-        basePoints = (activeMission.pointsPerHit || 60) * 3;
+        basePoints = (activeMission.pointsPerHit) * 3;
         logger.info('STRIKELOOP', `Sequence x3 multiplier applied! (${consecutiveValidHits} consecutive sequences)`);
       }
       return basePoints;
@@ -5752,7 +5758,7 @@ function calculatePoints(target) {
     case 'memory-sequence-7-mixed':
       // Bonus targets give pointsPerBonus
       if (target.colorCode === 'y') {
-        return activeMission.pointsPerBonus || 50;
+        return activeMission.pointsPerBonus;
       }
       // Full sequence completion gives goalScore
       if (target.sequenceCompleted) {
@@ -5760,7 +5766,7 @@ function calculatePoints(target) {
       }
       // Wrong sequence hit gives penalty
       if (target.sequenceWrong) {
-        return activeMission.penaltyRed || -100;
+        return activeMission.penaltyRed;
       }
       return 0;
     // Two-step validation modes
@@ -5776,11 +5782,11 @@ function calculatePoints(target) {
     case 'two-step-ultimate':
       // Bonus targets give points immediately
       if (target.colorCode === 'y') {
-        return activeMission.pointsPerBonus || 50;
+        return activeMission.pointsPerBonus;
       }
       // Traps give penalty
       if (target.isTrap || target.colorCode === 'r') {
-        return activeMission.penaltyRed || -100;
+        return activeMission.penaltyRed;
       }
       // Valid targets need validation, no immediate points
       return 0;
@@ -5788,56 +5794,56 @@ function calculatePoints(target) {
     case 'blinking-green-blue':
       // Level 7: Green and Blue targets both give points
       if (target.isBonus && target.colorCode === 'y') {
-        return activeMission.pointsPerBonus || 50;
+        return activeMission.pointsPerBonus;
       }
       if (target.colorCode === 'g') {
-        return activeMission.pointsPerGreen || 160;
+        return activeMission.pointsPerGreen;
       }
       if (target.colorCode === 'b') {
-        return activeMission.pointsPerBlue || 160;
+        return activeMission.pointsPerBlue;
       }
       return 0;
     case 'blinking-blue-avoid-red':
       // Level 8: Blue targets give points, red traps give penalty
       if (target.isBonus && target.colorCode === 'y') {
-        return activeMission.pointsPerBonus || 50;
+        return activeMission.pointsPerBonus;
       }
       if (target.colorCode === 'b') {
-        return activeMission.pointsPerBlue || 170;
+        return activeMission.pointsPerBlue;
       }
       if (target.isTrap || target.colorCode === 'r') {
-        return activeMission.penaltyRed || -100;
+        return activeMission.penaltyRed;
       }
       return 0;
     case 'random-4green-4red':
       // Level 9: Green targets give points, red traps give penalty
       if (target.isBonus && target.colorCode === 'y') {
-        return activeMission.pointsPerBonus || 50;
+        return activeMission.pointsPerBonus;
       }
       if (target.colorCode === 'g') {
-        return activeMission.pointsPerGreen || 180;
+        return activeMission.pointsPerGreen;
       }
       if (target.isTrap || target.colorCode === 'r') {
-        return activeMission.penaltyRed || -100;
+        return activeMission.penaltyRed;
       }
       return 0;
     case 'random-mixed-reshuffle':
       // Level 10: Mixed color targets give points, red traps give penalty
       if (target.isBonus && target.colorCode === 'y') {
-        return activeMission.pointsPerBonus || 50;
+        return activeMission.pointsPerBonus;
       }
       if (target.colorCode === 'g') {
-        return activeMission.pointsPerGreen || 190;
+        return activeMission.pointsPerGreen || activeMission.pointsPerTarget;
       }
       if (target.colorCode === 'b') {
-        return activeMission.pointsPerBlue || 190;
+        return activeMission.pointsPerBlue || activeMission.pointsPerTarget;
       }
       if (target.isTrap || target.colorCode === 'r') {
-        return activeMission.penaltyRed || -100;
+        return activeMission.penaltyRed;
       }
       return 0;
     default:
-      let defaultPoints = activeMission.pointsPerHit || 50;
+      let defaultPoints = activeMission.pointsPerHit;
       if (target.size === 'large') {
         defaultPoints += 10;
       }
