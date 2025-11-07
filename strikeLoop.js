@@ -18,7 +18,7 @@ let isRunning = false;
 let keyboardListenerActive = false;
 let currentLevelIndex = 0;
 let gameStartTime = null;
-let overallGameTimer = null; 
+let overallGameTimer = null;
 
 
 let gameState = {
@@ -194,7 +194,7 @@ let gameRounds = [
     redTraps: [5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
     snakeCount: 3,
-    snakePattern: [[1,2,4], [2,4,3], [4,3,1], [3,1,2]],
+    snakePattern: [[1, 2, 4], [2, 4, 3], [4, 3, 1], [3, 1, 2]],
     rotationDelay: 4000,
     pointsPerGreen: 900,
     pointsPerBonus: 200,
@@ -210,7 +210,7 @@ let gameRounds = [
     redTraps: [1, 2, 3, 4],
     bonusTargets: [9, 10, 11, 12, 13],
     snakeCount: 3,
-    snakePattern: [[5,6,8], [6,8,7], [8,7,5], [7,5,6]],
+    snakePattern: [[5, 6, 8], [6, 8, 7], [8, 7, 5], [7, 5, 6]],
     rotationDelay: 4000,
     pointsPerBlue: 950,
     pointsPerBonus: 200,
@@ -226,7 +226,7 @@ let gameRounds = [
     redTraps: [5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
     snakeCount: 2,
-    snakePattern: [[1,2], [2,4], [4,3], [3,1]],
+    snakePattern: [[1, 2], [2, 4], [4, 3], [3, 1]],
     rotationDelay: 4000,
     pointsPerGreen: 1000,
     pointsPerBonus: 200,
@@ -242,7 +242,7 @@ let gameRounds = [
     redTraps: [1, 2, 3, 4],
     bonusTargets: [9, 10, 11, 12, 13],
     snakeCount: 2,
-    snakePattern: [[5,6], [6,8], [8,7], [7,5]],
+    snakePattern: [[5, 6], [6, 8], [8, 7], [7, 5]],
     rotationDelay: 4000,
     pointsPerBlue: 1100,
     pointsPerBonus: 200,
@@ -314,7 +314,6 @@ let gameRounds = [
     redTraps: [5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
     buttonMode: 'all-green',  // All 4 green buttons must be pressed
-    validationWindow: 3000,
     pointsPerValidated: 1400,
     pointsPerBonus: 200,
     penaltyRed: -100
@@ -329,7 +328,6 @@ let gameRounds = [
     redTraps: [1, 2, 3, 4],
     bonusTargets: [9, 10, 11, 12, 13],
     buttonMode: 'all-blue',  // All 4 blue buttons must be pressed
-    validationWindow: 3000,
     pointsPerValidated: 1500,
     pointsPerBonus: 200,
     penaltyRed: -100
@@ -346,7 +344,6 @@ let gameRounds = [
     alternatePattern: [[1, 3], [2, 4]],  // Alternating pattern
     alternateInterval: 4000,
     buttonMode: 'all-green',
-    validationWindow: 3000,
     pointsPerValidated: 1600,
     pointsPerBonus: 200,
     penaltyRed: -100
@@ -363,7 +360,6 @@ let gameRounds = [
     alternatePattern: [[5, 7], [6, 8]],  // Alternating pattern
     alternateInterval: 4000,
     buttonMode: 'all-blue',
-    validationWindow: 3000,
     pointsPerValidated: 1700,
     pointsPerBonus: 200,
     penaltyRed: -100
@@ -382,7 +378,6 @@ let gameRounds = [
     sequenceDisplayTime: 1000,  // 1 sec on
     sequenceOffTime: 1000,  // 1 sec off
     sequenceTimeoutMs: 10000,  // 10 seconds to reproduce AFTER display completes
-    validationWindow: 3000,
     pointsPerValidated: 1800,
     pointsPerBonus: 200,
     penaltyRed: -100
@@ -401,7 +396,6 @@ let gameRounds = [
     sequenceDisplayTime: 1000,
     sequenceOffTime: 1000,
     sequenceTimeoutMs: 10000,  // 10 seconds to reproduce AFTER display completes
-    validationWindow: 3000,
     pointsPerValidated: 1900,
     pointsPerBonus: 200,
     penaltyRed: -100
@@ -422,7 +416,6 @@ let gameRounds = [
     sequenceDisplayTime: 1000,  // 1 sec on
     sequenceOffTime: 1000,  // 1 sec off
     sequenceTimeoutMs: 12000,  // 12 seconds to reproduce AFTER display completes
-    validationWindow: 3000,
     pointsPerValidated: 2000,
     pointsPerBonus: 200,
     penaltyRed: 0
@@ -444,7 +437,6 @@ let gameRounds = [
     sequenceDisplayTime: 1000,  // 1 sec on
     sequenceOffTime: 1000,  // 1 sec off
     sequenceTimeoutMs: 15000,  // 15 seconds to reproduce AFTER display completes
-    validationWindow: 3000,
     pointsPerValidated: 2100,
     pointsPerBonus: 200,
     penaltyRed: -100
@@ -466,7 +458,6 @@ let gameRounds = [
     sequenceDisplayTime: 1000,  // 1 sec on
     sequenceOffTime: 1000,  // 1 sec off
     sequenceTimeoutMs: 17000,  // 17 seconds to reproduce AFTER display completes
-    validationWindow: 3000,
     pointsPerValidated: 2200,
     pointsPerBonus: 200,
     penaltyRed: -100
@@ -486,7 +477,6 @@ let gameRounds = [
     sequenceDisplayTime: 1000,  // 1 sec on
     sequenceOffTime: 1000,  // 1 sec off
     sequenceTimeoutMs: 20000,  // 20 seconds to reproduce AFTER display completes
-    validationWindow: 3000,
     pointsPerValidated: 2300,
     pointsPerBonus: 200,
     penaltyRed: -100
@@ -495,7 +485,7 @@ let gameRounds = [
 
 
 const totalDuration = gameRounds.reduce((sum, round) => sum + round.duration, 0);
-logger.info('STRIKELOOP', `Total game duration: ${totalDuration} seconds (${Math.floor(totalDuration/60)} minutes ${totalDuration%60} seconds)`);
+logger.info('STRIKELOOP', `Total game duration: ${totalDuration} seconds (${Math.floor(totalDuration / 60)} minutes ${totalDuration % 60} seconds)`);
 
 
 let currentRoundTimeLeft = 0;
@@ -503,7 +493,7 @@ let timeUpdateInterval;
 
 
 let activeMission = null;
-let activeTargets = []; 
+let activeTargets = [];
 let missionTargetsHit = 0;
 
 
@@ -511,15 +501,15 @@ let sequenceProgress = 0;
 let lastHitTime = 0;
 
 
-let consecutiveValidHits = 0; 
-let currentMultiplier = 1; 
-let multiplierTimer = null; 
-let multiplierActive = false; 
-let trapPositions = []; 
-let cumulativeHitCounts = {}; 
-let comboProgress = 0; 
-let activationHits = 0; 
-let sequenceStep = 0; 
+let consecutiveValidHits = 0;
+let currentMultiplier = 1;
+let multiplierTimer = null;
+let multiplierActive = false;
+let trapPositions = [];
+let cumulativeHitCounts = {};
+let comboProgress = 0;
+let activationHits = 0;
+let sequenceStep = 0;
 
 
 let ledRefreshInterval;
@@ -657,7 +647,7 @@ function startOverallGameTimer() {
 
   gameStartTime = Date.now();
   const maxGameTimeMs = gameState.totalGameTimeMinutes * 60 * 1000; // 15 minutes in milliseconds
-  
+
   let lastRoundAdvanced = 0; // Track last round we advanced to (0, 1, 2, 3)
 
   logger.info('STRIKELOOP', `Overall game timer started - Maximum game time: ${gameState.totalGameTimeMinutes} minutes`);
@@ -665,7 +655,7 @@ function startOverallGameTimer() {
   overallGameTimer = setInterval(() => {
     const elapsedTime = Date.now() - gameStartTime;
     const elapsedMinutes = Math.floor(elapsedTime / 60000); // Convert to minutes
-    
+
     // Check for automatic round advancement every 5 minutes
     if (elapsedMinutes >= 5 && elapsedMinutes < 10 && lastRoundAdvanced < 2) {
       // 5 minutes elapsed - should be in Round 2
@@ -705,7 +695,7 @@ function forceSkipToRound(targetRound) {
 
   const currentLevel = gameRounds[currentLevelIndex];
   if (!currentLevel) return;
-  
+
   // If already at or past target round, do nothing
   if (currentLevel.round >= targetRound) {
     logger.info('STRIKELOOP', `Already in Round ${currentLevel.round}, no need to skip to Round ${targetRound}`);
@@ -1106,7 +1096,7 @@ function startLEDRefresh() {
       }
     }, refreshDelay);
 
-    logger.info('STRIKELOOP', `LED refresh started every ${Math.floor(refreshDelay/1000)} seconds`);
+    logger.info('STRIKELOOP', `LED refresh started every ${Math.floor(refreshDelay / 1000)} seconds`);
   } else {
     logger.info('STRIKELOOP', `LED refresh skipped for ${activeMission?.arcadeMode || 'unknown'} mode (static LEDs)`);
   }
@@ -1143,12 +1133,12 @@ function startArcadeLEDs() {
 
   logger.info('STRIKELOOP', `Starting arcade LEDs for mode: ${activeMission.arcadeMode}`);
 
-  
+
   if (activeMission.arcadeMode === 'sequence') {
     logger.info('STRIKELOOP', 'Sequence mode detected - using static colored targets');
     activateArcadeLEDs();
   } else {
-    
+
     activateArcadeLEDs();
   }
 }
@@ -1160,46 +1150,46 @@ function showSequenceTarget() {
   const targetColor = activeMission.sequence[sequenceStep];
   const allColors = ['r', 'g', 'b', 'y'];
 
-  
+
   activeTargets = [];
 
-  
+
   const targetCircle = Math.floor(Math.random() * 8) + 1;
 
   logger.info('STRIKELOOP', `Sequence ${sequenceStep + 1}/${activeMission.sequence.length}: Circle ${targetCircle} -> ${targetColor.toUpperCase()}`);
 
-  
+
   for (let circleId = 1; circleId <= 8; circleId++) {
     let color;
 
     if (circleId === targetCircle) {
-      
+
       color = targetColor;
     } else {
-      
-      
+
+
       if (Math.random() < 0.6) {
-        
+
         const sequenceColors = [...new Set(activeMission.sequence)];
         const wrongColors = sequenceColors.filter(c => c !== targetColor);
         if (wrongColors.length > 0) {
           color = wrongColors[Math.floor(Math.random() * wrongColors.length)];
         } else {
-          
+
           color = allColors.filter(c => c !== targetColor)[Math.floor(Math.random() * 3)];
         }
       } else {
-        
+
         const distractorColors = allColors.filter(c => c !== targetColor);
         color = distractorColors[Math.floor(Math.random() * distractorColors.length)];
       }
     }
 
     controlLED(circleId, color);
-    activeTargets.push({elementId: circleId, colorCode: color});
+    activeTargets.push({ elementId: circleId, colorCode: color });
   }
 
-  
+
   const targetIndex = activeTargets.findIndex(t => t.elementId === targetCircle);
   activeTargets[targetIndex].isSequenceTarget = true;
 
@@ -1212,25 +1202,25 @@ function showSequenceTarget() {
 function activateRandomLEDs() {
   if (!activeMission.targetColors) return;
 
-  
+
   activeTargets = [];
 
   const allColors = ['r', 'g', 'b', 'y'];
 
-  
+
   for (let circleId = 1; circleId <= 8; circleId++) {
     let color;
 
-    
+
     if (activeMission.targetColors && activeMission.avoidColors) {
-      
-      const shouldBeTarget = Math.random() < 0.4; 
+
+      const shouldBeTarget = Math.random() < 0.4;
       if (shouldBeTarget) {
         color = activeMission.targetColors[Math.floor(Math.random() * activeMission.targetColors.length)];
       } else {
-        
+
         const distractors = [...activeMission.avoidColors];
-        
+
         allColors.forEach(c => {
           if (!activeMission.targetColors.includes(c) && !activeMission.avoidColors.includes(c)) {
             distractors.push(c);
@@ -1240,37 +1230,37 @@ function activateRandomLEDs() {
       }
     }
     else if (activeMission.targetColors) {
-      
-      const shouldBeTarget = Math.random() < 0.3; 
+
+      const shouldBeTarget = Math.random() < 0.3;
       if (shouldBeTarget) {
         color = activeMission.targetColors[Math.floor(Math.random() * activeMission.targetColors.length)];
       } else {
-        
+
         const distractors = allColors.filter(c => !activeMission.targetColors.includes(c));
         if (distractors.length > 0) {
           color = distractors[Math.floor(Math.random() * distractors.length)];
         } else {
-          
+
           color = activeMission.targetColors[Math.floor(Math.random() * activeMission.targetColors.length)];
         }
       }
     }
     else {
-      
+
       color = allColors[Math.floor(Math.random() * 4)];
     }
 
-    
+
     if (!color) {
       color = allColors[Math.floor(Math.random() * 4)];
       logger.warn('STRIKELOOP', `Color was undefined, using fallback: ${color}`);
     }
 
     controlLED(circleId, color);
-    activeTargets.push({elementId: circleId, colorCode: color});
+    activeTargets.push({ elementId: circleId, colorCode: color });
   }
 
-  
+
   const targetCircles = activeTargets.filter(t => activeMission.targetColors && activeMission.targetColors.includes(t.colorCode));
   const avoidCircles = activeTargets.filter(t => activeMission.avoidColors && activeMission.avoidColors.includes(t.colorCode));
 
@@ -1285,7 +1275,7 @@ function processGameInput(inputId, source) {
   const currentTime = Date.now();
   lastHitTime = currentTime;
 
-  
+
   const clickedTarget = activeTargets.find(target => target.elementId == inputId);
 
   if (!clickedTarget) {
@@ -1313,11 +1303,11 @@ function validateInput(target, timestamp) {
   let pointsAwarded = 0;
   let valid = false;
 
-  
+
   if (activeMission.sequence) {
     const expectedColor = activeMission.sequence[sequenceProgress];
 
-    
+
     if (colorCode === expectedColor && target.isSequenceTarget) {
       valid = true;
       sequenceProgress++;
@@ -1325,46 +1315,46 @@ function validateInput(target, timestamp) {
       logger.info('STRIKELOOP', `✓ Sequence progress: ${sequenceProgress}/${activeMission.sequence.length}`);
 
       if (sequenceProgress >= activeMission.sequence.length) {
-        
+
         pointsAwarded = activeMission.pointsPerSequence || 100;
         logger.info('STRIKELOOP', `🎉 SEQUENCE COMPLETED! +${pointsAwarded} points`);
 
-        
+
         sequenceProgress = 0;
         setTimeout(() => showSequenceTarget(), 1000);
       } else {
-        
+
         setTimeout(() => showSequenceTarget(), 500);
         pointsAwarded = Math.floor((activeMission.pointsPerSequence || 100) / activeMission.sequence.length);
       }
     } else {
-      
+
       if (target.isSequenceTarget) {
         logger.info('STRIKELOOP', `❌ Wrong color! Expected ${expectedColor.toUpperCase()}, got ${colorCode.toUpperCase()}`);
       } else {
         logger.info('STRIKELOOP', `❌ Wrong circle! Need to click the ${expectedColor.toUpperCase()} circle`);
       }
 
-      
+
       if (activeMission.penaltyPerMiss) {
         pointsAwarded = activeMission.penaltyPerMiss;
       }
-      
+
       sequenceProgress = 0;
       setTimeout(() => showSequenceTarget(), 1000);
     }
   }
-  
+
   else {
-    
+
     if (activeMission.targetColors && activeMission.targetColors.includes(colorCode)) {
       valid = true;
       pointsAwarded = activeMission.pointsPerHit || 10;
 
-      
+
       if (activeMission.speedBonus) {
-        const timeSinceLastHit = timestamp - (lastHitTime - 1000); 
-        if (timeSinceLastHit < 2000) { 
+        const timeSinceLastHit = timestamp - (lastHitTime - 1000);
+        if (timeSinceLastHit < 2000) {
           const speedMultiplier = activeMission.speedMultiplier || 1.5;
           pointsAwarded = Math.floor(pointsAwarded * speedMultiplier);
           logger.info('STRIKELOOP', `SPEED BONUS! x${speedMultiplier}`);
@@ -1374,28 +1364,28 @@ function validateInput(target, timestamp) {
       logger.info('STRIKELOOP', `✅ TARGET HIT! ${colorCode.toUpperCase()} circle +${pointsAwarded} points`);
       missionTargetsHit++;
     }
-    
+
     else if (activeMission.avoidColors && activeMission.avoidColors.includes(colorCode)) {
       valid = false;
       pointsAwarded = activeMission.penaltyPerMiss || -10;
       logger.info('STRIKELOOP', `❌ PENALTY! ${colorCode.toUpperCase()} circle ${pointsAwarded} points`);
     }
-    
+
     else {
       logger.info('STRIKELOOP', `⚪ Neutral: ${colorCode.toUpperCase()} circle (no points)`);
     }
 
-    
+
     setTimeout(() => activateRandomLEDs(), 500);
   }
 
-  
+
   if (pointsAwarded !== 0) {
     const newScore = gameState.score + pointsAwarded;
     updateScore(newScore);
   }
 
-  
+
   controlLED(elementId, 'o');
 }
 
@@ -1577,9 +1567,9 @@ function stopGame() {
     isRunning = false;
     keyboardListenerActive = false;
     stopLevelTimer();
-    stopLEDRefresh(); 
-    cleanupArcadeGame(); 
-    activeMission = null; 
+    stopLEDRefresh();
+    cleanupArcadeGame();
+    activeMission = null;
     logger.info('STRIKELOOP', 'Game stopped - Keyboard controls disabled');
     emitter.emit('gameStopped');
     cleanupGameEventListeners();
@@ -1601,11 +1591,11 @@ function getTotalRemainingTime() {
     // Game hasn't started yet, return full 15 minutes
     return gameState.totalGameTimeMinutes * 60;
   }
-  
+
   const elapsedSeconds = Math.floor((Date.now() - gameStartTime) / 1000);
   const totalGameSeconds = gameState.totalGameTimeMinutes * 60;
   const remainingSeconds = Math.max(0, totalGameSeconds - elapsedSeconds);
-  
+
   return remainingSeconds;
 }
 
@@ -1653,17 +1643,17 @@ function controlLED(elementId, colorCode) {
 
 
 function getControlButtonColor(elementId) {
-  
+
   const buttonColors = {
-    14: '#27ae60', 
-    15: '#f1c40f', 
-    16: '#3498db', 
-    17: '#f1c40f', 
-    18: '#3498db', 
-    19: '#27ae60', 
-    20: '#3498db', 
-    21: '#27ae60', 
-    22: '#f1c40f'  
+    14: '#27ae60',
+    15: '#f1c40f',
+    16: '#3498db',
+    17: '#f1c40f',
+    18: '#3498db',
+    19: '#27ae60',
+    20: '#3498db',
+    21: '#27ae60',
+    22: '#f1c40f'
   };
   return buttonColors[elementId] || '#ffffff';
 }
@@ -1677,26 +1667,26 @@ function setupKeyboardListener() {
   logger.info('STRIKELOOP', 'Central Circle: 9[color] - Colors: b=blue, g=green, r=red, y=yellow, o=off');
   logger.info('STRIKELOOP', 'Control Buttons (14-28): [id] (on) or [id]o (off)');
   logger.info('STRIKELOOP', 'Inner Circles (10-13): Clickable only, no LED control');
-  
+
   rl.on('line', (input) => {
-    
+
     if (!keyboardListenerActive) {
       logger.info('STRIKELOOP', 'Game not running. Keyboard commands disabled. Start a new game to enable controls.');
       return;
     }
-    
+
     const command = input.trim();
-    
+
     if (command.length < 1) {
       logger.info('STRIKELOOP', 'Invalid command. Use format: [circleId][color] or [buttonId] or [buttonId]o');
       return;
     }
-    
+
     let circleId, colorCode;
-    
-    
+
+
     if (command.endsWith('o') && command.length >= 3) {
-      
+
       const twoDigitId = parseInt(command.substring(0, 2));
       if (twoDigitId >= CONTROL_BUTTONS_RANGE.min && twoDigitId <= CONTROL_BUTTONS_RANGE.max) {
         logger.info('STRIKELOOP', `Control button ${twoDigitId} -> OFF`);
@@ -1704,21 +1694,21 @@ function setupKeyboardListener() {
         return;
       }
     } else if (command.length >= 2) {
-      
+
       const twoDigitId = parseInt(command.substring(0, 2));
       if (twoDigitId >= CONTROL_BUTTONS_RANGE.min && twoDigitId <= CONTROL_BUTTONS_RANGE.max) {
-        
+
         logger.info('STRIKELOOP', `Control button ${twoDigitId} -> ON`);
         controlLED(twoDigitId, '1');
         return;
       } else if (twoDigitId >= 10 && twoDigitId <= 13) {
-        
+
         circleId = twoDigitId;
         colorCode = command[2] ? command[2].toLowerCase() : 'o';
       }
     }
-    
-    
+
+
     if (!circleId && command.length >= 1) {
       circleId = parseInt(command[0]);
       if (circleId >= OUTER_CIRCLES_RANGE.min && circleId <= OUTER_CIRCLES_RANGE.max) {
@@ -1728,10 +1718,10 @@ function setupKeyboardListener() {
       }
       logger.info('STRIKELOOP', `Single digit parsing: circleId=${circleId}, colorCode=${colorCode}, command=${command}`);
     }
-    
-    
+
+
     if (circleId >= OUTER_CIRCLES_RANGE.min && circleId <= OUTER_CIRCLES_RANGE.max) {
-      
+
       if (COLORS[colorCode]) {
         logger.info('STRIKELOOP', `Circle ${circleId} -> ${colorCode.toUpperCase()}`);
         controlLED(circleId, colorCode);
@@ -1739,7 +1729,7 @@ function setupKeyboardListener() {
         logger.info('STRIKELOOP', `Invalid color for circle ${circleId}. Use: b/g/r/y/o`);
       }
     } else if (circleId === CENTRAL_CIRCLE_ID) {
-      
+
       logger.info('STRIKELOOP', `Processing central circle: circleId=${circleId}, colorCode=${colorCode}, COLORS[colorCode]=${COLORS[colorCode]}`);
       if (COLORS[colorCode]) {
         logger.info('STRIKELOOP', `Central circle -> ${colorCode.toUpperCase()}`);
@@ -1748,7 +1738,7 @@ function setupKeyboardListener() {
         logger.info('STRIKELOOP', `Invalid color for central circle. Use: b/g/r/y/o`);
       }
     } else if (circleId >= INNER_CIRCLES_RANGE.min && circleId <= INNER_CIRCLES_RANGE.max) {
-      
+
       logger.info('STRIKELOOP', `Inner circle ${circleId} is clickable only. Use ${CENTRAL_CIRCLE_ID}[color] for central circle LED control.`);
     } else if (circleId >= CONTROL_BUTTONS_RANGE.min && circleId <= CONTROL_BUTTONS_RANGE.max) {
       logger.info('STRIKELOOP', `Control button ${circleId} commands should use simple format: ${circleId} or ${circleId}o`);
@@ -1767,7 +1757,7 @@ function activateArcadeLEDs() {
     activeMission.blinkIntervals.forEach(interval => clearInterval(interval));
     activeMission.blinkIntervals = [];
   }
-  
+
   // Clear two-step mode intervals
   if (alternateInterval) {
     clearInterval(alternateInterval);
@@ -2852,7 +2842,7 @@ function setAllButtonsRandomColors() {
   // 14 15 16
   // 17 18 19  
   // 20 21 22
-  
+
   const adjacencyMap = {
     0: [1, 3],       // 14 -> 15, 17
     1: [0, 2, 4],    // 15 -> 14, 16, 18
@@ -2864,23 +2854,23 @@ function setAllButtonsRandomColors() {
     7: [4, 6, 8],    // 21 -> 18, 20, 22
     8: [5, 7]        // 22 -> 19, 21
   };
-  
+
   let buttonColors = [];
   let attempts = 0;
   const maxAttempts = 100;
-  
+
   // Keep trying until we get a valid configuration
   while (attempts < maxAttempts) {
     buttonColors = [];
     const availableColors = ['g', 'g', 'g', 'b', 'b', 'b', 'y', 'y', 'y'];
     let valid = true;
-    
+
     // Try to place colors one by one
     for (let i = 0; i < 9; i++) {
       // Shuffle available colors for randomness
       const shuffled = availableColors.sort(() => Math.random() - 0.5);
       let colorPlaced = false;
-      
+
       for (const color of shuffled) {
         // Check if this color conflicts with adjacent buttons
         let canPlace = true;
@@ -2890,7 +2880,7 @@ function setAllButtonsRandomColors() {
             break;
           }
         }
-        
+
         if (canPlace) {
           buttonColors.push(color);
           availableColors.splice(availableColors.indexOf(color), 1);
@@ -2898,33 +2888,33 @@ function setAllButtonsRandomColors() {
           break;
         }
       }
-      
+
       if (!colorPlaced) {
         valid = false;
         break;
       }
     }
-    
+
     if (valid) {
       // Successfully placed all colors
       break;
     }
-    
+
     attempts++;
   }
-  
+
   // If we couldn't find a valid pattern, use a fallback pattern
   if (buttonColors.length !== 9) {
     // Guaranteed valid pattern: checkerboard-like
     buttonColors = ['g', 'b', 'y', 'b', 'y', 'g', 'y', 'g', 'b'];
   }
-  
+
   // Apply the colors to buttons
   buttonColors.forEach((color, index) => {
     const buttonId = CONTROL_BUTTONS_RANGE.min + index;
     controlLED(buttonId, color);
   });
-  
+
   activeButtonColors = buttonColors;
 }
 
@@ -2933,7 +2923,7 @@ function lightRandomButton(color) {
   const randomIndex = Math.floor(Math.random() * 9);
   const buttonId = CONTROL_BUTTONS_RANGE.min + randomIndex;
   controlLED(buttonId, color);
-  
+
   // Update the color in our tracking array
   activeButtonColors[randomIndex] = color;
 }
@@ -2945,7 +2935,7 @@ function lightRandomAnyColorButton() {
   const randomIndex = Math.floor(Math.random() * 9);
   const buttonId = CONTROL_BUTTONS_RANGE.min + randomIndex;
   controlLED(buttonId, randomColor);
-  
+
   // Update the color in our tracking array
   activeButtonColors[randomIndex] = randomColor;
 }
@@ -2957,8 +2947,8 @@ function handleTwoStepValidation(hitColor) {
     // IMPORTANT: For sequence modes, allow new hit to abort current sequence and start fresh
     // This allows player to restart if they made a mistake or if they didn't complete in time
     const isSequenceMode = activeMission.buttonMode === 'sequence-green' ||
-                          activeMission.buttonMode === 'sequence-blue' ||
-                          activeMission.buttonMode === 'sequence-all-colors';
+      activeMission.buttonMode === 'sequence-blue' ||
+      activeMission.buttonMode === 'sequence-all-colors';
     if (isSequenceMode) {
       logger.info('STRIKELOOP', 'New hit during sequence validation - aborting current sequence and starting fresh');
       // Clear current sequence state
@@ -3642,17 +3632,17 @@ function activateModeTwoStepAlternatingGreen() {
   const updatePattern = () => {
     activeTargets = [];
     trapPositions = [];
-    
+
     // Get current pattern
     const currentPattern = activeMission.alternatePattern[alternatePatternIndex];
-    
+
     // Set active green targets
     currentPattern.forEach(pos => {
       const target = { elementId: pos, colorCode: 'g', isValid: true, needsValidation: true };
       activeTargets.push(target);
       controlLED(pos, 'g');
     });
-    
+
     // Set inactive as off
     activeMission.greenTargets.forEach(pos => {
       if (!currentPattern.includes(pos)) {
@@ -3669,7 +3659,7 @@ function activateModeTwoStepAlternatingGreen() {
     });
 
     activateBonusSection();
-    
+
     // Toggle pattern
     alternatePatternIndex = (alternatePatternIndex + 1) % activeMission.alternatePattern.length;
   };
@@ -3689,15 +3679,15 @@ function activateModeTwoStepAlternatingBlue() {
   const updatePattern = () => {
     activeTargets = [];
     trapPositions = [];
-    
+
     const currentPattern = activeMission.alternatePattern[alternatePatternIndex];
-    
+
     currentPattern.forEach(pos => {
       const target = { elementId: pos, colorCode: 'b', isValid: true, needsValidation: true };
       activeTargets.push(target);
       controlLED(pos, 'b');
     });
-    
+
     activeMission.blueTargets.forEach(pos => {
       if (!currentPattern.includes(pos)) {
         controlLED(pos, 'o');
@@ -3712,7 +3702,7 @@ function activateModeTwoStepAlternatingBlue() {
     });
 
     activateBonusSection();
-    
+
     alternatePatternIndex = (alternatePatternIndex + 1) % activeMission.alternatePattern.length;
   };
 
@@ -3739,10 +3729,10 @@ function activateModeTwoStepRandomButtonGreen() {
   });
 
   activateBonusSection();
-  
+
   // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
   setAllButtonsRandomColors();
-  
+
   // Rotate button positions every 5 seconds
   if (buttonRotationInterval) clearInterval(buttonRotationInterval);
   buttonRotationInterval = setInterval(() => {
@@ -3767,10 +3757,10 @@ function activateModeTwoStepRandomButtonBlue() {
   });
 
   activateBonusSection();
-  
+
   // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
   setAllButtonsRandomColors();
-  
+
   // Rotate button positions every 5 seconds
   if (buttonRotationInterval) clearInterval(buttonRotationInterval);
   buttonRotationInterval = setInterval(() => {
@@ -3786,25 +3776,25 @@ function activateModeTwoStepRandomGreen() {
   const updateRandomTargets = () => {
     activeTargets = [];
     trapPositions = [];
-    
+
     // Select random green targets
     const count = activeMission.randomTargetCount || 2;
     const availableTargets = [...activeMission.greenTargets];
     const selected = [];
-    
+
     for (let i = 0; i < count && availableTargets.length > 0; i++) {
       const idx = Math.floor(Math.random() * availableTargets.length);
       selected.push(availableTargets[idx]);
       availableTargets.splice(idx, 1);
     }
-    
+
     // Set active targets
     selected.forEach(pos => {
       const target = { elementId: pos, colorCode: 'g', isValid: true, needsValidation: true };
       activeTargets.push(target);
       controlLED(pos, 'g');
     });
-    
+
     // Turn off inactive
     activeMission.greenTargets.forEach(pos => {
       if (!selected.includes(pos)) {
@@ -3825,7 +3815,7 @@ function activateModeTwoStepRandomGreen() {
 
   updateRandomTargets();
   randomTargetInterval = setInterval(updateRandomTargets, activeMission.randomChangeInterval || 4000);
-  
+
   // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
   setAllButtonsRandomColors();
 }
@@ -3838,9 +3828,9 @@ function activateModeTwoStepMixedColors() {
   const updatePattern = () => {
     activeTargets = [];
     trapPositions = [];
-    
+
     const currentPattern = activeMission.alternatePattern[alternatePatternIndex];
-    
+
     currentPattern.forEach(pos => {
       const isGreen = pos <= 4;
       const color = isGreen ? 'g' : 'b';
@@ -3848,7 +3838,7 @@ function activateModeTwoStepMixedColors() {
       activeTargets.push(target);
       controlLED(pos, color);
     });
-    
+
     // Turn off inactive
     for (let i = 1; i <= 8; i++) {
       if (!currentPattern.includes(i)) {
@@ -3857,13 +3847,13 @@ function activateModeTwoStepMixedColors() {
     }
 
     activateBonusSection();
-    
+
     alternatePatternIndex = (alternatePatternIndex + 1) % activeMission.alternatePattern.length;
   };
 
   updatePattern();
   alternateInterval = setInterval(updatePattern, activeMission.alternateInterval || 3000);
-  
+
   // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
   setAllButtonsRandomColors();
 }
@@ -3876,14 +3866,14 @@ function activateModeTwoStepRotatingGreen() {
   const rotateTargets = () => {
     activeTargets = [];
     trapPositions = [];
-    
+
     // Only one green target active at a time, rotating
     const activePos = activeMission.greenTargets[rotationIndex];
-    
+
     const target = { elementId: activePos, colorCode: 'g', isValid: true, needsValidation: true };
     activeTargets.push(target);
     controlLED(activePos, 'g');
-    
+
     // Turn off others
     activeMission.greenTargets.forEach(pos => {
       if (pos !== activePos) {
@@ -3900,13 +3890,13 @@ function activateModeTwoStepRotatingGreen() {
     });
 
     activateBonusSection();
-    
+
     rotationIndex = (rotationIndex + 1) % activeMission.greenTargets.length;
   };
 
   rotateTargets();
   rotationInterval = setInterval(rotateTargets, activeMission.rotationDelay || 2000);
-  
+
   // Set all buttons with 3 green, 3 blue, 3 yellow (no adjacent same colors)
   setAllButtonsRandomColors();
 }
@@ -3915,26 +3905,26 @@ function activateModeTwoStepUltimate() {
   // Level 10: Ultimate chaos - rotating blue + random green bursts
   if (rotationInterval) clearInterval(rotationInterval);
   if (randomTargetInterval) clearInterval(randomTargetInterval);
-  
+
   let rotationIndex = 0;
   let bonusHitCount = 0;
 
   const updateTargets = () => {
     activeTargets = [];
     trapPositions = [];
-    
+
     // Rotating blue
     const activeBlue = activeMission.blueTargets[rotationIndex];
     const blueTarget = { elementId: activeBlue, colorCode: 'b', isValid: true, needsValidation: true };
     activeTargets.push(blueTarget);
     controlLED(activeBlue, 'b');
-    
+
     activeMission.blueTargets.forEach(pos => {
       if (pos !== activeBlue) {
         controlLED(pos, 'o');
       }
     });
-    
+
     rotationIndex = (rotationIndex + 1) % activeMission.blueTargets.length;
   };
 
@@ -3942,12 +3932,12 @@ function activateModeTwoStepUltimate() {
     // Add a random green target
     const greenPos = activeMission.greenTargets[Math.floor(Math.random() * activeMission.greenTargets.length)];
     const greenTarget = { elementId: greenPos, colorCode: 'g', isValid: true, needsValidation: true };
-    
+
     // Check if not already active
     if (!activeTargets.find(t => t.elementId === greenPos)) {
       activeTargets.push(greenTarget);
       controlLED(greenPos, 'g');
-      
+
       // Turn off after 2 seconds
       setTimeout(() => {
         controlLED(greenPos, 'o');
@@ -3959,7 +3949,7 @@ function activateModeTwoStepUltimate() {
 
   updateTargets();
   rotationInterval = setInterval(updateTargets, activeMission.rotationDelay || 2000);
-  
+
   // Random green bursts
   if (activeMission.randomBurstInterval) {
     randomTargetInterval = setInterval(addRandomGreen, activeMission.randomBurstInterval);
@@ -4833,7 +4823,7 @@ function setupTrapPosition(position) {
   activeTargets.push(trap);
   trapPositions.push(trap);
 
-  
+
   // OPTIMIZATION: Always use constant red for traps (no blinking to reduce serial writes)
   logger.info('STRIKELOOP', `Setting up constant red trap at position ${position}`);
   controlLED(position, 'r');
@@ -4845,7 +4835,7 @@ function setupAdditionalTraps(trapConfig) {
   const existingTraps = trapPositions.map(t => t.elementId);
   const existingTargets = activeTargets.filter(t => t.isValid).map(t => t.elementId);
 
-  
+
   const availablePositions = allPositions.filter(pos =>
     !existingTraps.includes(pos) && !existingTargets.includes(pos)
   );
@@ -4874,9 +4864,9 @@ function startBlinkingLED(position, color, interval = 400) {
       controlLED(position, 'o');
     }
     isOn = !isOn;
-  }, interval); 
+  }, interval);
 
-  
+
   if (!activeMission.blinkIntervals) activeMission.blinkIntervals = [];
   activeMission.blinkIntervals.push(blinkInterval);
 }
@@ -4891,7 +4881,7 @@ function activateMultiplier(level) {
 
   if (level === 2 && consecutiveValidHits >= multiplierConfig.x2After) {
     newMultiplier = 2;
-    duration = multiplierConfig.x2Duration * 1000; 
+    duration = multiplierConfig.x2Duration * 1000;
   } else if (level === 3 && consecutiveValidHits >= multiplierConfig.x3After) {
     newMultiplier = 3;
     duration = multiplierConfig.x3Duration * 1000;
@@ -4901,26 +4891,26 @@ function activateMultiplier(level) {
     currentMultiplier = newMultiplier;
     multiplierActive = true;
 
-    
+
     if (multiplierTimer) {
       clearTimeout(multiplierTimer);
     }
 
-    
+
     multiplierTimer = setTimeout(() => {
       logger.info('STRIKELOOP', `Multiplier x${currentMultiplier} expired`);
       currentMultiplier = 1;
       multiplierActive = false;
-      consecutiveValidHits = 0; 
+      consecutiveValidHits = 0;
 
-      
+
       gameState.multiplier = 'x1';
       emitter.emit('multiplierUpdate', gameState.multiplier);
     }, duration);
 
-    logger.info('STRIKELOOP', `Multiplier ACTIVATED: x${currentMultiplier} for ${duration/1000}s`);
+    logger.info('STRIKELOOP', `Multiplier ACTIVATED: x${currentMultiplier} for ${duration / 1000}s`);
 
-    
+
     gameState.multiplier = `x${currentMultiplier}`;
     emitter.emit('multiplierUpdate', gameState.multiplier);
   }
@@ -4940,7 +4930,7 @@ function cancelMultiplier() {
     multiplierActive = false;
     consecutiveValidHits = 0;
 
-    
+
     gameState.multiplier = 'x1';
     emitter.emit('multiplierUpdate', gameState.multiplier);
   }
@@ -5241,15 +5231,15 @@ function processSequenceMode(target) {
   const sequence = activeMission.sequence || ['g', 'b', 'g'];
   const expectedColor = sequence[sequenceStep % sequence.length];
 
-  
+
   if (target.isTrap || target.colorCode === 'r') {
     logger.info('STRIKELOOP', `❌ TRAP HIT in sequence! Resetting sequence progress.`);
     sequenceStep = 0;
-    consecutiveValidHits = 0; 
+    consecutiveValidHits = 0;
     return false;
   }
 
-  
+
   if (target.colorCode === expectedColor) {
     logger.info('STRIKELOOP', `✅ SEQUENCE ${sequenceStep + 1}/${sequence.length}: ${expectedColor.toUpperCase()} HIT!`);
     sequenceStep++;
@@ -5257,15 +5247,15 @@ function processSequenceMode(target) {
     if (sequenceStep >= sequence.length) {
       logger.info('STRIKELOOP', `🎉 SEQUENCE COMPLETED! Restarting...`);
       sequenceStep = 0;
-      consecutiveValidHits++; 
+      consecutiveValidHits++;
       logger.info('STRIKELOOP', `Consecutive complete sequences: ${consecutiveValidHits}`);
-      return true; 
+      return true;
     }
-    return false; 
+    return false;
   } else {
     logger.info('STRIKELOOP', `❌ Wrong sequence! Expected ${expectedColor.toUpperCase()}, got ${target.colorCode?.toUpperCase()}`);
-    sequenceStep = 0; 
-    consecutiveValidHits = 0; 
+    sequenceStep = 0;
+    consecutiveValidHits = 0;
     return false;
   }
 }
@@ -5300,10 +5290,10 @@ function processCumulativeBonusMode(target) {
       logger.info('STRIKELOOP', `🎉 CUMULATIVE BONUS! +10 points for 3x hits on circle ${targetId}`);
       const bonusScore = gameState.score + 10;
       updateScore(bonusScore);
-      cumulativeHitCounts[targetId] = 0; 
+      cumulativeHitCounts[targetId] = 0;
     }
 
-    
+
     Object.keys(cumulativeHitCounts).forEach(id => {
       if (id != targetId) {
         cumulativeHitCounts[id] = 0;
@@ -5897,7 +5887,7 @@ function cleanupArcadeGame() {
   // Clear snake pattern tracking
   lastSnakeMode = null;
   snakePatternIndex = 0;
-  
+
   // Round 3: Clear two-step validation state - NEW IMPLEMENTATION
   if (validationTimeout) {
     clearTimeout(validationTimeout);
@@ -5972,7 +5962,7 @@ function handleShutdown() {
   logger.info('STRIKELOOP', 'Shutting down...');
   stopGame();
 
-  
+
   process.exit(0);
 }
 
