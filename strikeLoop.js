@@ -48,8 +48,8 @@ let gameRounds = [
     arcadeMode: 'green-blue-combo',
     greenTargets: [1, 2, 3, 4],
     blueTargets: [5, 6, 7, 8],
-    pointsPerGreen: 60,
-    pointsPerBlue: 80
+    pointsPerGreen: 400,
+    pointsPerBlue: 500
   },
   {
     round: 1, level: 2,
@@ -59,7 +59,7 @@ let gameRounds = [
     arcadeMode: 'green-avoid-red',
     greenTargets: [1, 2, 3, 4],
     redTraps: [5, 6, 7, 8],
-    pointsPerGreen: 50,
+    pointsPerGreen: 450,
     penaltyRed: -100
   },
   {
@@ -70,19 +70,19 @@ let gameRounds = [
     arcadeMode: 'blue-avoid-red',
     blueTargets: [5, 6, 7, 8],
     redTraps: [1, 2, 3, 4],
-    pointsPerBlue: 90,
+    pointsPerBlue: 550,
     penaltyRed: -100
   },
   {
     round: 1, level: 4,
     mission: 'Touchez uniquement les verts et les bleus !',
     duration: 30,
-    goalScore: 1800,
+    goalScore: 1600,
     arcadeMode: 'rotating-green-blue',
     greenTargets: [1, 2, 3, 4],
     blueTargets: [5, 6, 7, 8],
-    pointsPerGreen: 90,
-    pointsPerBlue: 100,
+    pointsPerGreen: 600,
+    pointsPerBlue: 650,
     penaltyRed: -100,
     rotationDelay: 2000
   },
@@ -90,10 +90,10 @@ let gameRounds = [
     round: 1, level: 5,
     mission: 'Touchez uniquement les verts !',
     duration: 30,
-    goalScore: 1600,
+    goalScore: 1800,
     arcadeMode: 'rotating-green',
     greenTargets: [1, 2, 3, 4],
-    pointsPerGreen: 80,
+    pointsPerGreen: 650,
     penaltyRed: -100,
     rotationDelay: 2000
   },
@@ -104,7 +104,7 @@ let gameRounds = [
     goalScore: 2000,
     arcadeMode: 'rotating-blue',
     blueTargets: [5, 6, 7, 8],
-    pointsPerBlue: 110,
+    pointsPerBlue: 700,
     penaltyRed: -100,
     rotationDelay: 2000
   },
@@ -117,7 +117,7 @@ let gameRounds = [
     greenTargets: [1, 2, 3, 4],
     redTraps: [5, 6, 7, 8],
     requiredHits: 2,
-    pointsPerCompletion: 120,
+    pointsPerCompletion: 2200,
     penaltyRed: -100
   },
   {
@@ -129,7 +129,7 @@ let gameRounds = [
     blueTargets: [5, 6, 7, 8],
     redTraps: [1, 2, 3, 4],
     requiredHits: 2,
-    pointsPerCompletion: 120,
+    pointsPerCompletion: 2400,
     penaltyRed: -100
   },
   {
@@ -141,7 +141,7 @@ let gameRounds = [
     greenTargets: [1, 2, 3, 4],
     redTraps: [5, 6, 7, 8],
     requiredHits: 3,
-    pointsPerCompletion: 130,
+    pointsPerCompletion: 2600,
     penaltyRed: -100
   },
   {
@@ -153,7 +153,7 @@ let gameRounds = [
     blueTargets: [5, 6, 7, 8],
     redTraps: [1, 2, 3, 4],
     requiredHits: 3,
-    pointsPerCompletion: 130,
+    pointsPerCompletion: 2800,
     penaltyRed: -100
   },
   // ROUND 2 - 10 Levels
@@ -166,28 +166,28 @@ let gameRounds = [
     greenTargets: [1, 2, 3, 4],
     redTraps: [5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
-    pointsPerGreen: 140,
-    pointsPerBonus: 50,
+    pointsPerGreen: 800,
+    pointsPerBonus: 200,
     penaltyRed: -100
   },
   {
     round: 2, level: 2,
     mission: 'Touchez uniquement les bleus. Évitez les rouges !',
     duration: 30,
-    goalScore: 3000,
+    goalScore: 3200,
     arcadeMode: 'blinking-blue-bonus',
     blueTargets: [5, 6, 7, 8],
     redTraps: [1, 2, 3, 4],
     bonusTargets: [9, 10, 11, 12, 13],
-    pointsPerBlue: 140,
-    pointsPerBonus: 50,
+    pointsPerBlue: 850,
+    pointsPerBonus: 200,
     penaltyRed: -100
   },
   {
     round: 2, level: 3,
     mission: 'Touchez les cibles vertes. Évitez les rouges !',
     duration: 30,
-    goalScore: 3000,
+    goalScore: 3400,
     arcadeMode: 'snake-green-3',
     greenTargets: [1, 2, 3, 4],
     redTraps: [5, 6, 7, 8],
@@ -195,15 +195,15 @@ let gameRounds = [
     snakeCount: 3,
     snakePattern: [[1,2,4], [2,4,3], [4,3,1], [3,1,2]],
     rotationDelay: 3000,
-    pointsPerGreen: 150,
-    pointsPerBonus: 50,
+    pointsPerGreen: 900,
+    pointsPerBonus: 200,
     penaltyRed: -100
   },
   {
     round: 2, level: 4,
     mission: 'Touchez les cibles bleus. Évitez les rouges !',
     duration: 30,
-    goalScore: 3000,
+    goalScore: 3600,
     arcadeMode: 'snake-blue-3',
     blueTargets: [5, 6, 7, 8],
     redTraps: [1, 2, 3, 4],
@@ -211,15 +211,15 @@ let gameRounds = [
     snakeCount: 3,
     snakePattern: [[5,6,8], [6,8,7], [8,7,5], [7,5,6]],
     rotationDelay: 3000,
-    pointsPerBlue: 160,
-    pointsPerBonus: 50,
+    pointsPerBlue: 950,
+    pointsPerBonus: 200,
     penaltyRed: -100
   },
   {
     round: 2, level: 5,
     mission: 'Touchez les cibles vertes. Évitez les rouges !',
     duration: 30,
-    goalScore: 3000,
+    goalScore: 3800,
     arcadeMode: 'snake-green-2',
     greenTargets: [1, 2, 3, 4],
     redTraps: [5, 6, 7, 8],
@@ -227,15 +227,15 @@ let gameRounds = [
     snakeCount: 2,
     snakePattern: [[1,2], [2,4], [4,3], [3,1]],
     rotationDelay: 3000,
-    pointsPerGreen: 160,
-    pointsPerBonus: 50,
+    pointsPerGreen: 1000,
+    pointsPerBonus: 200,
     penaltyRed: -100
   },
   {
     round: 2, level: 6,
     mission: 'Touchez les cibles bleus. Évitez les rouges !',
     duration: 30,
-    goalScore: 3000,
+    goalScore: 4000,
     arcadeMode: 'snake-blue-2',
     blueTargets: [5, 6, 7, 8],
     redTraps: [1, 2, 3, 4],
@@ -243,63 +243,63 @@ let gameRounds = [
     snakeCount: 2,
     snakePattern: [[5,6], [6,8], [8,7], [7,5]],
     rotationDelay: 3000,
-    pointsPerBlue: 170,
-    pointsPerBonus: 50,
+    pointsPerBlue: 1100,
+    pointsPerBonus: 200,
     penaltyRed: -100
   },
   {
     round: 2, level: 7,
     mission: 'Touchez les verts et bleus ! Évitez les rouges !',
     duration: 30,
-    goalScore: 3000,
+    goalScore: 4200,
     arcadeMode: 'blinking-green-blue',
     greenTargets: [1, 2, 3, 4],
     blueTargets: [5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
     blinkInterval: 2000,  // 2 sec on / 2 sec off
-    pointsPerGreen: 160,
-    pointsPerBlue: 160,
-    pointsPerBonus: 50,
+    pointsPerGreen: 1100,
+    pointsPerBlue: 1200,
+    pointsPerBonus: 200,
     penaltyRed: -100
   },
   {
     round: 2, level: 8,
     mission: 'Touchez uniquement les bleus. Évitez les rouges !',
     duration: 30,
-    goalScore: 3000,
+    goalScore: 4400,
     arcadeMode: 'blinking-blue-avoid-red',
     blueTargets: [5, 6, 7, 8],
     redTraps: [1, 2, 3, 4],
     bonusTargets: [9, 10, 11, 12, 13],
     blinkInterval: 2000,  // 2 sec on / 2 sec off
-    pointsPerBlue: 170,
-    pointsPerBonus: 50,
+    pointsPerBlue: 1300,
+    pointsPerBonus: 200,
     penaltyRed: -100
   },
   {
     round: 2, level: 9,
     mission: 'Touchez les verts ! Évitez les rouges !',
     duration: 30,
-    goalScore: 3000,
+    goalScore: 4600,
     arcadeMode: 'random-4green-4red',
     allTargets: [1, 2, 3, 4, 5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
     rotationInterval: 2000,  // Pattern changes every 2 sec
-    pointsPerGreen: 180,
-    pointsPerBonus: 50,
+    pointsPerGreen: 1200,
+    pointsPerBonus: 200,
     penaltyRed: -100
   },
   {
     round: 2, level: 10,
     mission: 'Touchez les verts et bleus ! Évitez les rouges !',
     duration: 30,
-    goalScore: 3000,
+    goalScore: 4800,
     arcadeMode: 'random-mixed-reshuffle',
     allTargets: [1, 2, 3, 4, 5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
     rotationInterval: 1000,  // Reshuffle every 1 sec
-    pointsPerTarget: 190,
-    pointsPerBonus: 50,
+    pointsPerTarget: 1300,
+    pointsPerBonus: 200,
     penaltyRed: -100
   },
   // ROUND 3 (TWO-STEP VALIDATION) - 10 Levels - NEW IMPLEMENTATION
@@ -307,37 +307,37 @@ let gameRounds = [
     round: 3, level: 1,
     mission: 'Touchez les cibles vertes puis appuyez sur les 4 boutons VERT!',
     duration: 30,
-    goalScore: 4000,
+    goalScore: 5000,
     arcadeMode: 'two-step-all-buttons-green',
     greenTargets: [1, 2, 3, 4],  // Fixed green circles
     redTraps: [5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
     buttonMode: 'all-green',  // All 4 green buttons must be pressed
     validationWindow: 3000,
-    pointsPerValidated: 100,
-    pointsPerBonus: 50,
+    pointsPerValidated: 1400,
+    pointsPerBonus: 200,
     penaltyRed: -100
   },
   {
     round: 3, level: 2,
     mission: 'Touchez les cibles bleues puis appuyez sur les 4 boutons BLEU!',
     duration: 30,
-    goalScore: 4000,
+    goalScore: 5200,
     arcadeMode: 'two-step-all-buttons-blue',
     blueTargets: [5, 6, 7, 8],  // Fixed blue circles
     redTraps: [1, 2, 3, 4],
     bonusTargets: [9, 10, 11, 12, 13],
     buttonMode: 'all-blue',  // All 4 blue buttons must be pressed
     validationWindow: 3000,
-    pointsPerValidated: 100,
-    pointsPerBonus: 50,
+    pointsPerValidated: 1500,
+    pointsPerBonus: 200,
     penaltyRed: -100
   },
   {
     round: 3, level: 3,
     mission: 'Touchez les cibles vertes mobiles puis appuyez sur les 4 boutons VERT!',
     duration: 30,
-    goalScore: 4000,
+    goalScore: 5400,
     arcadeMode: 'two-step-alternating-all-buttons-green',
     greenTargets: [1, 2, 3, 4],
     redTraps: [5, 6, 7, 8],
@@ -346,15 +346,15 @@ let gameRounds = [
     alternateInterval: 3000,
     buttonMode: 'all-green',
     validationWindow: 3000,
-    pointsPerValidated: 100,
-    pointsPerBonus: 50,
+    pointsPerValidated: 1600,
+    pointsPerBonus: 200,
     penaltyRed: -100
   },
   {
     round: 3, level: 4,
     mission: 'Touchez les cibles bleues mobiles puis appuyez sur les 4 boutons BLEU!',
     duration: 30,
-    goalScore: 4000,
+    goalScore: 5600,
     arcadeMode: 'two-step-alternating-all-buttons-blue',
     blueTargets: [5, 6, 7, 8],
     redTraps: [1, 2, 3, 4],
@@ -363,15 +363,15 @@ let gameRounds = [
     alternateInterval: 3000,
     buttonMode: 'all-blue',
     validationWindow: 3000,
-    pointsPerValidated: 100,
-    pointsPerBonus: 50,
+    pointsPerValidated: 1700,
+    pointsPerBonus: 200,
     penaltyRed: -100
   },
   {
     round: 3, level: 5,
     mission: 'Mémorisez et reproduisez la séquence VERTE!',
     duration: 30,
-    goalScore: 4000,
+    goalScore: 5800,
     arcadeMode: 'two-step-sequence-green',
     greenTargets: [1, 2, 3, 4],  // Fixed green circles
     redTraps: [5, 6, 7, 8],
@@ -382,15 +382,15 @@ let gameRounds = [
     sequenceOffTime: 1000,  // 1 sec off
     sequenceTimeoutMs: 10000,  // 10 seconds to reproduce AFTER display completes
     validationWindow: 3000,
-    pointsPerValidated: 100,
-    pointsPerBonus: 50,
+    pointsPerValidated: 1800,
+    pointsPerBonus: 200,
     penaltyRed: -100
   },
   {
     round: 3, level: 6,
     mission: 'Mémorisez et reproduisez la séquence BLEUE!',
     duration: 30,
-    goalScore: 4000,
+    goalScore: 6000,
     arcadeMode: 'two-step-sequence-blue',
     blueTargets: [5, 6, 7, 8],  // Fixed blue circles
     redTraps: [1, 2, 3, 4],
@@ -401,15 +401,15 @@ let gameRounds = [
     sequenceOffTime: 1000,
     sequenceTimeoutMs: 10000,  // 10 seconds to reproduce AFTER display completes
     validationWindow: 3000,
-    pointsPerValidated: 100,
-    pointsPerBonus: 50,
+    pointsPerValidated: 1900,
+    pointsPerBonus: 200,
     penaltyRed: -100
   },
   {
     round: 3, level: 7,
     mission: 'Mémorisez et reproduisez la séquence de 4 boutons!',
     duration: 30,
-    goalScore: 4000,
+    goalScore: 6200,
     arcadeMode: 'two-step-sequence-all-colors',
     greenTargets: [1, 2],      // 2 green holes
     blueTargets: [5, 6],       // 2 blue holes
@@ -422,15 +422,15 @@ let gameRounds = [
     sequenceOffTime: 1000,  // 1 sec off
     sequenceTimeoutMs: 12000,  // 12 seconds to reproduce AFTER display completes
     validationWindow: 3000,
-    pointsPerValidated: 100,
-    pointsPerBonus: 50,
+    pointsPerValidated: 2000,
+    pointsPerBonus: 200,
     penaltyRed: 0
   },
   {
     round: 3, level: 8,
     mission: 'Séquence de 5 boutons - Attention aux pièges rouges!',
     duration: 30,
-    goalScore: 4000,
+    goalScore: 6400,
     arcadeMode: 'two-step-sequence-all-colors-hard',
     greenTargets: [1, 2],      // 2 green holes
     blueTargets: [5, 6],       // 2 blue holes
@@ -444,15 +444,15 @@ let gameRounds = [
     sequenceOffTime: 1000,  // 1 sec off
     sequenceTimeoutMs: 15000,  // 15 seconds to reproduce AFTER display completes
     validationWindow: 3000,
-    pointsPerValidated: 100,
-    pointsPerBonus: 50,
+    pointsPerValidated: 2100,
+    pointsPerBonus: 200,
     penaltyRed: -100
   },
   {
     round: 3, level: 9,
     mission: 'Séquence de 6 boutons - Concentration maximale!',
     duration: 30,
-    goalScore: 4000,
+    goalScore: 6600,
     arcadeMode: 'two-step-sequence-reduced-holes',
     greenTargets: [1],         // 1 green hole
     blueTargets: [5],          // 1 blue hole
@@ -466,15 +466,15 @@ let gameRounds = [
     sequenceOffTime: 1000,  // 1 sec off
     sequenceTimeoutMs: 17000,  // 17 seconds to reproduce AFTER display completes
     validationWindow: 3000,
-    pointsPerValidated: 100,
-    pointsPerBonus: 50,
+    pointsPerValidated: 2200,
+    pointsPerBonus: 200,
     penaltyRed: -100
   },
   {
     round: 3, level: 10,
     mission: 'Séquence de 7 boutons - Défi ultime!',
     duration: 30,
-    goalScore: 4000,
+    goalScore: 6800,
     arcadeMode: 'two-step-sequence-minimal-holes',
     greenTargets: [1],         // 1 green hole
     blueTargets: [5],          // 1 blue hole
@@ -486,8 +486,8 @@ let gameRounds = [
     sequenceOffTime: 1000,  // 1 sec off
     sequenceTimeoutMs: 20000,  // 20 seconds to reproduce AFTER display completes
     validationWindow: 3000,
-    pointsPerValidated: 100,
-    pointsPerBonus: 50,
+    pointsPerValidated: 2300,
+    pointsPerBonus: 200,
     penaltyRed: -100
   }
 ];
