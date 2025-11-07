@@ -238,6 +238,61 @@ function flashOutput(outputId, colorCode, duration) {
   }, duration);
 }
 
+/**
+ * Turn on cell power (output 99)
+ * Respects HAL mode - only sends to hardware in hardware/both modes
+ */
+function powerOnCell() {
+  log('Power ON cell light (output 99)');
+
+  // Send to hardware only in hardware/both modes
+  if (CONFIG.mode === 'hardware' || CONFIG.mode === 'both') {
+    arduino.set_output_raw(99, 1);
+  }
+
+  // In simulation mode, just log it
+  if (CONFIG.mode === 'simulation') {
+    logger.debug('HAL', 'Cell power ON (simulation mode - no hardware command sent)');
+  }
+}
+
+/**
+ * Turn off cell power (output 99)
+ * Respects HAL mode - only sends to hardware in hardware/both modes
+ */
+function powerOffCell() {
+  log('Power OFF cell light (output 99)');
+
+  // Send to hardware only in hardware/both modes
+  if (CONFIG.mode === 'hardware' || CONFIG.mode === 'both') {
+    arduino.set_output_raw(99, 0);
+  }
+
+  // In simulation mode, just log it
+  if (CONFIG.mode === 'simulation') {
+    logger.debug('HAL', 'Cell power OFF (simulation mode - no hardware command sent)');
+  }
+}
+
+/**
+ * Send special effect command to hardware
+ * Respects HAL mode - only sends to hardware in hardware/both modes
+ * @param {number} effectCode - Effect code (1 = level change, 2 = round change, etc.)
+ */
+function sendEffect(effectCode) {
+  log(`Send effect code: ${effectCode}`);
+
+  // Send to hardware only in hardware/both modes
+  if (CONFIG.mode === 'hardware' || CONFIG.mode === 'both') {
+    arduino.send_effect(effectCode);
+  }
+
+  // In simulation mode, just log it
+  if (CONFIG.mode === 'simulation') {
+    logger.debug('HAL', `Effect ${effectCode} (simulation mode - no hardware command sent)`);
+  }
+}
+
 // ============================================================================
 // Private Functions
 // ============================================================================
@@ -423,6 +478,9 @@ module.exports = {
   setOutput,
   setBarLED,
   flashOutput,
+  powerOnCell,
+  powerOffCell,
+  sendEffect,
 
   // State management
   clearStateCache,

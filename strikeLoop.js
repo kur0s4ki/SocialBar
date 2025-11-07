@@ -1,6 +1,5 @@
 const events = require('events');
 const HAL = require('./hardwareAbstraction.js');
-const arduino = require('./arduino.js');
 const readline = require('readline');
 const logger = require('./logger.js');
 const emitter = new events.EventEmitter();
@@ -84,7 +83,7 @@ let gameRounds = [
     pointsPerGreen: 600,
     pointsPerBlue: 650,
     penaltyRed: -100,
-    rotationDelay: 2000
+    rotationDelay: 4000
   },
   {
     round: 1, level: 5,
@@ -95,7 +94,7 @@ let gameRounds = [
     greenTargets: [1, 2, 3, 4],
     pointsPerGreen: 650,
     penaltyRed: -100,
-    rotationDelay: 2000
+    rotationDelay: 4000
   },
   {
     round: 1, level: 6,
@@ -106,7 +105,7 @@ let gameRounds = [
     blueTargets: [5, 6, 7, 8],
     pointsPerBlue: 700,
     penaltyRed: -100,
-    rotationDelay: 2000
+    rotationDelay: 4000
   },
   {
     round: 1, level: 7,
@@ -166,6 +165,7 @@ let gameRounds = [
     greenTargets: [1, 2, 3, 4],
     redTraps: [5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
+    blinkInterval: 4000,
     pointsPerGreen: 800,
     pointsPerBonus: 200,
     penaltyRed: -100
@@ -179,6 +179,7 @@ let gameRounds = [
     blueTargets: [5, 6, 7, 8],
     redTraps: [1, 2, 3, 4],
     bonusTargets: [9, 10, 11, 12, 13],
+    blinkInterval: 4000,
     pointsPerBlue: 850,
     pointsPerBonus: 200,
     penaltyRed: -100
@@ -194,7 +195,7 @@ let gameRounds = [
     bonusTargets: [9, 10, 11, 12, 13],
     snakeCount: 3,
     snakePattern: [[1,2,4], [2,4,3], [4,3,1], [3,1,2]],
-    rotationDelay: 3000,
+    rotationDelay: 4000,
     pointsPerGreen: 900,
     pointsPerBonus: 200,
     penaltyRed: -100
@@ -210,7 +211,7 @@ let gameRounds = [
     bonusTargets: [9, 10, 11, 12, 13],
     snakeCount: 3,
     snakePattern: [[5,6,8], [6,8,7], [8,7,5], [7,5,6]],
-    rotationDelay: 3000,
+    rotationDelay: 4000,
     pointsPerBlue: 950,
     pointsPerBonus: 200,
     penaltyRed: -100
@@ -226,7 +227,7 @@ let gameRounds = [
     bonusTargets: [9, 10, 11, 12, 13],
     snakeCount: 2,
     snakePattern: [[1,2], [2,4], [4,3], [3,1]],
-    rotationDelay: 3000,
+    rotationDelay: 4000,
     pointsPerGreen: 1000,
     pointsPerBonus: 200,
     penaltyRed: -100
@@ -242,7 +243,7 @@ let gameRounds = [
     bonusTargets: [9, 10, 11, 12, 13],
     snakeCount: 2,
     snakePattern: [[5,6], [6,8], [8,7], [7,5]],
-    rotationDelay: 3000,
+    rotationDelay: 4000,
     pointsPerBlue: 1100,
     pointsPerBonus: 200,
     penaltyRed: -100
@@ -256,7 +257,7 @@ let gameRounds = [
     greenTargets: [1, 2, 3, 4],
     blueTargets: [5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
-    blinkInterval: 2000,  // 2 sec on / 2 sec off
+    blinkInterval: 4000,
     pointsPerGreen: 1100,
     pointsPerBlue: 1200,
     pointsPerBonus: 200,
@@ -271,7 +272,7 @@ let gameRounds = [
     blueTargets: [5, 6, 7, 8],
     redTraps: [1, 2, 3, 4],
     bonusTargets: [9, 10, 11, 12, 13],
-    blinkInterval: 2000,  // 2 sec on / 2 sec off
+    blinkInterval: 4000,
     pointsPerBlue: 1300,
     pointsPerBonus: 200,
     penaltyRed: -100
@@ -284,7 +285,7 @@ let gameRounds = [
     arcadeMode: 'random-4green-4red',
     allTargets: [1, 2, 3, 4, 5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
-    rotationInterval: 2000,  // Pattern changes every 2 sec
+    rotationDelay: 4000,
     pointsPerGreen: 1200,
     pointsPerBonus: 200,
     penaltyRed: -100
@@ -297,7 +298,7 @@ let gameRounds = [
     arcadeMode: 'random-mixed-reshuffle',
     allTargets: [1, 2, 3, 4, 5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
-    rotationInterval: 1000,  // Reshuffle every 1 sec
+    rotationDelay: 4000,
     pointsPerTarget: 1300,
     pointsPerBonus: 200,
     penaltyRed: -100
@@ -343,7 +344,7 @@ let gameRounds = [
     redTraps: [5, 6, 7, 8],
     bonusTargets: [9, 10, 11, 12, 13],
     alternatePattern: [[1, 3], [2, 4]],  // Alternating pattern
-    alternateInterval: 3000,
+    alternateInterval: 4000,
     buttonMode: 'all-green',
     validationWindow: 3000,
     pointsPerValidated: 1600,
@@ -360,7 +361,7 @@ let gameRounds = [
     redTraps: [1, 2, 3, 4],
     bonusTargets: [9, 10, 11, 12, 13],
     alternatePattern: [[5, 7], [6, 8]],  // Alternating pattern
-    alternateInterval: 3000,
+    alternateInterval: 4000,
     buttonMode: 'all-blue',
     validationWindow: 3000,
     pointsPerValidated: 1700,
@@ -746,7 +747,7 @@ function resetGameToInitialState() {
   stopOverallGameTimer();
 
   // Turn off cell power light (output 99, state 0) - sends O990
-  arduino.set_output_raw(99, 0);
+  HAL.powerOffCell();
 
   activeMission = null;
   currentLevelIndex = 0;
@@ -788,7 +789,7 @@ function startRoundBasedGame() {
   initializeGameState();
 
   // Turn on cell power light (output 99, state 1) - sends O991
-  arduino.set_output_raw(99, 1);
+  HAL.powerOnCell();
   logger.info('STRIKELOOP', 'Cell power light activated (O991)');
 
   // Start overall 15-minute game timer
@@ -836,7 +837,7 @@ function startNextLevel(isRetry = false) {
 
     if (isRoundChange) {
       logger.info('STRIKELOOP', `🎭 ROUND CHANGE DETECTED (${previousRound} → ${currentLevel.round}) - Triggering hardware effect O002`);
-      arduino.send_effect(2); // Send O002 for round change effect
+      HAL.sendEffect(2); // Send O002 for round change effect
 
       // Wait 2 seconds before continuing with level initialization
       setTimeout(() => {
@@ -848,7 +849,7 @@ function startNextLevel(isRetry = false) {
 
     } else if (isLevelChange) {
       logger.info('STRIKELOOP', `🎯 LEVEL CHANGE DETECTED (R${currentLevel.round}L${currentLevel.level}) - Triggering hardware effect O001`);
-      arduino.send_effect(1); // Send O001 for level change effect
+      HAL.sendEffect(1); // Send O001 for level change effect
 
       // Wait 2 seconds before continuing with level initialization
       setTimeout(() => {
@@ -1483,7 +1484,7 @@ function finishGame() {
   cleanupArcadeGame();
 
   // Turn off cell power light (output 99, state 0) - sends O990
-  arduino.set_output_raw(99, 0);
+  HAL.powerOffCell();
 
   activeMission = null;
 
@@ -2154,12 +2155,12 @@ function activateModeMultiHitBlue() {
 // ROUND 2 MODE IMPLEMENTATIONS
 
 function activateModeBlinkingGreenBonus() {
-  // Green targets (1-4) blink at 1 sec on/off
+  // Green targets (1-4) blink - now configurable via blinkInterval
   activeMission.greenTargets.forEach(pos => {
     const target = { elementId: pos, colorCode: 'g', isValid: true };
     activeTargets.push(target);
   });
-  startBlinkingTargets(activeMission.greenTargets, 'g', 1000);
+  startBlinkingTargets(activeMission.greenTargets, 'g', activeMission.blinkInterval || 1000);
 
   // Red traps (5-8) solid
   activeMission.redTraps.forEach(pos => {
@@ -2185,13 +2186,13 @@ function activateModeBlinkingBlueBonus() {
     controlLED(pos, 'r');
   });
 
-  // Blue targets (5-8) blink at 1 sec on/off
+  // Blue targets (5-8) blink - now configurable via blinkInterval
   logger.info('STRIKELOOP', 'Setting blue targets (5-8) to BLINKING BLUE');
   activeMission.blueTargets.forEach(pos => {
     const target = { elementId: pos, colorCode: 'b', isValid: true };
     activeTargets.push(target);
   });
-  startBlinkingTargets(activeMission.blueTargets, 'b', 1000);
+  startBlinkingTargets(activeMission.blueTargets, 'b', activeMission.blinkInterval || 1000);
 
   // Bonus section (9-13) solid yellow
   logger.info('STRIKELOOP', 'Setting bonus section (9-13) to SOLID YELLOW');
