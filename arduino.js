@@ -50,6 +50,74 @@ let fAnswerReceived1 = false;
 let timeoutIdTab1 = [];
 let comptCmd1 = 0;
 
+// ============================================================================
+// Serial Write Queue System
+// ============================================================================
+// Queue to prevent overwhelming hardware with rapid serial writes
+// Adjust SERIAL_WRITE_DELAY if needed: lower = faster but may overwhelm hardware
+const serialWriteQueue = [];
+let isProcessingQueue = false;
+const SERIAL_WRITE_DELAY = 200; // milliseconds between serial writes (recommended: 150-250ms)
+
+/**
+ * Add command to queue and start processing if not already running
+ * @private
+ */
+function enqueueSerialCommand(command, resolveCallback, rejectCallback) {
+  serialWriteQueue.push({ command, resolveCallback, rejectCallback });
+
+  // Log queue status for debugging
+  if (serialWriteQueue.length > 1) {
+    logger.debug('ARDUINO', `Queue size: ${serialWriteQueue.length} commands pending`);
+  }
+
+  // Start processing if not already running
+  if (!isProcessingQueue) {
+    processSerialQueue();
+  }
+}
+
+/**
+ * Process serial command queue with delay between writes
+ * @private
+ */
+async function processSerialQueue() {
+  if (isProcessingQueue) return;
+
+  isProcessingQueue = true;
+
+  while (serialWriteQueue.length > 0) {
+    const { command, resolveCallback, rejectCallback } = serialWriteQueue.shift();
+
+    try {
+      // Send the command immediately (internal implementation)
+      const result = await sendCmdImmediate(command);
+      resolveCallback(result);
+    } catch (error) {
+      rejectCallback(error);
+    }
+
+    // Wait before processing next command (if there are more)
+    if (serialWriteQueue.length > 0) {
+      await sleep(SERIAL_WRITE_DELAY);
+    }
+  }
+
+  isProcessingQueue = false;
+}
+
+/**
+ * Get current queue status (for debugging)
+ * @returns {Object} Queue statistics
+ */
+function getQueueStatus() {
+  return {
+    queueLength: serialWriteQueue.length,
+    isProcessing: isProcessingQueue,
+    delayMs: SERIAL_WRITE_DELAY
+  };
+}
+
 let ControllinovendorId = `2341`;
 let ControllinoPort;
 
@@ -136,7 +204,12 @@ async function sendSerial(count) {
   });
 }
 
-async function sendCmd1(mes) {
+/**
+ * Send command immediately (internal implementation)
+ * This is the original sendCmd1 function, now used internally by the queue
+ * @private
+ */
+async function sendCmdImmediate(mes) {
   statusCmd1 = ``;
   fAnswerReceived1 = false;
 
@@ -148,6 +221,7 @@ async function sendCmd1(mes) {
       sendSerial(mes);
     } else {
       emitter.emit(`cmdFailedEvent`, `no serial port 1`);
+      reject(new Error('no serial port 1'));
       return;
     }
     nbrOfComdOngoing++;
@@ -169,7 +243,7 @@ async function sendCmd1(mes) {
     timeoutId = setTimeout(() => {
       emitter.emit(`cmdFailedEvent`, `no answer from arduino1`);
       comptCmd1--;
-      reject;
+      reject(new Error('no answer from arduino1'));
     }, 2000);
     timeoutIdTab1[comptCmd1++] = timeoutId;
   });
@@ -177,6 +251,16 @@ async function sendCmd1(mes) {
   let result = await promise; // wait until the promise resolves (*)
 
   return input1;
+}
+
+/**
+ * Send command via queue (public API)
+ * Enqueues command and returns promise that resolves when command completes
+ */
+async function sendCmd1(mes) {
+  return new Promise((resolve, reject) => {
+    enqueueSerialCommand(mes, resolve, reject);
+  });
 }
 
 function manageInputEvent(mes, input) {
@@ -378,4 +462,5 @@ module.exports = {
   set_output_raw,
   send_effect,
   setBarled,
+  getQueueStatus, // For debugging queue performance
 };

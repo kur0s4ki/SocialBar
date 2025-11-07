@@ -149,9 +149,10 @@ class Logger {
    */
   serial(message) {
     if (this._shouldLog('ARDUINO', LOG_LEVELS.DEBUG)) {
-      console.log(`\x1b[36m╔════════════════════════════════════════╗\x1b[0m`);
-      console.log(`\x1b[36m║\x1b[0m \x1b[1m\x1b[33mSERIAL WRITE → Controllino:\x1b[0m \x1b[1m\x1b[32m${message}\x1b[0m`);
-      console.log(`\x1b[36m╚════════════════════════════════════════╝\x1b[0m`);
+      const timestamp = this._getTimestamp();
+      console.log(`${timestamp} \x1b[36m╔════════════════════════════════════════╗\x1b[0m`);
+      console.log(`${timestamp} \x1b[36m║\x1b[0m \x1b[1m\x1b[33mSERIAL WRITE → Controllino:\x1b[0m \x1b[1m\x1b[32m${message}\x1b[0m`);
+      console.log(`${timestamp} \x1b[36m╚════════════════════════════════════════╝\x1b[0m`);
     }
   }
 
