@@ -471,3 +471,30 @@ html, body, #root, .App {
 .progress-glow {
   box-shadow: 0 0 10px #22c55e, 0 0 20px #22c55e, 0 0 30px #22c55e;
 }
+
+/* Golden color for bonus phase */
+.text-golden {
+  color: #FFD700;
+}
+
+/* Golden shining animation for bonus phase */
+@keyframes goldenShine {
+  0% {
+    text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FFD700;
+  }
+  50% {
+    text-shadow: 0 0 20px #FFD700, 0 0 30px #FFD700, 0 0 40px #FFD700, 0 0 50px #FFA500;
+  }
+  100% {
+    text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FFD700;
+  }
+}
+
+.golden-shine {
+  animation: goldenShine 1.5s ease-in-out infinite;
+}
+
+/* Golden glow for progress bar during bonus phase */
+.golden-glow {
+  box-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FFD700;
+}

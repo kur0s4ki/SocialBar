@@ -719,6 +719,14 @@ function forceSkipToRound(targetRound) {
   startNextLevel(false);
 }
 
+function turnAllHolesWhite() {
+  // Turn all 8 holes (1-8) white for staff visibility when cell lights are off
+  logger.info('STRIKELOOP', 'Setting all holes to white for staff visibility');
+  for (let i = 1; i <= 8; i++) {
+    controlLED(i, 'd'); // 'd' is white
+  }
+}
+
 function resetGameToInitialState() {
   logger.info('STRIKELOOP', 'Resetting game to initial state...');
 
@@ -731,6 +739,9 @@ function resetGameToInitialState() {
 
   // Turn off cell power light (output 99, state 0) - sends O990
   HAL.powerOffCell();
+
+  // Turn all holes white for staff visibility
+  turnAllHolesWhite();
 
   activeMission = null;
   currentLevelIndex = 0;
@@ -1168,6 +1179,12 @@ function startLevelTimer() {
 
 
   timeUpdateInterval = setInterval(() => {
+    // Guard: Stop if game is no longer running (prevents execution after reset)
+    if (!isRunning) {
+      stopLevelTimer();
+      return;
+    }
+
     if (currentRoundTimeLeft > 0) {
       currentRoundTimeLeft--;
       const timeString = formatTime(currentRoundTimeLeft);
@@ -1239,6 +1256,9 @@ function finishGame() {
   // Turn off cell power light (output 99, state 0) - sends O990
   HAL.powerOffCell();
 
+  // Turn all holes white for staff visibility
+  turnAllHolesWhite();
+
   activeMission = null;
 
   emitter.emit('gameFinished');
@@ -1295,6 +1315,12 @@ function updateScore(newScore) {
   if (currentLevel && !goalAchieved && localScore >= currentLevel.goalScore) {
     goalAchieved = true;
     logger.info('STRIKELOOP', `🎉 GOAL ACHIEVED! ${localScore}/${currentLevel.goalScore} - Level can be completed`);
+
+    // Trigger bonus phase
+    emitter.emit('bonusPhaseStarted', {
+      mission: '🌟 OBJECTIF ATTEINT! Tous les points gagnés maintenant sont des BONUS! 🌟',
+      color: 'golden'
+    });
   }
 }
 

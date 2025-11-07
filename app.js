@@ -331,6 +331,15 @@ addTrackedListener(strikeLoop.emitter, 'bonusActive', (isActive) => {
   });
 });
 
+addTrackedListener(strikeLoop.emitter, 'bonusPhaseStarted', (data) => {
+  logger.info('APP', `Bonus phase started: ${data.mission}`);
+  broadcastToDisplay({
+    type: 'bonusPhaseStarted',
+    mission: data.mission,
+    color: data.color
+  });
+});
+
 // Configure Hardware Abstraction Layer mode
 // Check command line arguments first, then environment variable, default to 'simulation'
 let hardwareMode = 'simulation';

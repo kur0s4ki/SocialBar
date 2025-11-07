@@ -41,6 +41,13 @@ function App() {
   // Bonus section state
   const [bonusActive, setBonusActive] = useState(false);
 
+  // Bonus phase state (when goal is achieved early)
+  const [bonusPhase, setBonusPhase] = useState({
+    active: false,
+    mission: '',
+    color: 'golden'
+  });
+
   // Team name state
   const [teamName, setTeamName] = useState('TEST');
 
@@ -88,7 +95,8 @@ function App() {
 
   // Adjust mission text font size based on length
   useEffect(() => {
-    const textLength = currentRound.mission.length;
+    const textToMeasure = bonusPhase.active ? bonusPhase.mission : currentRound.mission;
+    const textLength = textToMeasure.length;
     if (textLength > 100) {
       setMissionFontSize('text-4xl');
     } else if (textLength > 70) {
@@ -98,7 +106,7 @@ function App() {
     } else {
       setMissionFontSize('text-7xl');
     }
-  }, [currentRound.mission]);
+  }, [currentRound.mission, bonusPhase.active, bonusPhase.mission]);
 
   useEffect(() => {
     const connect = () => {
@@ -157,6 +165,9 @@ function App() {
 
                 // Reset sound manager's score tracking for new level
                 soundManager.resetScoreTracking();
+
+                // Reset bonus phase on level change
+                setBonusPhase({ active: false, mission: '', color: 'golden' });
               }
 
               // Handle round change for narration (force play on first round update)
@@ -248,6 +259,14 @@ function App() {
               console.log('[GAMEINPROGRESS] Bonus active update:', data.active);
               setBonusActive(data.active);
               break;
+            case 'bonusPhaseStarted':
+              console.log('[GAMEINPROGRESS] Bonus phase started:', data);
+              setBonusPhase({
+                active: true,
+                mission: data.mission,
+                color: data.color
+              });
+              break;
             case 'teamName':
               console.log('[GAMEINPROGRESS] Team name update:', data.name);
               setTeamName(data.name || 'TEST');
@@ -281,6 +300,7 @@ function App() {
               previousRound.current = 0;
               lastScore.current = 0;
               setBonusActive(false);
+              setBonusPhase({ active: false, mission: '', color: 'golden' });
               setTeamName('TEST');
               setIsNarrationPlaying(false);
               break;
@@ -345,7 +365,7 @@ function App() {
           {/* Right Rectangle - Score */}
           <div className="bg-slate-900 border-8 border-cyan-400 rounded-2xl p-10 flex flex-col items-center justify-center space-y-4">
             <span className="text-white text-6xl font-bold">SCORE</span>
-            <span className={`${gameData.score >= currentRound.goalScore ? 'text-green score-shine' : 'text-yellow-400'} text-6xl font-bold`}>{gameData.score}</span>
+            <span className={`${bonusPhase.active ? 'text-golden golden-shine' : (gameData.score >= currentRound.goalScore ? 'text-green score-shine' : 'text-yellow-400')} text-6xl font-bold`}>{gameData.score}</span>
           </div>
         </div>
 
@@ -370,8 +390,8 @@ function App() {
 
           {/* Mission Text */}
           <div className="text-center pr-80">
-            <p className={`text-white ${missionFontSize} font-medium mt-8 uppercase`}>
-              {currentRound.mission}
+            <p className={`${bonusPhase.active ? 'text-golden golden-shine' : 'text-white'} ${missionFontSize} font-medium mt-8 uppercase`}>
+              {bonusPhase.active ? bonusPhase.mission : currentRound.mission}
             </p>
           </div>
 
@@ -379,10 +399,10 @@ function App() {
           <div className="absolute bottom-6 left-16 right-16 pr-80">
             <div className="w-full bg-slate-700 h-8">
               <div
-                className="h-full transition-all duration-300 ease-out progress-glow"
+                className={`h-full transition-all duration-300 ease-out ${bonusPhase.active ? 'golden-glow' : 'progress-glow'}`}
                 style={{
                   width: `${Math.min((gameData.score / currentRound.goalScore) * 100, 100)}%`,
-                  backgroundColor: '#22c55e'
+                  backgroundColor: bonusPhase.active ? '#FFD700' : '#22c55e'
                 }}
               ></div>
             </div>
