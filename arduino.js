@@ -32,6 +32,12 @@ const OUTPUT_POWER_CELL = `99`;
 const OUT_ON = `1`;
 const OUT_OFF = `0`;
 
+// Testing configuration - adds delay between ALL serial commands
+// Set to 0 to disable delays (normal gameplay)
+// Set to 500 or higher to slow down for testing/debugging
+// IMPORTANT: Delay is applied in sendSerial() so ALL commands are affected
+const TESTING_DELAY_MS = 500; // Delay between serial commands in milliseconds
+
 
 let ControllinoSerialPort;
 
@@ -127,6 +133,13 @@ async function sendSerial(mes) {
       await sleep(10); // Wait 10ms before checking again
     }
     await sendIn2Parts(mes);
+
+    // Testing delay - adds delay between ALL serial commands
+    if (TESTING_DELAY_MS > 0) {
+      console.log(`[${getCurrentTime()}] ⏱️  Delaying ${TESTING_DELAY_MS}ms after command: ${mes}`);
+      await sleep(TESTING_DELAY_MS);
+      console.log(`[${getCurrentTime()}] ✅ Delay complete, ready for next command`);
+    }
   });
 }
 
@@ -145,9 +158,19 @@ async function sendCmd1(mes) {
     throw new Error('no serial port 1');
   }
 
-  // For LED commands: fire-and-forget (no waiting for response)
+  // For LED commands: fire-and-forget UNLESS testing delay is enabled
   if (isOutputCommand) {
     logger.serial(mes);
+
+    // If testing delay is enabled, wait for serial to complete (including delay)
+    if (TESTING_DELAY_MS > 0) {
+      await sendSerial(mes).catch(err => {
+        logger.error('ARDUINO', `Failed to send LED command: ${err.message}`);
+      });
+      return Promise.resolve(1);
+    }
+
+    // Normal mode: fire-and-forget (no waiting)
     sendSerial(mes).catch(err => {
       logger.error('ARDUINO', `Failed to send LED command: ${err.message}`);
     });
@@ -304,7 +327,7 @@ function powerOffCell(val) {
 }
 
 // protocol 0xxY xx= output Y=color, W if state =0
-async function set_output(num, val, color = 'w') {
+function set_output(num, val, color = 'w') {
   var n = num.toString();
   var v = val.toString();
   var c = color.toString()[0]; // Take first character of color
@@ -316,14 +339,13 @@ async function set_output(num, val, color = 'w') {
   // Human-readable description
   const stateDesc = val == 1 ? 'ON' : 'OFF';
   const colorDesc = val == 1 ? ` (${c})` : '';
-    console.log(`[ARDUINO] Output ${num} → ${stateDesc}${colorDesc}`);
-    console.log(`[${getCurrentTime()}] [ARDUINO] Output ${num} → ${stateDesc}${colorDesc}\n`);
-
+  console.log(`[ARDUINO] Output ${num} → ${stateDesc}${colorDesc}`);
+  console.log(`[${getCurrentTime()}] [ARDUINO] Output ${num} → ${stateDesc}${colorDesc}\n`);
 
   // New protocol: O{NN}{0|1}{color}
+  // Note: Delay is handled in sendSerial() using TESTING_DELAY_MS
   sendCmd1(`O` + n + c);
-  await sleep(500);
-  }
+}
 
 // Raw output command: O{NN}{state} format (for cell power, etc.)
 // Example: O991 (output 99 ON), O990 (output 99 OFF)
@@ -340,16 +362,16 @@ function set_output_raw(num, state) {
 
 // Send special effect command: O{NNN} format (for hardware transition effects)
 // Example: O001 (level change effect), O002 (round change effect)
-async function send_effect(effectCode) {
+function send_effect(effectCode) {
   var code = effectCode.toString();
   // Pad to 3 digits
   while (code.length < 3) code = `0` + code;
 
   logger.info('ARDUINO', `Special effect code: ${code}`);
   console.log(`[${getCurrentTime()}] Special effect code: ${code}\n`);
-  
+
+  // Note: Delay is handled in sendSerial() using TESTING_DELAY_MS
   sendCmd1(`O` + code);
-  await sleep(500);
 }
 
 async function get_input1() {
