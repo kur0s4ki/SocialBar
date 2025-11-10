@@ -41,14 +41,9 @@ let statusCmd1 = ``;
 let input1 = 0;
 let SerialComBusy = false;
 
-//timer timeout output command ID
-let timeoutId;
-
-//used to manage timeout in case of several commands in very short time
-let nbrOfComdOngoing = 0;
-let fAnswerReceived1 = false;
-let timeoutIdTab1 = [];
-let comptCmd1 = 0;
+// Queue to handle multiple concurrent commands
+// Each command gets its own entry with resolve/reject callbacks
+let pendingCommands = [];
 
 
 let ControllinovendorId = `2341`;
@@ -111,73 +106,82 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-//cut message in 2 parts
+//cut message in 2 parts (splits command to prevent serial buffer overflow)
 async function sendIn2Parts(mes) {
-
   await lock.acquire('exampleLock', async () => {
-    if (SerialComBusy === true) {
-      return;
-    }
-
     SerialComBusy = true;
     ControllinoSerialPort.write(mes.slice(0, 1));
-    await sleep(110);
+    await sleep(50); // Reduced from 110ms to 50ms for faster LED updates
     ControllinoSerialPort.write(mes.slice(1));
+    await sleep(10); // Small delay before marking as not busy
     SerialComBusy = false;
   });
 }
 
-//send serial in loop
-async function sendSerial(count) {
-
+//send serial command (waits if busy)
+async function sendSerial(mes) {
+  // Acquire lock to ensure sequential sending
   await lock.acquire('loopLock', async () => {
-    do {
-      await sendIn2Parts(count);
-    } while (SerialComBusy === true);
+    // Wait until serial is not busy, then send
+    while (SerialComBusy === true) {
+      await sleep(10); // Wait 10ms before checking again
+    }
+    await sendIn2Parts(mes);
   });
 }
 
 /**
- * Send serial command to Controllino
+ * Send serial command to Controllino (fire-and-forget for LED commands)
+ * LED commands (O prefix) don't wait for response for better performance
+ * Input commands (I prefix) wait for response
  * Returns promise that resolves when command completes
  */
 async function sendCmd1(mes) {
-  statusCmd1 = ``;
-  fAnswerReceived1 = false;
+  // Check if this is an LED/Output command (starts with O)
+  const isOutputCommand = mes[0] === 'O';
 
+  if (!ControllinoSerialPort) {
+    emitter.emit(`cmdFailedEvent`, `no serial port 1`);
+    throw new Error('no serial port 1');
+  }
+
+  // For LED commands: fire-and-forget (no waiting for response)
+  if (isOutputCommand) {
+    logger.serial(mes);
+    sendSerial(mes).catch(err => {
+      logger.error('ARDUINO', `Failed to send LED command: ${err.message}`);
+    });
+    return Promise.resolve(1); // Immediate success
+  }
+
+  // For Input commands: wait for response (original behavior)
   let promise = new Promise((resolve, reject) => {
-    //    setTimeout(() => , 1000)
-    if (ControllinoSerialPort) {
-      // Colored serial command box - only shown at DEBUG level
-      logger.serial(mes);
-      sendSerial(mes);
-    } else {
-      emitter.emit(`cmdFailedEvent`, `no serial port 1`);
-      reject(new Error('no serial port 1'));
-      return;
-    }
-    nbrOfComdOngoing++;
-    //console.log(`cmd1: ` + mes + `, `+nbrOfComdOngoing.toString());
+    // Create command entry with its own timeout
+    const commandEntry = {
+      message: mes,
+      resolve: resolve,
+      reject: reject,
+      timeoutId: null,
+      timestamp: Date.now()
+    };
 
-    let intervalId = setInterval(() => {
-      if (fAnswerReceived1) {
-        //  console.log(`fAnswerReceived` + input1.toString());
-        clearInterval(intervalId);
-        comptCmd1--;
-        // console.log(`Clear Timeout 1: ` + comptCmd1.toString());
-        //case of several command sent in the same timeout
-        clearTimeout(timeoutIdTab1[comptCmd1]);
-
-        resolve(input1);
+    // Set timeout for this specific command
+    commandEntry.timeoutId = setTimeout(() => {
+      // Remove this command from queue
+      const index = pendingCommands.indexOf(commandEntry);
+      if (index > -1) {
+        pendingCommands.splice(index, 1);
       }
-    }, 100);
-
-    timeoutId = setTimeout(() => {
       emitter.emit(`cmdFailedEvent`, `no answer from arduino1`);
-      comptCmd1--;
       reject(new Error('no answer from arduino1'));
     }, 2000);
-    timeoutIdTab1[comptCmd1++] = timeoutId;
+
+    // Add to pending queue
+    pendingCommands.push(commandEntry);
+
+    // Colored serial command box - only shown at DEBUG level
+    logger.serial(mes);
+    sendSerial(mes);
   });
 
   let result = await promise; // wait until the promise resolves (*)
@@ -223,15 +227,14 @@ function manageSerialPort1() {
           statusCmd1 = tempBuffer1.substring(1, 2);
           // If statusCmd1 == 1 then send an Succes event else Failed event
           if (statusCmd1 != `1`) emitter.emit(`cmdFailedEvent`);
-          fAnswerReceived1 = true;
-          //answer received, stop timer
-          if (nbrOfComdOngoing > 1) {
-            nbrOfComdOngoing--;
-          } else {
-            clearTimeout(timeoutId);
-            timeoutId = 0;
-            nbrOfComdOngoing = 0;
+
+          // Resolve the oldest pending command (FIFO queue)
+          if (pendingCommands.length > 0) {
+            const commandEntry = pendingCommands.shift(); // Remove first command
+            clearTimeout(commandEntry.timeoutId); // Clear its timeout
+            commandEntry.resolve(input1); // Resolve its promise
           }
+
           //remove string processed
           tempBuffer1 = tempBuffer1.substring(2);
         } else break; //string too short, end of processing
@@ -245,19 +248,14 @@ function manageSerialPort1() {
       //event I01x
       if (tempBuffer1.length > 6) {
         // new format I21xxyy
-        //case of get input answer
-        if (nbrOfComdOngoing > 1) {
-          nbrOfComdOngoing--;
-        } else {
-          clearTimeout(timeoutId);
-          timeoutId = 0;
-          nbrOfComdOngoing = 0;
+        // Resolve the oldest pending command (FIFO queue)
+        if (pendingCommands.length > 0) {
+          const commandEntry = pendingCommands.shift(); // Remove first command
+          clearTimeout(commandEntry.timeoutId); // Clear its timeout
+          commandEntry.resolve(input1); // Resolve its promise
         }
 
-        //just to detect answer
-        statusCmd1 = tempBuffer1.substring(0, 1);
-
-        //just to detect answer
+        // Extract status (for backward compatibility)
         statusCmd1 = tempBuffer1.substring(1, 3);
 
         manageInputEvent(

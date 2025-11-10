@@ -4,9 +4,9 @@ const readline = require('readline');
 const logger = require('./logger.js');
 const emitter = new events.EventEmitter();
 
-// ⚠️ TESTING FLAG: Set to true to play Round 2 first (for testing)
+// ⚠️ TESTING FLAG: Set to true to play Round 3 first (for testing)
 // Set to false for normal game flow (Round 1 → Round 2 → Round 3)
-const TESTING_MODE_SWAP_ROUNDS = false
+const TESTING_MODE_SWAP_ROUNDS = true
 
 const OUTER_CIRCLES_RANGE = { min: 1, max: 8 };
 const INNER_CIRCLES_RANGE = { min: 9, max: 13 };
