@@ -2712,6 +2712,7 @@ function displayButtonSequence(sequence, colorName) {
   const showNext = () => {
     if (index < sequence.length) {
       const buttonId = sequence[index];
+      const isLastButton = (index === sequence.length - 1);
 
       // Turn on button
       controlLED(buttonId, colorCode);
@@ -2722,20 +2723,20 @@ function displayButtonSequence(sequence, colorName) {
         controlLED(buttonId, 'o');
         logger.info('STRIKELOOP', `Sequence step ${index + 1}/${sequence.length}: Button ${buttonId} OFF`);
 
-        // Wait before next
-        setTimeout(() => {
-          index++;
-          showNext();
-        }, offTime);
+        // If this is the last button, enable reproduction IMMEDIATELY
+        if (isLastButton) {
+          sequenceDisplaying = false;
+          sequenceValidationActive = true;
+          logger.info('STRIKELOOP', '✅ Sequence display complete - START REPRODUCING NOW!');
+          startSequenceTimeout();
+        } else {
+          // Wait before showing next button
+          setTimeout(() => {
+            index++;
+            showNext();
+          }, offTime);
+        }
       }, displayTime);
-    } else {
-      // Sequence display complete - now player must reproduce
-      sequenceDisplaying = false;
-      sequenceValidationActive = true;
-      logger.info('STRIKELOOP', '✅ Sequence display complete - START REPRODUCING NOW!');
-
-      // Start 5-second timeout for sequence reproduction
-      startSequenceTimeout();
     }
   };
 
@@ -2752,6 +2753,7 @@ function displayButtonSequenceAllColors(sequence) {
   const showNext = () => {
     if (index < sequence.length) {
       const buttonId = sequence[index];
+      const isLastButton = (index === sequence.length - 1);
 
       // Determine color based on button ID
       const colorCode = getButtonColorCode(buttonId);
@@ -2765,20 +2767,20 @@ function displayButtonSequenceAllColors(sequence) {
         controlLED(buttonId, 'o');
         logger.info('STRIKELOOP', `Sequence step ${index + 1}/${sequence.length}: Button ${buttonId} OFF`);
 
-        // Wait before next
-        setTimeout(() => {
-          index++;
-          showNext();
-        }, offTime);
+        // If this is the last button, enable reproduction IMMEDIATELY
+        if (isLastButton) {
+          sequenceDisplaying = false;
+          sequenceValidationActive = true;
+          logger.info('STRIKELOOP', '✅ Sequence display complete - START REPRODUCING NOW!');
+          startSequenceTimeout();
+        } else {
+          // Wait before showing next button
+          setTimeout(() => {
+            index++;
+            showNext();
+          }, offTime);
+        }
       }, displayTime);
-    } else {
-      // Sequence display complete - now player must reproduce
-      sequenceDisplaying = false;
-      sequenceValidationActive = true;
-      logger.info('STRIKELOOP', '✅ Sequence display complete - START REPRODUCING NOW!');
-
-      // Start configurable timeout for sequence reproduction
-      startSequenceTimeout();
     }
   };
 
@@ -4458,7 +4460,7 @@ function calculatePoints(target) {
         return activeMission.penaltyRed;
       }
       return 0;
-    // Two-step validation modes
+    // Two-step validation modes (legacy Round 3)
     case 'two-step-fixed-green':
     case 'two-step-fixed-blue':
     case 'two-step-alternating-green':
@@ -4469,6 +4471,21 @@ function calculatePoints(target) {
     case 'two-step-mixed-colors':
     case 'two-step-rotating-green':
     case 'two-step-ultimate':
+    // Two-step validation modes (NEW Round 3)
+    case 'two-step-all-buttons-green':
+    case 'two-step-all-buttons-blue':
+    case 'two-step-alternating-all-buttons-green':
+    case 'two-step-alternating-all-buttons-blue':
+    case 'two-step-sequence-green':
+    case 'two-step-sequence-blue':
+    case 'two-step-random-all-buttons-green':
+    case 'two-step-mixed-all-buttons-blue':
+    case 'two-step-color-rotation-1-4':
+    case 'two-step-color-rotation-5-8':
+    case 'two-step-sequence-all-colors':
+    case 'two-step-sequence-all-colors-hard':
+    case 'two-step-sequence-reduced-holes':
+    case 'two-step-sequence-minimal-holes':
       // Bonus targets give points immediately
       if (target.colorCode === 'y') {
         return activeMission.pointsPerBonus;
