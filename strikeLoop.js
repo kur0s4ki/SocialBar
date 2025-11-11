@@ -555,8 +555,8 @@ emitter.on('start', (teamData) => {
 
 // Handle reset command from staff interface
 emitter.on('hardReset', () => {
-  logger.info('STRIKELOOP', 'Hard reset received from staff interface');
-  resetGameToInitialState();
+  logger.info('STRIKELOOP', 'Hard reset received from staff interface (no congratulations)');
+  resetGameToInitialState(false); // Don't show congratulations on manual reset
 });
 
 // Handle skip level command from staff interface (for testing/development)
@@ -668,9 +668,9 @@ function startOverallGameTimer() {
       }
     } else if (elapsedTime >= maxGameTimeMs) {
       // 15 minutes elapsed - game over
-      logger.info('STRIKELOOP', `15 minutes elapsed - resetting game to initial state`);
+      logger.info('STRIKELOOP', `15 minutes elapsed - resetting game with congratulations`);
       stopOverallGameTimer();
-      resetGameToInitialState();
+      resetGameToInitialState(true); // Show congratulations on timeout
     }
   }, 1000); // Check every second
 }
@@ -727,8 +727,8 @@ function turnAllHolesWhite() {
   }
 }
 
-function resetGameToInitialState() {
-  logger.info('STRIKELOOP', 'Resetting game to initial state...');
+function resetGameToInitialState(showCongratulations = false) {
+  logger.info('STRIKELOOP', `Resetting game to initial state... (showCongratulations: ${showCongratulations})`);
 
   // Stop everything
   isRunning = false;
@@ -736,6 +736,15 @@ function resetGameToInitialState() {
   stopLevelTimer();
   stopLEDRefresh();
   stopOverallGameTimer();
+
+  // Clear all sequence display timeouts (prevents sequence from continuing after reset)
+  clearSequenceDisplayTimeouts();
+
+  // Clear validation timeout
+  if (validationTimeout) {
+    clearTimeout(validationTimeout);
+    validationTimeout = null;
+  }
 
   // Turn off cell power light (output 99, state 0) - sends O990
   HAL.powerOffCell();
@@ -756,8 +765,8 @@ function resetGameToInitialState() {
   // Reset game state
   initializeGameState();
 
-  // Notify displays
-  emitter.emit('reset');
+  // Notify displays (include showCongratulations flag)
+  emitter.emit('reset', { showCongratulations });
 
   logger.info('STRIKELOOP', 'Game reset complete - ready to start new game');
 }
@@ -2405,6 +2414,7 @@ let sequenceToMatch = []; // The sequence player must reproduce
 let sequenceDisplaying = false; // Whether we're showing the sequence
 let sequencePlayerInput = []; // Player's input so far
 let sequenceValidationActive = false; // Whether player is currently entering sequence
+let sequenceDisplayTimeouts = []; // Track all setTimeout IDs for sequence display
 
 // Hole sequence matching state (Levels 7-10)
 let holeSequenceHit = []; // Array of hole IDs player has hit so far
@@ -2542,7 +2552,8 @@ function handleTwoStepValidation(hitColor) {
       sequenceValidationActive = false;
       validationPending = false;
 
-      // CRITICAL: Clear any running timeout from previous sequence
+      // CRITICAL: Clear any running timeouts from previous sequence
+      clearSequenceDisplayTimeouts();
       if (validationTimeout) {
         clearTimeout(validationTimeout);
         validationTimeout = null;
@@ -2709,6 +2720,9 @@ function displayButtonSequence(sequence, colorName) {
   const displayTime = activeMission.sequenceDisplayTime;
   const offTime = activeMission.sequenceOffTime;
 
+  // Play sequence-prepare sound when sequence display starts
+  emitter.emit('soundEffect', { effect: 'sequencePrepare' });
+
   const showNext = () => {
     if (index < sequence.length) {
       const buttonId = sequence[index];
@@ -2718,7 +2732,7 @@ function displayButtonSequence(sequence, colorName) {
       controlLED(buttonId, colorCode);
       logger.info('STRIKELOOP', `Sequence step ${index + 1}/${sequence.length}: Button ${buttonId} ON`);
 
-      setTimeout(() => {
+      const timeout1 = setTimeout(() => {
         // Turn off button
         controlLED(buttonId, 'o');
         logger.info('STRIKELOOP', `Sequence step ${index + 1}/${sequence.length}: Button ${buttonId} OFF`);
@@ -2728,15 +2742,19 @@ function displayButtonSequence(sequence, colorName) {
           sequenceDisplaying = false;
           sequenceValidationActive = true;
           logger.info('STRIKELOOP', '✅ Sequence display complete - START REPRODUCING NOW!');
+          // Play sequence-go sound when it's player's turn to reproduce
+          emitter.emit('soundEffect', { effect: 'sequenceGo' });
           startSequenceTimeout();
         } else {
           // Wait before showing next button
-          setTimeout(() => {
+          const timeout2 = setTimeout(() => {
             index++;
             showNext();
           }, offTime);
+          sequenceDisplayTimeouts.push(timeout2);
         }
       }, displayTime);
+      sequenceDisplayTimeouts.push(timeout1);
     }
   };
 
@@ -2750,6 +2768,9 @@ function displayButtonSequenceAllColors(sequence) {
   const displayTime = activeMission.sequenceDisplayTime;
   const offTime = activeMission.sequenceOffTime;
 
+  // Play sequence-prepare sound when sequence display starts
+  emitter.emit('soundEffect', { effect: 'sequencePrepare' });
+
   const showNext = () => {
     if (index < sequence.length) {
       const buttonId = sequence[index];
@@ -2762,7 +2783,7 @@ function displayButtonSequenceAllColors(sequence) {
       controlLED(buttonId, colorCode);
       logger.info('STRIKELOOP', `Sequence step ${index + 1}/${sequence.length}: Button ${buttonId} (${colorCode.toUpperCase()}) ON`);
 
-      setTimeout(() => {
+      const timeout1 = setTimeout(() => {
         // Turn off button
         controlLED(buttonId, 'o');
         logger.info('STRIKELOOP', `Sequence step ${index + 1}/${sequence.length}: Button ${buttonId} OFF`);
@@ -2772,24 +2793,43 @@ function displayButtonSequenceAllColors(sequence) {
           sequenceDisplaying = false;
           sequenceValidationActive = true;
           logger.info('STRIKELOOP', '✅ Sequence display complete - START REPRODUCING NOW!');
+          // Play sequence-go sound when it's player's turn to reproduce
+          emitter.emit('soundEffect', { effect: 'sequenceGo' });
           startSequenceTimeout();
         } else {
           // Wait before showing next button
-          setTimeout(() => {
+          const timeout2 = setTimeout(() => {
             index++;
             showNext();
           }, offTime);
+          sequenceDisplayTimeouts.push(timeout2);
         }
       }, displayTime);
+      sequenceDisplayTimeouts.push(timeout1);
     }
   };
 
   showNext();
 }
 
+// Helper: Clear all sequence display timeouts
+function clearSequenceDisplayTimeouts() {
+  if (sequenceDisplayTimeouts.length > 0) {
+    logger.debug('STRIKELOOP', `Clearing ${sequenceDisplayTimeouts.length} sequence display timeouts`);
+    sequenceDisplayTimeouts.forEach(timeoutId => clearTimeout(timeoutId));
+    sequenceDisplayTimeouts = [];
+  }
+}
+
 // Helper: Start timeout for sequence reproduction (Levels 5-10)
 // Uses configurable timeout from mission config or defaults to 5 seconds
 function startSequenceTimeout() {
+  // Guard: If activeMission is null (game was reset), don't start timeout
+  if (!activeMission) {
+    logger.warn('STRIKELOOP', 'Cannot start sequence timeout - activeMission is null (game was reset)');
+    return;
+  }
+
   // Clear any existing timeout
   if (validationTimeout) {
     clearTimeout(validationTimeout);
@@ -2802,6 +2842,9 @@ function startSequenceTimeout() {
 
   validationTimeout = setTimeout(() => {
     logger.info('STRIKELOOP', '⏱️ Sequence timeout! Player failed to reproduce sequence in time');
+
+    // Play failed sound on timeout
+    emitter.emit('soundEffect', { effect: 'failed' });
 
     // Clear sequence state
     sequenceToMatch = [];
@@ -2953,6 +2996,9 @@ function validateSequenceButtonPress(buttonId) {
     // Wrong button - reset and player must hit circle again
     logger.info('STRIKELOOP', `❌ Wrong button! Resetting sequence...`);
 
+    // Play failed sound on wrong button
+    emitter.emit('soundEffect', { effect: 'failed' });
+
     // Clear sequence state - player must hit circle again
     sequenceToMatch = [];
     sequencePlayerInput = [];
@@ -3077,6 +3123,9 @@ function validateHoleSequenceButtonPress(buttonId) {
     // Wrong button! Reset everything
     logger.info('STRIKELOOP', `❌ WRONG BUTTON! Expected ${expectedColor.toUpperCase()}, got ${buttonColor?.toUpperCase()}`);
     logger.info('STRIKELOOP', 'Resetting - hit holes again to retry');
+
+    // Play failed sound on wrong button
+    emitter.emit('soundEffect', { effect: 'failed' });
 
     // Clear timeout
     if (validationTimeout) {
@@ -4357,8 +4406,14 @@ function processTwoStepMode(target) {
   // This includes yellow holes in Levels 7-10!
   if (target.needsValidation && target.isValid && elementId <= 8) {
     logger.info('STRIKELOOP', `Target ${elementId} (${colorCode.toUpperCase()}) hit - awaiting button validation`);
+
     // Emit correct sound (valid hit, no points yet)
-    emitter.emit('soundEffect', { effect: 'correct' });
+    // Skip correct sound for memory/sequence levels (they use sequence-prepare/go/failed sounds)
+    const isSequenceMode = activeMission.arcadeMode && activeMission.arcadeMode.includes('sequence');
+    if (!isSequenceMode) {
+      emitter.emit('soundEffect', { effect: 'correct' });
+    }
+
     // Start validation process but don't award points yet
     handleTwoStepValidation(colorCode);
     return false; // No points until validated

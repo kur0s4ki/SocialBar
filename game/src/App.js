@@ -54,6 +54,10 @@ function App() {
   // Narration state
   const [isNarrationPlaying, setIsNarrationPlaying] = useState(false);
 
+  // Congratulations screen state (shown on reset/game end)
+  const [showCongratulations, setShowCongratulations] = useState(false);
+  const [finalScore, setFinalScore] = useState(0);
+
   // Dynamic font sizing for mission text
   const [missionFontSize, setMissionFontSize] = useState('text-7xl');
 
@@ -148,6 +152,8 @@ function App() {
             case 'gameStarted':
               console.log('[GAMEINPROGRESS] Game started - starting background music');
               soundManager.startBackgroundMusic();
+              // Hide congratulations screen when new game starts
+              setShowCongratulations(false);
               break;
             case 'roundUpdate':
               console.log('[GAMEINPROGRESS] Round update received:', data);
@@ -230,6 +236,8 @@ function App() {
               break;
             case 'soundEffect':
               console.log('[GAMEINPROGRESS] Sound effect:', data.effect);
+              // Track sound effect for bonus/point logic
+              soundManager.trackSoundEffect(data.effect);
               // Play the specific sound effect
               switch(data.effect) {
                 case 'trap':
@@ -240,6 +248,15 @@ function App() {
                   break;
                 case 'correct':
                   soundManager.playCorrect();
+                  break;
+                case 'sequencePrepare':
+                  soundManager.playSequencePrepare();
+                  break;
+                case 'sequenceGo':
+                  soundManager.playSequenceGo();
+                  break;
+                case 'failed':
+                  soundManager.playFailed();
                   break;
                 default:
                   console.warn('[GAMEINPROGRESS] Unknown sound effect:', data.effect);
@@ -272,9 +289,17 @@ function App() {
               setTeamName(data.name || 'TEST');
               break;
             case 'reset':
-              console.log('[GAMEINPROGRESS] Game reset received');
+              console.log('[GAMEINPROGRESS] Game reset received, showCongratulations:', data.showCongratulations);
               // Stop all sounds including narration
               soundManager.stopAllSounds();
+
+              // Only show congratulations if explicitly requested (15-minute timeout)
+              // Manual reset button should NOT show congratulations
+              if (data.showCongratulations) {
+                setFinalScore(cumulativeScore);
+                setShowCongratulations(true);
+              }
+
               // Reset to default values
               setGameData({
                 round: 1,
@@ -452,6 +477,33 @@ function App() {
               <p className="text-cyan-400 text-5xl font-medium">
                 Lisez les instructions de niveau dès la fin de l'audio
               </p>
+            </div>
+          </div>
+        )}
+
+        {/* Congratulations Screen - Shows when game ends or resets */}
+        {showCongratulations && (
+          <div className="fixed inset-0 bg-slate-900 flex items-center justify-center z-50">
+            <div className="relative w-full h-full">
+              {/* Background Image */}
+              <img
+                src="/assets/images/congratulations.png"
+                alt="Congratulations"
+                className="w-full h-full object-contain"
+              />
+
+              {/* Score Overlay - positioned at coordinates from photoshop */}
+              <div
+                className="absolute flex items-center justify-center"
+                style={{
+                  left: '16.333%',
+                  top: '50.994%',
+                  width: '66.111%',
+                  height: '29.815%'
+                }}
+              >
+                <span className="text-yellow-400 text-9xl font-bold">{finalScore}</span>
+              </div>
             </div>
           </div>
         )}

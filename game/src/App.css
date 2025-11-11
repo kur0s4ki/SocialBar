@@ -20,7 +20,7 @@ html, body, #root, .App {
 }
 
 .bg-slate-900 {
-  background-color: #0f172a;
+  background-color: #00071B;
 }
 
 .text-white {
@@ -28,7 +28,7 @@ html, body, #root, .App {
 }
 
 .text-yellow-400 {
-  color: #facc15;
+  color: #FFC600;
 }
 
 .text-cyan-400 {

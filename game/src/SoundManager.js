@@ -23,6 +23,7 @@ class SoundManager {
     this.isBackgroundPlaying = false;
     this.isNarrationPlaying = false;
     this.levelUpPlayed = false; // Track if levelup was played for current level
+    this.lastSoundEffect = null; // Track last sound effect played (for bonus/point logic)
   }
 
   /**
@@ -44,6 +45,11 @@ class SoundManager {
       this.sounds.point = await this.loadSound('/assets/sounds/point.mp3');
       this.sounds.correct = await this.loadSound('/assets/sounds/correct.mp3');
       this.sounds.levelup = await this.loadSound('/assets/sounds/levelup.mp3');
+
+      // Preload sequence sounds (for memory reproduction levels)
+      this.sounds.sequencePrepare = await this.loadSound('/assets/sounds/sequence-prepare.mp3');
+      this.sounds.sequenceGo = await this.loadSound('/assets/sounds/sequence-go.mp3');
+      this.sounds.failed = await this.loadSound('/assets/sounds/failed.mp3');
 
       // Preload round narrations
       this.sounds.round1 = await this.loadSound('/assets/sounds/round1.mp3');
@@ -149,6 +155,30 @@ class SoundManager {
   playLevelUp() {
     console.log('[SOUNDMANAGER] Playing level up sound');
     this.playSound('levelup');
+  }
+
+  /**
+   * Play sequence prepare sound (when sequence display starts)
+   */
+  playSequencePrepare() {
+    console.log('[SOUNDMANAGER] Playing sequence prepare sound');
+    this.playSound('sequencePrepare');
+  }
+
+  /**
+   * Play sequence go sound (when it's player's turn to reproduce)
+   */
+  playSequenceGo() {
+    console.log('[SOUNDMANAGER] Playing sequence go sound');
+    this.playSound('sequenceGo');
+  }
+
+  /**
+   * Play failed sound (on error or timeout)
+   */
+  playFailed() {
+    console.log('[SOUNDMANAGER] Playing failed sound');
+    this.playSound('failed');
   }
 
   /**
@@ -287,12 +317,20 @@ class SoundManager {
   }
 
   /**
+   * Track sound effect (called from App.js when soundEffect event received)
+   * @param {string} effect - The sound effect name
+   */
+  trackSoundEffect(effect) {
+    this.lastSoundEffect = effect;
+  }
+
+  /**
    * Handle score updates and play appropriate sounds
    * @param {number} newScore - New score value
    * @param {number} goalScore - Goal score for level
    */
   handleScoreUpdate(newScore, goalScore) {
-    console.log(`[SOUNDMANAGER] Score update: ${this.lastScore} → ${newScore}, goal: ${goalScore}, levelUpPlayed: ${this.levelUpPlayed}`);
+    console.log(`[SOUNDMANAGER] Score update: ${this.lastScore} → ${newScore}, goal: ${goalScore}, levelUpPlayed: ${this.levelUpPlayed}, lastSoundEffect: ${this.lastSoundEffect}`);
 
     // Check if goal just achieved (AND not already played for this level)
     if (newScore >= goalScore && this.lastScore < goalScore && !this.levelUpPlayed) {
@@ -301,12 +339,19 @@ class SoundManager {
       this.levelUpPlayed = true; // Mark as played for this level
     }
     // Check if score increased (points gained)
+    // Skip point sound if the last sound effect was bonus (bonus sound already played)
     else if (newScore > this.lastScore) {
-      this.playPoint();
+      if (this.lastSoundEffect === 'bonus') {
+        console.log('[SOUNDMANAGER] Skipping point sound - bonus sound already played');
+      } else {
+        this.playPoint();
+      }
     }
     // Score decreased means trap was hit (sound already played via soundEffect)
 
     this.lastScore = newScore;
+    // Reset lastSoundEffect after processing to avoid affecting next score update
+    this.lastSoundEffect = null;
   }
 
   /**
