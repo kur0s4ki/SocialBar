@@ -289,14 +289,16 @@ function App() {
               setTeamName(data.name || 'TEST');
               break;
             case 'reset':
-              console.log('[GAMEINPROGRESS] Game reset received, showCongratulations:', data.showCongratulations);
+              console.log('[GAMEINPROGRESS] Game reset received, showCongratulations:', data.showCongratulations, 'finalScore:', data.finalScore);
               // Stop all sounds including narration
               soundManager.stopAllSounds();
 
               // Only show congratulations if explicitly requested (15-minute timeout)
               // Manual reset button should NOT show congratulations
               if (data.showCongratulations) {
-                setFinalScore(cumulativeScore);
+                // Use finalScore from backend (already calculated as cumulative + current)
+                console.log('[GAMEINPROGRESS] Using backend final score:', data.finalScore);
+                setFinalScore(data.finalScore || 0);
                 setShowCongratulations(true);
               }
 

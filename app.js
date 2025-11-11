@@ -250,17 +250,20 @@ addTrackedListener(strikeLoop.emitter, 'gameFinished', () => {
 
 addTrackedListener(strikeLoop.emitter, 'reset', (resetData) => {
   const showCongratulations = resetData?.showCongratulations || false;
-  logger.warn('APP', `Reset triggered (showCongratulations: ${showCongratulations})`);
+  const finalScore = resetData?.finalScore || 0;
+  logger.warn('APP', `Reset triggered (showCongratulations: ${showCongratulations}, finalScore: ${finalScore})`);
 
   // Send reset message to both client types
   broadcastToStaff({
     type: 'reset',
-    showCongratulations: showCongratulations
+    showCongratulations: showCongratulations,
+    finalScore: finalScore
   });
 
   broadcastToDisplay({
     type: 'reset',
-    showCongratulations: showCongratulations
+    showCongratulations: showCongratulations,
+    finalScore: finalScore
   });
 });
 

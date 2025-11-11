@@ -36,7 +36,7 @@ const OUT_OFF = `0`;
 // Set to 0 to disable delays (normal gameplay)
 // Set to 500 or higher to slow down for testing/debugging
 // IMPORTANT: Delay is applied in sendSerial() so ALL commands are affected
-const TESTING_DELAY_MS = 500; // Delay between serial commands in milliseconds
+const TESTING_DELAY_MS = 50; // Delay between serial commands in milliseconds
 
 
 let ControllinoSerialPort;
@@ -136,9 +136,9 @@ async function sendSerial(mes) {
 
     // Testing delay - adds delay between ALL serial commands
     if (TESTING_DELAY_MS > 0) {
-      console.log(`[${getCurrentTime()}] ⏱️  Delaying ${TESTING_DELAY_MS}ms after command: ${mes}`);
+      //console.log(`[${getCurrentTime()}] ⏱️  Delaying ${TESTING_DELAY_MS}ms after command: ${mes}`);
       await sleep(TESTING_DELAY_MS);
-      console.log(`[${getCurrentTime()}] ✅ Delay complete, ready for next command`);
+      //console.log(`[${getCurrentTime()}] ✅ Delay complete, ready for next command`);
     }
   });
 }
@@ -339,7 +339,7 @@ function set_output(num, val, color = 'w') {
   // Human-readable description
   const stateDesc = val == 1 ? 'ON' : 'OFF';
   const colorDesc = val == 1 ? ` (${c})` : '';
-  console.log(`[ARDUINO] Output ${num} → ${stateDesc}${colorDesc}`);
+  //console.log(`[ARDUINO] Output ${num} → ${stateDesc}${colorDesc}`);
   console.log(`[${getCurrentTime()}] [ARDUINO] Output ${num} → ${stateDesc}${colorDesc}\n`);
 
   // New protocol: O{NN}{0|1}{color}

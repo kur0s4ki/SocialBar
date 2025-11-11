@@ -6,7 +6,7 @@ const emitter = new events.EventEmitter();
 
 // ⚠️ TESTING FLAG: Set to true to play Round 3 first (for testing)
 // Set to false for normal game flow (Round 1 → Round 2 → Round 3)
-const TESTING_MODE_SWAP_ROUNDS = true
+const TESTING_MODE_SWAP_ROUNDS = false
 
 const OUTER_CIRCLES_RANGE = { min: 1, max: 8 };
 const INNER_CIRCLES_RANGE = { min: 9, max: 13 };
@@ -32,6 +32,7 @@ let gameState = {
 };
 
 let localScore = 0;
+let cumulativeScore = 0; // Track cumulative score across all levels
 let goalAchieved = false;
 let previousRound = 0; // Track previous round for hardware effect detection
 
@@ -733,6 +734,10 @@ function turnAllHolesWhite() {
 function resetGameToInitialState(showCongratulations = false) {
   logger.info('STRIKELOOP', `Resetting game to initial state... (showCongratulations: ${showCongratulations})`);
 
+  // Capture final score BEFORE resetting (cumulative + current level)
+  const finalScore = cumulativeScore + localScore;
+  logger.info('STRIKELOOP', `Final score before reset: ${finalScore} (cumulative: ${cumulativeScore} + current: ${localScore})`);
+
   // Stop everything
   isRunning = false;
   disableKeyboardListener();
@@ -758,6 +763,7 @@ function resetGameToInitialState(showCongratulations = false) {
   activeMission = null;
   currentLevelIndex = 0;
   localScore = 0;
+  cumulativeScore = 0;
   goalAchieved = false;
 
   // Cleanup
@@ -768,8 +774,8 @@ function resetGameToInitialState(showCongratulations = false) {
   // Reset game state
   initializeGameState();
 
-  // Notify displays (include showCongratulations flag)
-  emitter.emit('reset', { showCongratulations });
+  // Notify displays (include showCongratulations flag and finalScore)
+  emitter.emit('reset', { showCongratulations, finalScore });
 
   logger.info('STRIKELOOP', 'Game reset complete - ready to start new game');
 }
@@ -1220,6 +1226,9 @@ function startLevelTimer() {
 
         logger.success('STRIKELOOP', `Level ${currentLevel.level} COMPLETED! ${localScore}/${currentLevel.goalScore}`);
 
+        // Add level score to cumulative total
+        cumulativeScore += localScore;
+        logger.info('STRIKELOOP', `Cumulative score: ${cumulativeScore} (added ${localScore} from this level)`);
 
         stopLEDRefresh();
 
@@ -1230,7 +1239,7 @@ function startLevelTimer() {
           startNextLevel(false);
         } else {
 
-          logger.info('STRIKELOOP', `🎉 ALL 10 LEVELS COMPLETED! Final score: ${localScore}`);
+          logger.info('STRIKELOOP', `🎉 ALL 10 LEVELS COMPLETED! Final cumulative score: ${cumulativeScore}`);
           finishGame();
         }
       } else {
