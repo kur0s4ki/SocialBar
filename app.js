@@ -248,16 +248,19 @@ addTrackedListener(strikeLoop.emitter, 'gameFinished', () => {
   });
 });
 
-addTrackedListener(strikeLoop.emitter, 'reset', () => {
-  logger.warn('APP', 'Hard reset triggered');
+addTrackedListener(strikeLoop.emitter, 'reset', (resetData) => {
+  const showCongratulations = resetData?.showCongratulations || false;
+  logger.warn('APP', `Reset triggered (showCongratulations: ${showCongratulations})`);
 
   // Send reset message to both client types
   broadcastToStaff({
-    type: 'reset'
+    type: 'reset',
+    showCongratulations: showCongratulations
   });
 
   broadcastToDisplay({
-    type: 'reset'
+    type: 'reset',
+    showCongratulations: showCongratulations
   });
 });
 

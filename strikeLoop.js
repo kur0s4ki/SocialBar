@@ -28,7 +28,7 @@ let gameState = {
   missionNumber: 1,
   multiplier: 'x1',
   missionDescription: 'Waiting for mission...',
-  totalGameTimeMinutes: 15
+  totalGameTimeMinutes: 2  // TESTING: Changed from 15 to 2 minutes
 };
 
 let localScore = 0;
@@ -647,28 +647,31 @@ function startOverallGameTimer() {
 
   overallGameTimer = setInterval(() => {
     const elapsedTime = Date.now() - gameStartTime;
-    const elapsedMinutes = Math.floor(elapsedTime / 60000); // Convert to minutes
 
-    // Check for automatic round advancement every 5 minutes
-    if (elapsedMinutes >= 5 && elapsedMinutes < 10 && lastRoundAdvanced < 2) {
-      // 5 minutes elapsed - should be in Round 2
+    // Calculate thresholds based on total game time (dynamic, not hardcoded)
+    const oneThirdTime = maxGameTimeMs / 3;  // 33% - Round 2
+    const twoThirdsTime = (maxGameTimeMs * 2) / 3;  // 66% - Round 3
+
+    // Check for automatic round advancement at 33% of total time
+    if (elapsedTime >= oneThirdTime && elapsedTime < twoThirdsTime && lastRoundAdvanced < 2) {
+      // 33% elapsed - should be in Round 2
       const currentLevel = gameRounds[currentLevelIndex];
       if (currentLevel && currentLevel.round === 1) {
-        logger.info('STRIKELOOP', `⏰ 5 MINUTES ELAPSED - Auto-advancing from Round 1 to Round 2`);
+        logger.info('STRIKELOOP', `⏰ 33% TIME ELAPSED (${Math.floor(elapsedTime/1000)}s) - Auto-advancing from Round 1 to Round 2`);
         lastRoundAdvanced = 2;
         forceSkipToRound(2);
       }
-    } else if (elapsedMinutes >= 10 && elapsedMinutes < 15 && lastRoundAdvanced < 3) {
-      // 10 minutes elapsed - should be in Round 3
+    } else if (elapsedTime >= twoThirdsTime && elapsedTime < maxGameTimeMs && lastRoundAdvanced < 3) {
+      // 66% elapsed - should be in Round 3
       const currentLevel = gameRounds[currentLevelIndex];
       if (currentLevel && currentLevel.round < 3) {
-        logger.info('STRIKELOOP', `⏰ 10 MINUTES ELAPSED - Auto-advancing to Round 3`);
+        logger.info('STRIKELOOP', `⏰ 66% TIME ELAPSED (${Math.floor(elapsedTime/1000)}s) - Auto-advancing to Round 3`);
         lastRoundAdvanced = 3;
         forceSkipToRound(3);
       }
     } else if (elapsedTime >= maxGameTimeMs) {
-      // 15 minutes elapsed - game over
-      logger.info('STRIKELOOP', `15 minutes elapsed - resetting game with congratulations`);
+      // 100% time elapsed - game over
+      logger.info('STRIKELOOP', `⏰ ${gameState.totalGameTimeMinutes} minutes elapsed - resetting game with congratulations`);
       stopOverallGameTimer();
       resetGameToInitialState(true); // Show congratulations on timeout
     }
@@ -1298,7 +1301,7 @@ function initializeGameState() {
     missionNumber: 1,
     multiplier: 'x1',
     missionDescription: 'Game starting... Prepare for first round!',
-    totalGameTimeMinutes: 15
+    totalGameTimeMinutes: 2  // TESTING: Changed from 15 to 2 minutes
   };
 
   logger.info('STRIKELOOP', 'Game state initialized:', gameState);
