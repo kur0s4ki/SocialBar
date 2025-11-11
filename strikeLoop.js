@@ -4409,7 +4409,8 @@ function processTwoStepMode(target) {
 
     // Emit correct sound (valid hit, no points yet)
     // Skip correct sound for memory/sequence levels (they use sequence-prepare/go/failed sounds)
-    const isSequenceMode = activeMission.arcadeMode && activeMission.arcadeMode.includes('sequence');
+    const isSequenceMode = (activeMission.arcadeMode && activeMission.arcadeMode.includes('sequence')) ||
+                           (activeMission.buttonMode && activeMission.buttonMode.includes('sequence'));
     if (!isSequenceMode) {
       emitter.emit('soundEffect', { effect: 'correct' });
     }
