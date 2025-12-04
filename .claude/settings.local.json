@@ -3,7 +3,8 @@
     "allow": [
       "Bash(git show:*)",
       "Bash(find:*)",
-      "Bash(node -c:*)"
+      "Bash(node -c:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

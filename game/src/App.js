@@ -58,6 +58,12 @@ function App() {
   const [showCongratulations, setShowCongratulations] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
 
+  // Score display timeout reference
+  const scoreDisplayTimeout = useRef(null);
+
+  // Configurable score display duration (10 seconds)
+  const SCORE_DISPLAY_DURATION = 10000;
+
   // Dynamic font sizing for mission text
   const [missionFontSize, setMissionFontSize] = useState('text-7xl');
 
@@ -94,6 +100,10 @@ function App() {
     // Cleanup on unmount
     return () => {
       soundManager.cleanup();
+      // Clear score display timeout if active
+      if (scoreDisplayTimeout.current) {
+        clearTimeout(scoreDisplayTimeout.current);
+      }
     };
   }, []);
 
@@ -293,6 +303,12 @@ function App() {
               // Stop all sounds including narration
               soundManager.stopAllSounds();
 
+              // Clear any existing score display timeout
+              if (scoreDisplayTimeout.current) {
+                clearTimeout(scoreDisplayTimeout.current);
+                scoreDisplayTimeout.current = null;
+              }
+
               // Only show congratulations if explicitly requested (15-minute timeout)
               // Manual reset button should NOT show congratulations
               if (data.showCongratulations) {
@@ -300,6 +316,15 @@ function App() {
                 console.log('[GAMEINPROGRESS] Using backend final score:', data.finalScore);
                 setFinalScore(data.finalScore || 0);
                 setShowCongratulations(true);
+
+                // Start timer to return to original layout after configured duration
+                console.log(`[GAMEINPROGRESS] Score will display for ${SCORE_DISPLAY_DURATION / 1000} seconds before returning to original layout`);
+                scoreDisplayTimeout.current = setTimeout(() => {
+                  console.log('[GAMEINPROGRESS] Score display timeout - returning to original layout');
+                  setShowCongratulations(false);
+                  setFinalScore(0);
+                  scoreDisplayTimeout.current = null;
+                }, SCORE_DISPLAY_DURATION);
               }
 
               // Reset to default values
