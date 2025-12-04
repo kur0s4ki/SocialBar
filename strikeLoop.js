@@ -6,7 +6,7 @@ const emitter = new events.EventEmitter();
 
 // ⚠️ TESTING FLAG: Set to true to play Round 3 first (for testing)
 // Set to false for normal game flow (Round 1 → Round 2 → Round 3)
-const TESTING_MODE_SWAP_ROUNDS = false
+const TESTING_MODE_SWAP_ROUNDS = true
 
 const OUTER_CIRCLES_RANGE = { min: 1, max: 8 };
 const INNER_CIRCLES_RANGE = { min: 9, max: 13 };
@@ -1000,6 +1000,9 @@ function initializeMission(levelConfig, isRetry = false) {
     controlLED(i, 'o');
   }
 
+  // Check if validation was pending BEFORE clearing it (to restore hole colors on retry)
+  const hadPendingValidation = validationPending;
+
   // Clear validation state flags to prevent stuck validations from previous level (ALWAYS on start/retry)
   validationPending = false;
   validationHitColor = null;
@@ -1021,6 +1024,11 @@ function initializeMission(levelConfig, isRetry = false) {
     controlLED(9, 'o');
   } else {
     logger.info('STRIKELOOP', 'Retry mode - keeping existing LED pattern (but resetting validation)');
+    // If validation was pending when timer expired, restore hole colors (they're currently all RED)
+    if (hadPendingValidation) {
+      logger.info('STRIKELOOP', 'Validation was pending - restoring hole colors');
+      restoreHoleColors();
+    }
     // SKIP calling startArcadeLEDs() on retry to prevent clearing sequence state and redundant serial writes
   }
 
