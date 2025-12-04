@@ -858,6 +858,9 @@ function startNextLevel(isRetry = false) {
       logger.info('STRIKELOOP', `🎭 ROUND CHANGE DETECTED (${previousRound} → ${currentLevel.round}) - Triggering hardware effect O002`);
       HAL.sendEffect(2); // Send O002 for round change effect
 
+      // Clear active targets immediately to prevent "ghost inputs" during transition
+      activeTargets = [];
+
       // Clear any pending transition timeout to prevent race conditions
       if (transitionTimeout) {
         clearTimeout(transitionTimeout);
@@ -875,6 +878,9 @@ function startNextLevel(isRetry = false) {
     } else if (isLevelChange) {
       logger.info('STRIKELOOP', `🎯 LEVEL CHANGE DETECTED (R${currentLevel.round}L${currentLevel.level}) - Triggering hardware effect O001`);
       HAL.sendEffect(1); // Send O001 for level change effect
+
+      // Clear active targets immediately to prevent "ghost inputs" during transition
+      activeTargets = [];
 
       // Clear any pending transition timeout to prevent race conditions
       if (transitionTimeout) {
