@@ -28,7 +28,7 @@ let gameState = {
   missionNumber: 1,
   multiplier: 'x1',
   missionDescription: 'Waiting for mission...',
-  totalGameTimeMinutes: 2  // TESTING: Changed from 15 to 2 minutes
+  totalGameTimeMinutes: 15  
 };
 
 let localScore = 0;
