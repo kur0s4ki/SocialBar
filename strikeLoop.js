@@ -19,6 +19,7 @@ let keyboardListenerActive = false;
 let currentLevelIndex = 0;
 let gameStartTime = null;
 let overallGameTimer = null;
+let transitionTimeout = null; // Track level/round transition delay timeout to prevent zombie timers
 
 
 let gameState = {
@@ -28,7 +29,7 @@ let gameState = {
   missionNumber: 1,
   multiplier: 'x1',
   missionDescription: 'Waiting for mission...',
-  totalGameTimeMinutes: 15  
+  totalGameTimeMinutes: 15
 };
 
 let localScore = 0;
@@ -754,6 +755,12 @@ function resetGameToInitialState(showCongratulations = false) {
     validationTimeout = null;
   }
 
+  // Clear transition timeout to prevent zombie timers
+  if (transitionTimeout) {
+    clearTimeout(transitionTimeout);
+    transitionTimeout = null;
+  }
+
   // Turn off cell power light (output 99, state 0) - sends O990
   HAL.powerOffCell();
 
@@ -851,8 +858,14 @@ function startNextLevel(isRetry = false) {
       logger.info('STRIKELOOP', `🎭 ROUND CHANGE DETECTED (${previousRound} → ${currentLevel.round}) - Triggering hardware effect O002`);
       HAL.sendEffect(2); // Send O002 for round change effect
 
+      // Clear any pending transition timeout to prevent race conditions
+      if (transitionTimeout) {
+        clearTimeout(transitionTimeout);
+      }
+
       // Wait 2 seconds before continuing with level initialization
-      setTimeout(() => {
+      transitionTimeout = setTimeout(() => {
+        transitionTimeout = null;
         initializeLevelAfterEffect(currentLevel, isRetry);
       }, 2000);
 
@@ -863,8 +876,14 @@ function startNextLevel(isRetry = false) {
       logger.info('STRIKELOOP', `🎯 LEVEL CHANGE DETECTED (R${currentLevel.round}L${currentLevel.level}) - Triggering hardware effect O001`);
       HAL.sendEffect(1); // Send O001 for level change effect
 
+      // Clear any pending transition timeout to prevent race conditions
+      if (transitionTimeout) {
+        clearTimeout(transitionTimeout);
+      }
+
       // Wait 2 seconds before continuing with level initialization
-      setTimeout(() => {
+      transitionTimeout = setTimeout(() => {
+        transitionTimeout = null;
         initializeLevelAfterEffect(currentLevel, isRetry);
       }, 2000);
 
