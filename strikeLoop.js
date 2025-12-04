@@ -658,7 +658,7 @@ function startOverallGameTimer() {
       // 33% elapsed - should be in Round 2
       const currentLevel = gameRounds[currentLevelIndex];
       if (currentLevel && currentLevel.round === 1) {
-        logger.info('STRIKELOOP', `⏰ 33% TIME ELAPSED (${Math.floor(elapsedTime/1000)}s) - Auto-advancing from Round 1 to Round 2`);
+        logger.info('STRIKELOOP', `⏰ 33% TIME ELAPSED (${Math.floor(elapsedTime / 1000)}s) - Auto-advancing from Round 1 to Round 2`);
         lastRoundAdvanced = 2;
         forceSkipToRound(2);
       }
@@ -666,7 +666,7 @@ function startOverallGameTimer() {
       // 66% elapsed - should be in Round 3
       const currentLevel = gameRounds[currentLevelIndex];
       if (currentLevel && currentLevel.round < 3) {
-        logger.info('STRIKELOOP', `⏰ 66% TIME ELAPSED (${Math.floor(elapsedTime/1000)}s) - Auto-advancing to Round 3`);
+        logger.info('STRIKELOOP', `⏰ 66% TIME ELAPSED (${Math.floor(elapsedTime / 1000)}s) - Auto-advancing to Round 3`);
         lastRoundAdvanced = 3;
         forceSkipToRound(3);
       }
@@ -995,6 +995,21 @@ function initializeMission(levelConfig, isRetry = false) {
   // OPTIMIZATION: Only reset LEDs when starting a NEW level, not on retry
   // On retry, the same level pattern will be reactivated, so we save ~17 serial writes
   // IMPORTANT: For Round 3 hole sequence modes, also preserve sequence state on retry
+  // Turn off all control buttons (14-28) to clear any pending validation from previous level (ALWAYS on start/retry)
+  for (let i = 14; i <= 28; i++) {
+    controlLED(i, 'o');
+  }
+
+  // Clear validation state flags to prevent stuck validations from previous level (ALWAYS on start/retry)
+  validationPending = false;
+  validationHitColor = null;
+  buttonsToValidate = [];
+  buttonsValidated = [];
+  if (validationTimeout) {
+    clearTimeout(validationTimeout);
+    validationTimeout = null;
+  }
+
   if (!isRetry) {
     logger.info('STRIKELOOP', 'New level - resetting all LEDs');
     // Turn off all LEDs before starting new level
@@ -1004,23 +1019,8 @@ function initializeMission(levelConfig, isRetry = false) {
     }
     // Turn off central circle (9)
     controlLED(9, 'o');
-
-    // Turn off all control buttons (14-28) to clear any pending validation from previous level
-    for (let i = 14; i <= 28; i++) {
-      controlLED(i, 'o');
-    }
-
-    // Clear validation state flags to prevent stuck validations from previous level
-    validationPending = false;
-    validationHitColor = null;
-    buttonsToValidate = [];
-    buttonsValidated = [];
-    if (validationTimeout) {
-      clearTimeout(validationTimeout);
-      validationTimeout = null;
-    }
   } else {
-    logger.info('STRIKELOOP', 'Retry mode - keeping existing LED pattern and validation state');
+    logger.info('STRIKELOOP', 'Retry mode - keeping existing LED pattern (but resetting validation)');
     // SKIP calling startArcadeLEDs() on retry to prevent clearing sequence state and redundant serial writes
   }
 
@@ -4437,7 +4437,7 @@ function processTwoStepMode(target) {
     // Emit correct sound (valid hit, no points yet)
     // Skip correct sound for memory/sequence levels (they use sequence-prepare/go/failed sounds)
     const isSequenceMode = (activeMission.arcadeMode && activeMission.arcadeMode.includes('sequence')) ||
-                           (activeMission.buttonMode && activeMission.buttonMode.includes('sequence'));
+      (activeMission.buttonMode && activeMission.buttonMode.includes('sequence'));
     if (!isSequenceMode) {
       emitter.emit('soundEffect', { effect: 'correct' });
     }
