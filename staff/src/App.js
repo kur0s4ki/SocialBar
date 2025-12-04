@@ -27,14 +27,14 @@ function App() {
       if (isConnecting.current || (ws.current && ws.current.readyState === WebSocket.OPEN)) {
         return;
       }
-      
+
       isConnecting.current = true;
-      
+
       // Close existing connection if any
       if (ws.current) {
         ws.current.close();
       }
-      
+
       ws.current = new WebSocket('ws://localhost:8080');
 
       ws.current.onopen = () => {
@@ -140,7 +140,7 @@ function App() {
 
   const handleCircleClick = (circleId) => {
     console.log('[FRONTEND] Circle clicked:', circleId);
-    
+
     // Send circle click message to server
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       ws.current.send(JSON.stringify({
@@ -155,9 +155,9 @@ function App() {
 
   const handleLEDControl = (data) => {
     const { elementId, colorCode, colorValue } = data;
-    
+
     console.log('[FRONTEND] LED control received:', { elementId, colorCode, colorValue });
-    
+
     // Update LED state for the element with color info
     setLedStates(prev => {
       const newState = {
@@ -171,7 +171,7 @@ function App() {
       console.log('[FRONTEND] Updated LED states:', newState);
       return newState;
     });
-    
+
     // No auto-reset - all elements stay on until explicitly turned off
     // Both circles (1-13) and control buttons (14-22) persist their state
   };
@@ -301,6 +301,7 @@ function App() {
               >
                 Reset Game
               </button>
+              {/* Skip Level button hidden as requested
               <button
                 type="button"
                 onClick={handleSkipLevel}
@@ -309,6 +310,7 @@ function App() {
               >
                 ⏭️ Skip Level
               </button>
+              */}
             </div>
             <div className="simulator-panels">
               <div className="left-panel">
@@ -318,7 +320,7 @@ function App() {
                     <div
                       key={buttonId}
                       className={`control-button ${getButtonPulseClass(buttonId)}`}
-                      style={{opacity: getButtonOpacity(buttonId), backgroundColor: getCircleColor(buttonId)}}
+                      style={{ opacity: getButtonOpacity(buttonId), backgroundColor: getCircleColor(buttonId) }}
                       onClick={() => handleCircleClick(buttonId)}
                       title={getElementTooltip(buttonId)}
                     >

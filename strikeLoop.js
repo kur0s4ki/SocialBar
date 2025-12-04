@@ -1,6 +1,6 @@
 const events = require('events');
 const HAL = require('./hardwareAbstraction.js');
-const readline = require('readline');
+
 const logger = require('./logger.js');
 const emitter = new events.EventEmitter();
 
@@ -15,7 +15,7 @@ const CENTRAL_CIRCLE_ID = 9;
 
 
 let isRunning = false;
-let keyboardListenerActive = false;
+
 let currentLevelIndex = 0;
 let gameStartTime = null;
 let overallGameTimer = null;
@@ -541,10 +541,7 @@ function getButtonColorCode(buttonId) {
   return null; // Invalid button ID
 }
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
+
 
 const gameEventListeners = [];
 
@@ -552,7 +549,6 @@ const gameEventListeners = [];
 emitter.on('start', (teamData) => {
   logger.info('STRIKELOOP', 'Game start received for team:', teamData.teamName);
   startRoundBasedGame();
-  setupKeyboardListener();
 });
 
 // Handle reset command from staff interface
@@ -714,6 +710,9 @@ function forceSkipToRound(targetRound) {
   stopLevelTimer();
   stopLEDRefresh();
 
+  // Clear sequence display timeouts to prevent sequences from bleeding into next round
+  clearSequenceDisplayTimeouts();
+
   // Update level index to target round's first level
   currentLevelIndex = targetLevelIndex;
 
@@ -741,7 +740,6 @@ function resetGameToInitialState(showCongratulations = false) {
 
   // Stop everything
   isRunning = false;
-  disableKeyboardListener();
   stopLevelTimer();
   stopLEDRefresh();
   stopOverallGameTimer();
@@ -763,6 +761,9 @@ function resetGameToInitialState(showCongratulations = false) {
 
   // Turn off cell power light (output 99, state 0) - sends O990
   HAL.powerOffCell();
+
+  // Clear HAL state cache to ensure hardware state synchronization on new game
+  HAL.clearStateCache();
 
   // Turn all holes white for staff visibility
   turnAllHolesWhite();
@@ -1312,7 +1313,6 @@ function stopLevelTimer() {
 
 function finishGame() {
   isRunning = false;
-  disableKeyboardListener();
   stopLevelTimer();
   stopLEDRefresh();
   stopOverallGameTimer(); // Stop the 15-minute timer
@@ -1423,7 +1423,6 @@ function updateMultiplier(multiplier) {
 function stopGame() {
   if (isRunning) {
     isRunning = false;
-    keyboardListenerActive = false;
     stopLevelTimer();
     stopLEDRefresh();
     cleanupArcadeGame();
@@ -1475,10 +1474,7 @@ function setGameRounds(customRounds) {
   }
 }
 
-function disableKeyboardListener() {
-  keyboardListenerActive = false;
-  logger.info('STRIKELOOP', 'Keyboard controls disabled - Game ended');
-}
+
 
 
 
@@ -1500,94 +1496,7 @@ function controlLED(elementId, colorCode) {
 }
 
 
-function setupKeyboardListener() {
-  keyboardListenerActive = true;
-  logger.info('STRIKELOOP', 'Keyboard listener active! Type commands and press Enter');
-  logger.info('STRIKELOOP', 'Examples: 1b (circle 1 blue), 9r (central circle red), 15 (button 15 on), 15o (button 15 off)');
-  logger.info('STRIKELOOP', 'Outer Circles (1-8): [id][color] - Colors: b=blue, g=green, r=red, y=yellow, o=off');
-  logger.info('STRIKELOOP', 'Central Circle: 9[color] - Colors: b=blue, g=green, r=red, y=yellow, o=off');
-  logger.info('STRIKELOOP', 'Control Buttons (14-28): [id] (on) or [id]o (off)');
-  logger.info('STRIKELOOP', 'Inner Circles (10-13): Clickable only, no LED control');
 
-  rl.on('line', (input) => {
-
-    if (!keyboardListenerActive) {
-      logger.info('STRIKELOOP', 'Game not running. Keyboard commands disabled. Start a new game to enable controls.');
-      return;
-    }
-
-    const command = input.trim();
-
-    if (command.length < 1) {
-      logger.info('STRIKELOOP', 'Invalid command. Use format: [circleId][color] or [buttonId] or [buttonId]o');
-      return;
-    }
-
-    let circleId, colorCode;
-
-
-    if (command.endsWith('o') && command.length >= 3) {
-
-      const twoDigitId = parseInt(command.substring(0, 2));
-      if (twoDigitId >= CONTROL_BUTTONS_RANGE.min && twoDigitId <= CONTROL_BUTTONS_RANGE.max) {
-        logger.info('STRIKELOOP', `Control button ${twoDigitId} -> OFF`);
-        controlLED(twoDigitId, 'o');
-        return;
-      }
-    } else if (command.length >= 2) {
-
-      const twoDigitId = parseInt(command.substring(0, 2));
-      if (twoDigitId >= CONTROL_BUTTONS_RANGE.min && twoDigitId <= CONTROL_BUTTONS_RANGE.max) {
-
-        logger.info('STRIKELOOP', `Control button ${twoDigitId} -> ON`);
-        controlLED(twoDigitId, '1');
-        return;
-      } else if (twoDigitId >= 10 && twoDigitId <= 13) {
-
-        circleId = twoDigitId;
-        colorCode = command[2] ? command[2].toLowerCase() : 'o';
-      }
-    }
-
-
-    if (!circleId && command.length >= 1) {
-      circleId = parseInt(command[0]);
-      if (circleId >= OUTER_CIRCLES_RANGE.min && circleId <= OUTER_CIRCLES_RANGE.max) {
-        colorCode = command[1] ? command[1].toLowerCase() : 'o';
-      } else if (circleId === CENTRAL_CIRCLE_ID) {
-        colorCode = command[1] ? command[1].toLowerCase() : 'o';
-      }
-      logger.info('STRIKELOOP', `Single digit parsing: circleId=${circleId}, colorCode=${colorCode}, command=${command}`);
-    }
-
-
-    if (circleId >= OUTER_CIRCLES_RANGE.min && circleId <= OUTER_CIRCLES_RANGE.max) {
-
-      if (COLORS[colorCode]) {
-        logger.info('STRIKELOOP', `Circle ${circleId} -> ${colorCode.toUpperCase()}`);
-        controlLED(circleId, colorCode);
-      } else {
-        logger.info('STRIKELOOP', `Invalid color for circle ${circleId}. Use: b/g/r/y/o`);
-      }
-    } else if (circleId === CENTRAL_CIRCLE_ID) {
-
-      logger.info('STRIKELOOP', `Processing central circle: circleId=${circleId}, colorCode=${colorCode}, COLORS[colorCode]=${COLORS[colorCode]}`);
-      if (COLORS[colorCode]) {
-        logger.info('STRIKELOOP', `Central circle -> ${colorCode.toUpperCase()}`);
-        controlLED(CENTRAL_CIRCLE_ID, colorCode);
-      } else {
-        logger.info('STRIKELOOP', `Invalid color for central circle. Use: b/g/r/y/o`);
-      }
-    } else if (circleId >= INNER_CIRCLES_RANGE.min && circleId <= INNER_CIRCLES_RANGE.max) {
-
-      logger.info('STRIKELOOP', `Inner circle ${circleId} is clickable only. Use ${CENTRAL_CIRCLE_ID}[color] for central circle LED control.`);
-    } else if (circleId >= CONTROL_BUTTONS_RANGE.min && circleId <= CONTROL_BUTTONS_RANGE.max) {
-      logger.info('STRIKELOOP', `Control button ${circleId} commands should use simple format: ${circleId} or ${circleId}o`);
-    } else {
-      logger.info('STRIKELOOP', `Invalid command. Use: [${OUTER_CIRCLES_RANGE.min}-${OUTER_CIRCLES_RANGE.max}][color] or ${CENTRAL_CIRCLE_ID}[color] or [${CONTROL_BUTTONS_RANGE.min}-${CONTROL_BUTTONS_RANGE.max}] or [${CONTROL_BUTTONS_RANGE.min}-${CONTROL_BUTTONS_RANGE.max}]o`);
-    }
-  });
-}
 
 
 function activateArcadeLEDs() {
