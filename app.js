@@ -2,7 +2,7 @@ const WebSocket = require('ws');
 const http = require('http');
 const arduino = require('./arduino.js');
 const HAL = require('./hardwareAbstraction.js');
-const strikeLoop = require('./strikeloop.js');
+const strikeLoop = require('./strikeLoop.js');
 const logger = require('./logger.js');
 
 // Create HTTP servers for both staff and display clients
@@ -21,6 +21,17 @@ let displayClientIdCounter = 1;
 
 // Staff WebSocket connection handling
 staffWss.on('connection', (ws) => {
+  // Reject connection if a staff client is already connected
+  if (staffClients.size >= 1) {
+    logger.warn('STAFF-WS', 'Connection rejected - Staff client already connected');
+    ws.send(JSON.stringify({
+      type: 'connectionRejected',
+      reason: 'A staff client is already connected. Only one staff client allowed at a time.'
+    }));
+    ws.close();
+    return;
+  }
+
   const clientId = `staff-${staffClientIdCounter++}`;
   const clientData = {
     id: clientId,
@@ -95,6 +106,17 @@ staffWss.on('connection', (ws) => {
 
 // Display WebSocket connection handling
 displayWss.on('connection', (ws) => {
+  // Reject connection if a display client is already connected
+  if (displayClients.size >= 1) {
+    logger.warn('DISPLAY-WS', 'Connection rejected - Display client already connected');
+    ws.send(JSON.stringify({
+      type: 'connectionRejected',
+      reason: 'A display client is already connected. Only one display client allowed at a time.'
+    }));
+    ws.close();
+    return;
+  }
+
   const clientId = `display-${displayClientIdCounter++}`;
   const clientData = {
     id: clientId,

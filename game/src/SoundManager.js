@@ -32,11 +32,11 @@ class SoundManager {
    */
   async init() {
     if (this.isInitialized) {
-      console.log('[SOUNDMANAGER] Already initialized');
+      //console.log('[SOUNDMANAGER] Already initialized');
       return;
     }
 
-    console.log('[SOUNDMANAGER] Initializing sound system...');
+    //console.log('[SOUNDMANAGER] Initializing sound system...');
 
     try {
       // Preload all sound effects
@@ -62,7 +62,7 @@ class SoundManager {
       this.backgroundMusic.volume = this.backgroundVolume * this.masterVolume;
 
       this.isInitialized = true;
-      console.log('[SOUNDMANAGER] Sound system initialized successfully');
+      //console.log('[SOUNDMANAGER] Sound system initialized successfully');
     } catch (error) {
       console.error('[SOUNDMANAGER] Error initializing sound system:', error);
       // Don't throw - game should work even if sounds fail
@@ -79,7 +79,7 @@ class SoundManager {
       const audio = new Audio(src);
 
       audio.addEventListener('canplaythrough', () => {
-        console.log(`[SOUNDMANAGER] Loaded: ${src}`);
+        //console.log(`[SOUNDMANAGER] Loaded: ${src}`);
         resolve(audio);
       }, { once: true });
 
@@ -121,7 +121,7 @@ class SoundManager {
    * Play trap sound (red trap hit with penalty)
    */
   playTrap() {
-    console.log('[SOUNDMANAGER] Playing trap sound');
+    //console.log('[SOUNDMANAGER] Playing trap sound');
     this.playSound('trap');
   }
 
@@ -129,7 +129,7 @@ class SoundManager {
    * Play bonus sound (yellow holes 9-13)
    */
   playBonus() {
-    console.log('[SOUNDMANAGER] Playing bonus sound');
+    //console.log('[SOUNDMANAGER] Playing bonus sound');
     this.playSound('bonus');
   }
 
@@ -137,7 +137,7 @@ class SoundManager {
    * Play point sound (when score increases)
    */
   playPoint() {
-    console.log('[SOUNDMANAGER] Playing point sound');
+    //console.log('[SOUNDMANAGER] Playing point sound');
     this.playSound('point');
   }
 
@@ -145,7 +145,7 @@ class SoundManager {
    * Play correct sound (valid hit, but no points yet)
    */
   playCorrect() {
-    console.log('[SOUNDMANAGER] Playing correct sound');
+    //console.log('[SOUNDMANAGER] Playing correct sound');
     this.playSound('correct');
   }
 
@@ -153,7 +153,7 @@ class SoundManager {
    * Play level up sound (goal achieved)
    */
   playLevelUp() {
-    console.log('[SOUNDMANAGER] Playing level up sound');
+    //console.log('[SOUNDMANAGER] Playing level up sound');
     this.playSound('levelup');
   }
 
@@ -161,7 +161,7 @@ class SoundManager {
    * Play sequence prepare sound (when sequence display starts)
    */
   playSequencePrepare() {
-    console.log('[SOUNDMANAGER] Playing sequence prepare sound');
+    //console.log('[SOUNDMANAGER] Playing sequence prepare sound');
     this.playSound('sequencePrepare');
   }
 
@@ -169,7 +169,7 @@ class SoundManager {
    * Play sequence go sound (when it's player's turn to reproduce)
    */
   playSequenceGo() {
-    console.log('[SOUNDMANAGER] Playing sequence go sound');
+    //console.log('[SOUNDMANAGER] Playing sequence go sound');
     this.playSound('sequenceGo');
   }
 
@@ -177,7 +177,7 @@ class SoundManager {
    * Play failed sound (on error or timeout)
    */
   playFailed() {
-    console.log('[SOUNDMANAGER] Playing failed sound');
+    //console.log('[SOUNDMANAGER] Playing failed sound');
     this.playSound('failed');
   }
 
@@ -189,11 +189,11 @@ class SoundManager {
     if (!this.isInitialized || this.isMuted || !this.backgroundMusic) return;
 
     if (this.isBackgroundPlaying) {
-      console.log('[SOUNDMANAGER] Background music already playing');
+      //console.log('[SOUNDMANAGER] Background music already playing');
       return;
     }
 
-    console.log('[SOUNDMANAGER] Starting background music');
+    //console.log('[SOUNDMANAGER] Starting background music');
     this.backgroundMusic.currentTime = 0;
     this.backgroundMusic.volume = this.backgroundVolume * this.masterVolume;
     this.backgroundMusic.play().catch(err => {
@@ -209,7 +209,7 @@ class SoundManager {
   stopBackgroundMusic() {
     if (!this.backgroundMusic) return;
 
-    console.log('[SOUNDMANAGER] Stopping background music');
+    //console.log('[SOUNDMANAGER] Stopping background music');
     this.backgroundMusic.pause();
     this.backgroundMusic.currentTime = 0;
     this.isBackgroundPlaying = false;
@@ -220,7 +220,7 @@ class SoundManager {
    * Stops background music and any playing narration
    */
   stopAllSounds() {
-    console.log('[SOUNDMANAGER] Stopping all sounds (reset triggered)');
+    //console.log('[SOUNDMANAGER] Stopping all sounds (reset triggered)');
 
     // Stop background music
     this.stopBackgroundMusic();
@@ -251,7 +251,7 @@ class SoundManager {
   duckBackground(duration = 5000) {
     if (!this.backgroundMusic || !this.isBackgroundPlaying) return;
 
-    console.log(`[SOUNDMANAGER] Ducking background music for ${duration}ms`);
+    //console.log(`[SOUNDMANAGER] Ducking background music for ${duration}ms`);
 
     // Smoothly reduce volume
     this.backgroundMusic.volume = this.duckedVolume * this.masterVolume;
@@ -259,7 +259,7 @@ class SoundManager {
     // Restore volume after duration
     setTimeout(() => {
       if (this.backgroundMusic && this.isBackgroundPlaying && !this.isNarrationPlaying) {
-        console.log('[SOUNDMANAGER] Restoring background music volume');
+        //console.log('[SOUNDMANAGER] Restoring background music volume');
         this.backgroundMusic.volume = this.backgroundVolume * this.masterVolume;
       }
     }, duration);
@@ -280,7 +280,7 @@ class SoundManager {
       return;
     }
 
-    console.log(`[SOUNDMANAGER] Playing round ${roundNumber} narration`);
+    //console.log(`[SOUNDMANAGER] Playing round ${roundNumber} narration`);
 
     // Duck background music
     if (this.isBackgroundPlaying) {
@@ -297,7 +297,7 @@ class SoundManager {
     clone.volume = this.sfxVolume * this.masterVolume;
 
     clone.addEventListener('ended', () => {
-      console.log('[SOUNDMANAGER] Round narration ended, restoring background volume');
+      //console.log('[SOUNDMANAGER] Round narration ended, restoring background volume');
       this.isNarrationPlaying = false;
 
       // Restore background music volume
@@ -330,11 +330,11 @@ class SoundManager {
    * @param {number} goalScore - Goal score for level
    */
   handleScoreUpdate(newScore, goalScore) {
-    console.log(`[SOUNDMANAGER] Score update: ${this.lastScore} → ${newScore}, goal: ${goalScore}, levelUpPlayed: ${this.levelUpPlayed}, lastSoundEffect: ${this.lastSoundEffect}`);
+    //console.log(`[SOUNDMANAGER] Score update: ${this.lastScore} → ${newScore}, goal: ${goalScore}, levelUpPlayed: ${this.levelUpPlayed}, lastSoundEffect: ${this.lastSoundEffect}`);
 
     // Check if goal just achieved (AND not already played for this level)
     if (newScore >= goalScore && this.lastScore < goalScore && !this.levelUpPlayed) {
-      console.log('[SOUNDMANAGER] 🎉 Goal achieved! Playing levelup sound');
+      //console.log('[SOUNDMANAGER] 🎉 Goal achieved! Playing levelup sound');
       this.playLevelUp();
       this.levelUpPlayed = true; // Mark as played for this level
     }
@@ -342,7 +342,7 @@ class SoundManager {
     // Skip point sound if the last sound effect was bonus (bonus sound already played)
     else if (newScore > this.lastScore) {
       if (this.lastSoundEffect === 'bonus') {
-        console.log('[SOUNDMANAGER] Skipping point sound - bonus sound already played');
+        //console.log('[SOUNDMANAGER] Skipping point sound - bonus sound already played');
       } else {
         this.playPoint();
       }
@@ -363,7 +363,7 @@ class SoundManager {
    */
   handleRoundChange(newRound, forcePlay = false, onStart = null, onEnd = null) {
     if ((forcePlay || newRound !== this.currentRound) && newRound >= 1 && newRound <= 3) {
-      console.log(`[SOUNDMANAGER] Round changed from ${this.currentRound} to ${newRound}`);
+      //console.log(`[SOUNDMANAGER] Round changed from ${this.currentRound} to ${newRound}`);
       this.playRoundNarration(newRound, onStart, onEnd);
       this.currentRound = newRound;
     }
@@ -374,7 +374,7 @@ class SoundManager {
    * This ensures levelup detection works correctly for new levels
    */
   resetScoreTracking() {
-    console.log('[SOUNDMANAGER] Resetting score tracking for new level');
+    //console.log('[SOUNDMANAGER] Resetting score tracking for new level');
     this.lastScore = 0;
     this.levelUpPlayed = false; // Reset levelup flag for new level
   }
@@ -384,7 +384,7 @@ class SoundManager {
    */
   toggleMute() {
     this.isMuted = !this.isMuted;
-    console.log(`[SOUNDMANAGER] Muted: ${this.isMuted}`);
+    //console.log(`[SOUNDMANAGER] Muted: ${this.isMuted}`);
 
     if (this.isMuted) {
       this.stopBackgroundMusic();
@@ -397,7 +397,7 @@ class SoundManager {
    * Clean up resources
    */
   cleanup() {
-    console.log('[SOUNDMANAGER] Cleaning up sound system');
+    //console.log('[SOUNDMANAGER] Cleaning up sound system');
     this.stopBackgroundMusic();
 
     // Remove all audio elements

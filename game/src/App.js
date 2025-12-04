@@ -92,7 +92,7 @@ function App() {
 
     // Initialize sound system
     soundManager.init().then(() => {
-      console.log('[APP] Sound system initialized');
+      //console.log('[APP] Sound system initialized');
     }).catch(err => {
       console.error('[APP] Failed to initialize sound system:', err);
     });
@@ -136,11 +136,11 @@ function App() {
         ws.current.close();
       }
 
-      console.log('[GAMEINPROGRESS] Attempting to connect to Display WebSocket server...');
+      //console.log('[GAMEINPROGRESS] Attempting to connect to Display WebSocket server...');
       ws.current = new WebSocket('ws://localhost:8081'); // Display WebSocket server
 
       ws.current.onopen = () => {
-        console.log('[GAMEINPROGRESS] Connected to WebSocket server as new client');
+        //console.log('[GAMEINPROGRESS] Connected to WebSocket server as new client');
         setIsConnected(true);
         isConnecting.current = false;
 
@@ -151,30 +151,30 @@ function App() {
       ws.current.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          console.log('[GAMEINPROGRESS] Received from server:', data);
+          //console.log('[GAMEINPROGRESS] Received from server:', data);
 
           // Handle different message types
           switch (data.type) {
             case 'clientId':
               setClientId(data.clientId);
-              console.log('[GAMEINPROGRESS] Assigned client ID:', data.clientId);
+              //console.log('[GAMEINPROGRESS] Assigned client ID:', data.clientId);
               break;
             case 'gameStarted':
-              console.log('[GAMEINPROGRESS] Game started - starting background music');
+              //console.log('[GAMEINPROGRESS] Game started - starting background music');
               soundManager.startBackgroundMusic();
               // Hide congratulations screen when new game starts
               setShowCongratulations(false);
               break;
             case 'roundUpdate':
-              console.log('[GAMEINPROGRESS] Round update received:', data);
+              //console.log('[GAMEINPROGRESS] Round update received:', data);
 
               // Check if level changed - accumulate score BEFORE updating state
               if (data.level !== previousLevel.current) {
                 const scoreToAdd = lastScore.current;
-                console.log(`[GAMEINPROGRESS] Level changed from ${previousLevel.current} to ${data.level}, adding ${scoreToAdd} to cumulative`);
+                //console.log(`[GAMEINPROGRESS] Level changed from ${previousLevel.current} to ${data.level}, adding ${scoreToAdd} to cumulative`);
                 setCumulativeScore(prev => {
                   const newCumulative = prev + scoreToAdd;
-                  console.log(`[GAMEINPROGRESS] Cumulative score: ${prev} + ${scoreToAdd} = ${newCumulative}`);
+                  //console.log(`[GAMEINPROGRESS] Cumulative score: ${prev} + ${scoreToAdd} = ${newCumulative}`);
                   return newCumulative;
                 });
                 previousLevel.current = data.level;
@@ -210,7 +210,7 @@ function App() {
               }));
               break;
             case 'missionUpdate':
-              console.log('[GAMEINPROGRESS] Mission update received:', data);
+              //console.log('[GAMEINPROGRESS] Mission update received:', data);
               setCurrentRound(prev => ({
                 ...prev,
                 mission: data.description
@@ -222,14 +222,14 @@ function App() {
               }));
               break;
             case 'multiplierUpdate':
-              console.log('[GAMEINPROGRESS] Multiplier update received:', data);
+              //console.log('[GAMEINPROGRESS] Multiplier update received:', data);
               setGameData(prevData => ({
                 ...prevData,
                 multiplier: data.multiplier
               }));
               break;
             case 'scoreUpdate':
-              console.log('[GAMEINPROGRESS] Score update:', data.score, 'goalScore:', data.goalScore);
+              //console.log('[GAMEINPROGRESS] Score update:', data.score, 'goalScore:', data.goalScore);
               lastScore.current = data.score; // Store score in ref
 
               // Handle score-based sounds (point and levelup)
@@ -245,7 +245,7 @@ function App() {
               setGameData(prevData => ({ ...prevData, score: data.score }));
               break;
             case 'soundEffect':
-              console.log('[GAMEINPROGRESS] Sound effect:', data.effect);
+              //console.log('[GAMEINPROGRESS] Sound effect:', data.effect);
               // Track sound effect for bonus/point logic
               soundManager.trackSoundEffect(data.effect);
               // Play the specific sound effect
@@ -273,7 +273,7 @@ function App() {
               }
               break;
             case 'timeUpdate':
-              console.log('[DEBUG] timeUpdate:', JSON.stringify(data));
+              //console.log('[DEBUG] timeUpdate:', JSON.stringify(data));
               setCurrentRound(prev => ({
                 ...prev,
                 timeLeft: data.timeLeft,
@@ -283,11 +283,11 @@ function App() {
               }));
               break;
             case 'bonusActive':
-              console.log('[GAMEINPROGRESS] Bonus active update:', data.active);
+              //console.log('[GAMEINPROGRESS] Bonus active update:', data.active);
               setBonusActive(data.active);
               break;
             case 'bonusPhaseStarted':
-              console.log('[GAMEINPROGRESS] Bonus phase started:', data);
+              //console.log('[GAMEINPROGRESS] Bonus phase started:', data);
               setBonusPhase({
                 active: true,
                 mission: data.mission,
@@ -295,11 +295,11 @@ function App() {
               });
               break;
             case 'teamName':
-              console.log('[GAMEINPROGRESS] Team name update:', data.name);
+              //console.log('[GAMEINPROGRESS] Team name update:', data.name);
               setTeamName(data.name || 'TEST');
               break;
             case 'reset':
-              console.log('[GAMEINPROGRESS] Game reset received, showCongratulations:', data.showCongratulations, 'finalScore:', data.finalScore);
+              //console.log('[GAMEINPROGRESS] Game reset received, showCongratulations:', data.showCongratulations, 'finalScore:', data.finalScore);
               // Stop all sounds including narration
               soundManager.stopAllSounds();
 
@@ -313,14 +313,14 @@ function App() {
               // Manual reset button should NOT show congratulations
               if (data.showCongratulations) {
                 // Use finalScore from backend (already calculated as cumulative + current)
-                console.log('[GAMEINPROGRESS] Using backend final score:', data.finalScore);
+                //console.log('[GAMEINPROGRESS] Using backend final score:', data.finalScore);
                 setFinalScore(data.finalScore || 0);
                 setShowCongratulations(true);
 
                 // Start timer to return to original layout after configured duration
-                console.log(`[GAMEINPROGRESS] Score will display for ${SCORE_DISPLAY_DURATION / 1000} seconds before returning to original layout`);
+                //console.log(`[GAMEINPROGRESS] Score will display for ${SCORE_DISPLAY_DURATION / 1000} seconds before returning to original layout`);
                 scoreDisplayTimeout.current = setTimeout(() => {
-                  console.log('[GAMEINPROGRESS] Score display timeout - returning to original layout');
+                  //console.log('[GAMEINPROGRESS] Score display timeout - returning to original layout');
                   setShowCongratulations(false);
                   setFinalScore(0);
                   scoreDisplayTimeout.current = null;
@@ -357,7 +357,7 @@ function App() {
               setIsNarrationPlaying(false);
               break;
             default:
-              console.log('[GAMEINPROGRESS] Unknown message type:', data.type);
+              //console.log('[GAMEINPROGRESS] Unknown message type:', data.type);
           }
         } catch (error) {
           console.error('[GAMEINPROGRESS] Error parsing message:', error);
@@ -365,7 +365,7 @@ function App() {
       };
 
       ws.current.onclose = () => {
-        console.log('[GAMEINPROGRESS] Disconnected from WebSocket server');
+        //console.log('[GAMEINPROGRESS] Disconnected from WebSocket server');
         setIsConnected(false);
         setClientId(null);
         isConnecting.current = false;
@@ -385,7 +385,7 @@ function App() {
 
     return () => {
       if (ws.current) {
-        console.log('[GAMEINPROGRESS] Component unmounting, closing WebSocket connection');
+        //console.log('[GAMEINPROGRESS] Component unmounting, closing WebSocket connection');
         ws.current.close();
       }
     };

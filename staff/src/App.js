@@ -38,31 +38,31 @@ function App() {
       ws.current = new WebSocket('ws://localhost:8080');
 
       ws.current.onopen = () => {
-        console.log('[FRONTEND] Connected to WebSocket server');
+        //console.log('[FRONTEND] Connected to WebSocket server');
         setIsConnected(true);
         isConnecting.current = false;
       };
 
       ws.current.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        console.log('[FRONTEND] Received from server:', data);
+        //console.log('[FRONTEND] Received from server:', data);
 
         if (data.type === 'gameStarted') {
-          console.log('[FRONTEND] Game started - waiting for time updates from server');
+          //console.log('[FRONTEND] Game started - waiting for time updates from server');
           setIsStarted(true);
         } else if (data.type === 'reset') {
-          console.log('[FRONTEND] Game reset received - resetting UI');
+          //console.log('[FRONTEND] Game reset received - resetting UI');
           resetGame();
         } else if (data.type === 'ledControl') {
-          console.log('[FRONTEND] LED control received:', data);
+          //console.log('[FRONTEND] LED control received:', data);
           handleLEDControl(data);
         } else if (data.type === 'timeUpdate') {
-          console.log('[FRONTEND] Time update received:', data);
+          //console.log('[FRONTEND] Time update received:', data);
         }
       };
 
       ws.current.onclose = () => {
-        console.log('[FRONTEND] Disconnected from WebSocket server');
+        //console.log('[FRONTEND] Disconnected from WebSocket server');
         setIsConnected(false);
         isConnecting.current = false;
         // Retry connection after 3 seconds
@@ -70,7 +70,7 @@ function App() {
       };
 
       ws.current.onerror = () => {
-        console.log('[FRONTEND] WebSocket connection error');
+        //console.log('[FRONTEND] WebSocket connection error');
         setIsConnected(false);
         isConnecting.current = false;
       };
@@ -98,7 +98,7 @@ function App() {
 
   const handleStart = () => {
     if (teamName.trim() && !isStarted) {
-      console.log('[FRONTEND] Starting game for team:', teamName);
+      //console.log('[FRONTEND] Starting game for team:', teamName);
 
       // Send start message to server
       if (ws.current && ws.current.readyState === WebSocket.OPEN) {
@@ -106,7 +106,7 @@ function App() {
           type: 'start',
           teamName: teamName
         }));
-        console.log('[FRONTEND] Start message sent to server');
+        //console.log('[FRONTEND] Start message sent to server');
       }
 
       // Automatically show simulator
@@ -115,31 +115,31 @@ function App() {
   };
 
   const handleHardReset = () => {
-    console.log('[FRONTEND] Hard reset requested');
+    //console.log('[FRONTEND] Hard reset requested');
 
     // Send hard reset message to server
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       ws.current.send(JSON.stringify({
         type: 'hardReset'
       }));
-      console.log('[FRONTEND] Hard reset message sent to server');
+      //console.log('[FRONTEND] Hard reset message sent to server');
     }
   };
 
   const handleSkipLevel = () => {
-    console.log('[FRONTEND] Skip level requested (testing mode)');
+    //console.log('[FRONTEND] Skip level requested (testing mode)');
 
     // Send skip level message to server
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       ws.current.send(JSON.stringify({
         type: 'skipLevel'
       }));
-      console.log('[FRONTEND] Skip level message sent to server');
+      //console.log('[FRONTEND] Skip level message sent to server');
     }
   };
 
   const handleCircleClick = (circleId) => {
-    console.log('[FRONTEND] Circle clicked:', circleId);
+    //console.log('[FRONTEND] Circle clicked:', circleId);
 
     // Send circle click message to server
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
@@ -147,16 +147,16 @@ function App() {
         type: 'circleClick',
         circleId: circleId
       }));
-      console.log('[FRONTEND] Circle click message sent to server for circle:', circleId);
+      //console.log('[FRONTEND] Circle click message sent to server for circle:', circleId);
     } else {
-      console.log('[FRONTEND] WebSocket not connected, cannot send circle click');
+      //console.log('[FRONTEND] WebSocket not connected, cannot send circle click');
     }
   };
 
   const handleLEDControl = (data) => {
     const { elementId, colorCode, colorValue } = data;
 
-    console.log('[FRONTEND] LED control received:', { elementId, colorCode, colorValue });
+    //console.log('[FRONTEND] LED control received:', { elementId, colorCode, colorValue });
 
     // Update LED state for the element with color info
     setLedStates(prev => {
@@ -168,7 +168,7 @@ function App() {
           active: colorCode !== 'o'
         }
       };
-      console.log('[FRONTEND] Updated LED states:', newState);
+      //console.log('[FRONTEND] Updated LED states:', newState);
       return newState;
     });
 
