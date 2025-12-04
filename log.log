@@ -1,0 +1,2661 @@
+[22:05:28.297] [STRIKELOOP] ⏰ 15 minutes elapsed - resetting game with congratulations
+[22:05:28.297] [STRIKELOOP] Resetting game to initial state... (showCongratulations: true)
+[22:05:28.297] [STRIKELOOP] Final score before reset: 28550 (cumulative: 28550 + current: 0)
+[22:05:28.298] [STRIKELOOP] Keyboard controls disabled - Game ended
+[22:05:28] [ARDUINO] Output 1 → OFF
+
+[22:05:28] [ARDUINO] Output 4 → OFF
+
+[22:05:28] [ARDUINO] Output 6 → OFF
+
+[22:05:28] [ARDUINO] Output 7 → OFF
+
+[22:05:28] [ARDUINO] Output 2 → OFF
+
+[22:05:28] [ARDUINO] Output 3 → OFF
+
+[22:05:28] [ARDUINO] Output 5 → OFF
+
+[22:05:28] [ARDUINO] Output 8 → OFF
+
+[22:05:28] [ARDUINO] Output 9 → OFF
+
+[22:05:28.303] [STRIKELOOP] LED refresh stopped, all LEDs cleared
+[22:05:28.304] [ARDUINO] Raw output 99 → OFF
+[22:05:28.304] [STRIKELOOP] Setting all holes to white for staff visibility
+[22:05:28] [ARDUINO] Output 1 → ON (d)
+
+[22:05:28] [ARDUINO] Output 4 → ON (d)
+
+[22:05:28] [ARDUINO] Output 6 → ON (d)
+
+[22:05:28] [ARDUINO] Output 7 → ON (d)
+
+[22:05:28] [ARDUINO] Output 2 → ON (d)
+
+[22:05:28] [ARDUINO] Output 3 → ON (d)
+
+[22:05:28] [ARDUINO] Output 5 → ON (d)
+
+[22:05:28] [ARDUINO] Output 8 → ON (d)
+
+[22:05:28] [ARDUINO] Output 24 → OFF
+
+[22:05:28.310] [STRIKELOOP] Cleaning up game event listeners...
+[22:05:28.311] [STRIKELOOP] Game state initialized: {
+  round: 1,
+  level: 1,
+  score: 0,
+  missionNumber: 1,
+  multiplier: 'x1',
+  missionDescription: 'Game starting... Prepare for first round!',
+  totalGameTimeMinutes: 15
+}
+[22:05:28.311] [STRIKELOOP] Total rounds configured: 30
+[22:05:28.312] [STRIKELOOP] Total game duration: 900 seconds
+[22:05:28.313] [STRIKELOOP] Game reset complete - ready to start new game
+[22:07:04.274] [STRIKELOOP] Arduino input received but no game running
+[22:14:09.631] [STRIKELOOP] Hard reset received from staff interface (no congratulations)
+[22:14:09.631] [STRIKELOOP] Resetting game to initial state... (showCongratulations: false)
+[22:14:09.632] [STRIKELOOP] Final score before reset: 0 (cumulative: 0 + current: 0)
+[22:14:09.632] [STRIKELOOP] Keyboard controls disabled - Game ended
+[22:14:09] [ARDUINO] Output 1 → OFF
+
+[22:14:09] [ARDUINO] Output 4 → OFF
+
+[22:14:09] [ARDUINO] Output 6 → OFF
+
+[22:14:09] [ARDUINO] Output 7 → OFF
+
+[22:14:09] [ARDUINO] Output 2 → OFF
+
+[22:14:09] [ARDUINO] Output 3 → OFF
+
+[22:14:09] [ARDUINO] Output 5 → OFF
+
+[22:14:09] [ARDUINO] Output 8 → OFF
+
+[22:14:09.639] [STRIKELOOP] LED refresh stopped, all LEDs cleared
+[22:14:09.639] [ARDUINO] Raw output 99 → OFF
+[22:14:09.639] [STRIKELOOP] Setting all holes to white for staff visibility
+[22:14:09] [ARDUINO] Output 1 → ON (d)
+
+[22:14:09] [ARDUINO] Output 4 → ON (d)
+
+[22:14:09] [ARDUINO] Output 6 → ON (d)
+
+[22:14:09] [ARDUINO] Output 7 → ON (d)
+
+[22:14:09] [ARDUINO] Output 2 → ON (d)
+
+[22:14:09] [ARDUINO] Output 3 → ON (d)
+
+[22:14:09] [ARDUINO] Output 5 → ON (d)
+
+[22:14:09] [ARDUINO] Output 8 → ON (d)
+
+[22:14:09.649] [STRIKELOOP] Cleaning up game event listeners...
+[22:14:09.649] [STRIKELOOP] Game state initialized: {
+  round: 1,
+  level: 1,
+  score: 0,
+  missionNumber: 1,
+  multiplier: 'x1',
+  missionDescription: 'Game starting... Prepare for first round!',
+  totalGameTimeMinutes: 15
+}
+[22:14:09.650] [STRIKELOOP] Total rounds configured: 30
+[22:14:09.650] [STRIKELOOP] Total game duration: 900 seconds
+[22:14:09.652] [STRIKELOOP] Game reset complete - ready to start new game
+[22:14:10.482] [STAFF-WS] Game start: Az
+[22:14:10.483] [STRIKELOOP] Game start received for team: Az
+[22:14:10.484] [STRIKELOOP] Starting game: 3 rounds, 10 levels each
+[22:14:10.484] [STRIKELOOP] Game state initialized: {
+  round: 1,
+  level: 1,
+  score: 0,
+  missionNumber: 1,
+  multiplier: 'x1',
+  missionDescription: 'Game starting... Prepare for first round!',
+  totalGameTimeMinutes: 15
+}
+[22:14:10.484] [STRIKELOOP] Total rounds configured: 30
+[22:14:10.485] [STRIKELOOP] Total game duration: 900 seconds
+[22:14:10.485] [ARDUINO] Raw output 99 → ON
+[22:14:10.486] [STRIKELOOP] Cell power light activated (O991)
+[22:14:10.487] [STRIKELOOP] Overall game timer started - Maximum game time: 15 minutes
+[22:14:10.488] [APP] Game started
+[22:14:10.492] [STRIKELOOP] Round 1-1 | Goal: 1000pts in 30s
+[22:14:10.492] [STRIKELOOP] 🎭 ROUND CHANGE DETECTED (3 → 1) - Triggering hardware effect O002
+[22:14:10.493] [ARDUINO] Special effect code: 002
+[22:14:10] Special effect code: 002
+
+[22:14:10.494] [STRIKELOOP] Keyboard listener active! Type commands and press Enter
+[22:14:10.494] [STRIKELOOP] Examples: 1b (circle 1 blue), 9r (central circle red), 15 (button 15 on), 15o (button 15 off)
+[22:14:10.494] [STRIKELOOP] Outer Circles (1-8): [id][color] - Colors: b=blue, g=green, r=red, y=yellow, o=off
+[22:14:10.495] [STRIKELOOP] Central Circle: 9[color] - Colors: b=blue, g=green, r=red, y=yellow, o=off
+[22:14:10.495] [STRIKELOOP] Control Buttons (14-28): [id] (on) or [id]o (off)
+[22:14:10.495] [STRIKELOOP] Inner Circles (10-13): Clickable only, no LED control
+[22:14:12.493] [STRIKELOOP] New level - resetting all LEDs
+[22:14:12] [ARDUINO] Output 1 → OFF
+
+[22:14:12] [ARDUINO] Output 4 → OFF
+
+[22:14:12] [ARDUINO] Output 6 → OFF
+
+[22:14:12] [ARDUINO] Output 7 → OFF
+
+[22:14:12] [ARDUINO] Output 2 → OFF
+
+[22:14:12] [ARDUINO] Output 3 → OFF
+
+[22:14:12] [ARDUINO] Output 5 → OFF
+
+[22:14:12] [ARDUINO] Output 8 → OFF
+
+[22:14:12.503] [STRIKELOOP] Mission initialized: { arcadeMode: 'green-blue-combo', goalScore: 1000, duration: 30 }
+[22:14:12.503] [STRIKELOOP] Starting arcade LEDs for mode: green-blue-combo
+[22:14:12] [ARDUINO] Output 1 → ON (g)
+
+[22:14:12] [ARDUINO] Output 4 → ON (g)
+
+[22:14:12] [ARDUINO] Output 6 → ON (g)
+
+[22:14:12] [ARDUINO] Output 7 → ON (g)
+
+[22:14:12] [ARDUINO] Output 2 → ON (b)
+
+[22:14:12] [ARDUINO] Output 3 → ON (b)
+
+[22:14:12] [ARDUINO] Output 5 → ON (b)
+
+[22:14:12] [ARDUINO] Output 8 → ON (b)
+
+[22:14:12.507] [STRIKELOOP] Arcade LEDs (green-blue-combo): 8 targets, 0 traps | Pattern: 1:G 2:G 3:G 4:G 5:B 6:B 7:B 8:B
+[22:14:12.508] [STRIKELOOP] LED refresh skipped for green-blue-combo mode (static LEDs)
+[22:14:22.514] [STRIKELOOP] Round 1 Level 1 time remaining: 00:20
+[22:14:32.516] [STRIKELOOP] Round 1 Level 1 time remaining: 00:10
+[22:14:42.519] [STRIKELOOP] Round 1 Level 1 time remaining: 00:00
+[22:14:43.518] [STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (0/1000). Retrying level...
+[22:14:43.519] [STRIKELOOP] LED refresh stopped, LEDs preserved
+[22:14:43.519] [STRIKELOOP] Round 1-1 (RETRY) | Goal: 1000pts in 30s
+[22:14:43.520] [STRIKELOOP] Retry mode - keeping existing LED pattern and validation state
+[22:14:43.520] [STRIKELOOP] Mission initialized: { arcadeMode: 'green-blue-combo', goalScore: 1000, duration: 30 }
+[22:14:43.521] [STRIKELOOP] Retry - skipping startArcadeLEDs() to preserve state and reduce serial writes
+[22:14:43.521] [STRIKELOOP] LED refresh skipped for green-blue-combo mode (static LEDs)
+[22:14:53.525] [STRIKELOOP] Round 1 Level 1 time remaining: 00:20
+[HAL] ⚡ Input Translation: Hardware 5 → Logical 7
+[22:15:02.411] [STRIKELOOP] Arduino input received during game: 7 Value: 32
+[22:15:02.411] [STRIKELOOP] ✅ BLUE HIT! Circle 7 +500 points
+[22:15:02.412] [STRIKELOOP] Local score updated to: 500
+[22:15:02.412] [STRIKELOOP] Score: -500 → 500 (+500)
+[22:15:02.715] [STRIKELOOP] Arcade LEDs (green-blue-combo): 8 targets, 0 traps | Pattern: 1:G 2:G 3:G 4:G 5:B 6:B 7:B 8:B
+[22:15:03.526] [STRIKELOOP] Round 1 Level 1 time remaining: 00:10
+[22:15:13.529] [STRIKELOOP] Round 1 Level 1 time remaining: 00:00
+[22:15:14.529] [STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (500/1000). Retrying level...
+[22:15:14.530] [STRIKELOOP] LED refresh stopped, LEDs preserved
+[22:15:14.530] [STRIKELOOP] Round 1-1 (RETRY) | Goal: 1000pts in 30s
+[22:15:14.530] [STRIKELOOP] Retry mode - keeping existing LED pattern and validation state
+[22:15:14.531] [STRIKELOOP] Mission initialized: { arcadeMode: 'green-blue-combo', goalScore: 1000, duration: 30 }
+[22:15:14.531] [STRIKELOOP] Retry - skipping startArcadeLEDs() to preserve state and reduce serial writes
+[22:15:14.531] [STRIKELOOP] LED refresh skipped for green-blue-combo mode (static LEDs)
+[HAL] ⚡ Input Translation: Hardware 5 → Logical 7
+[22:15:20.605] [STRIKELOOP] Arduino input received during game: 7 Value: 32
+[22:15:20.606] [STRIKELOOP] ✅ BLUE HIT! Circle 7 +500 points
+[22:15:20.606] [STRIKELOOP] Local score updated to: 1000
+[22:15:20.607] [STRIKELOOP] 🎉 GOAL ACHIEVED! 1000/1000 - Level can be completed
+[22:15:20.607] [APP] Bonus phase started: 🌟 OBJECTIF ATTEINT! Tous les points gagnés maintenant sont des BONUS! 🌟
+[22:15:20.608] [STRIKELOOP] Score: 0 → 1000 (+500)
+[22:15:20.909] [STRIKELOOP] Arcade LEDs (green-blue-combo): 8 targets, 0 traps | Pattern: 1:G 2:G 3:G 4:G 5:B 6:B 7:B 8:B
+[HAL] ⚡ Input Translation: Hardware 6 → Logical 3
+[22:15:21.142] [STRIKELOOP] Arduino input received during game: 3 Value: 2
+[22:15:21.142] [STRIKELOOP] ✅ GREEN HIT! Circle 3 +400 points
+[22:15:21.143] [STRIKELOOP] Local score updated to: 1400
+[22:15:21.143] [STRIKELOOP] Score: 600 → 1400 (+400)
+[22:15:21.447] [STRIKELOOP] Arcade LEDs (green-blue-combo): 8 targets, 0 traps | Pattern: 1:G 2:G 3:G 4:G 5:B 6:B 7:B 8:B
+[22:15:24.536] [STRIKELOOP] Round 1 Level 1 time remaining: 00:20
+[22:15:34.538] [STRIKELOOP] Round 1 Level 1 time remaining: 00:10
+[HAL] ⚡ Input Translation: Hardware 7 → Logical 4
+[22:15:38.135] [STRIKELOOP] Arduino input received during game: 4 Value: 8
+[22:15:38.136] [STRIKELOOP] ✅ GREEN HIT! Circle 4 +400 points
+[22:15:38.136] [STRIKELOOP] Local score updated to: 1800
+[22:15:38.136] [STRIKELOOP] Score: 1000 → 1800 (+400)
+[22:15:38.438] [STRIKELOOP] Arcade LEDs (green-blue-combo): 8 targets, 0 traps | Pattern: 1:G 2:G 3:G 4:G 5:B 6:B 7:B 8:B
+[HAL] ⚡ Input Translation: Hardware 5 → Logical 7
+[22:15:40.392] [STRIKELOOP] Arduino input received during game: 7 Value: 32
+[22:15:40.393] [STRIKELOOP] ✅ BLUE HIT! Circle 7 +500 points
+[22:15:40.393] [STRIKELOOP] Local score updated to: 2300
+[22:15:40.393] [STRIKELOOP] Score: 1300 → 2300 (+500)
+[22:15:40.696] [STRIKELOOP] Arcade LEDs (green-blue-combo): 8 targets, 0 traps | Pattern: 1:G 2:G 3:G 4:G 5:B 6:B 7:B 8:B
+[HAL] ⚡ Input Translation: Hardware 5 → Logical 7
+[22:15:41.232] [STRIKELOOP] Arduino input received during game: 7 Value: 32
+[22:15:41.232] [STRIKELOOP] ✅ BLUE HIT! Circle 7 +500 points
+[22:15:41.232] [STRIKELOOP] Local score updated to: 2800
+[22:15:41.233] [STRIKELOOP] Score: 1800 → 2800 (+500)
+[22:15:41.535] [STRIKELOOP] Arcade LEDs (green-blue-combo): 8 targets, 0 traps | Pattern: 1:G 2:G 3:G 4:G 5:B 6:B 7:B 8:B
+[HAL] ⚡ Input Translation: Hardware 7 → Logical 4
+[22:15:43.845] [STRIKELOOP] Arduino input received during game: 4 Value: 8
+[22:15:43.846] [STRIKELOOP] ✅ GREEN HIT! Circle 4 +400 points
+[22:15:43.846] [STRIKELOOP] Local score updated to: 3200
+[22:15:43.846] [STRIKELOOP] Score: 2400 → 3200 (+400)
+[22:15:44.148] [STRIKELOOP] Arcade LEDs (green-blue-combo): 8 targets, 0 traps | Pattern: 1:G 2:G 3:G 4:G 5:B 6:B 7:B 8:B
+[22:15:44.540] [STRIKELOOP] Round 1 Level 1 time remaining: 00:00
+[22:15:45.539] [STRIKELOOP] ✅ Level 1 COMPLETED! 3200/1000
+[22:15:45.540] [STRIKELOOP] Cumulative score: 3200 (added 3200 from this level)
+[22:15:45] [ARDUINO] Output 1 → OFF
+
+[22:15:45] [ARDUINO] Output 4 → OFF
+
+[22:15:45] [ARDUINO] Output 6 → OFF
+
+[22:15:45] [ARDUINO] Output 7 → OFF
+
+[22:15:45] [ARDUINO] Output 2 → OFF
+
+[22:15:45] [ARDUINO] Output 3 → OFF
+
+[22:15:45] [ARDUINO] Output 5 → OFF
+
+[22:15:45] [ARDUINO] Output 8 → OFF
+
+[22:15:45.543] [STRIKELOOP] LED refresh stopped, all LEDs cleared
+[22:15:45.543] [STRIKELOOP] Round 1-2 | Goal: 1200pts in 30s
+[22:15:45.544] [STRIKELOOP] 🎯 LEVEL CHANGE DETECTED (R1L2) - Triggering hardware effect O001
+[22:15:45.544] [ARDUINO] Special effect code: 001
+[22:15:45] Special effect code: 001
+
+[HAL] ⚡ Input Translation: Hardware 4 → Logical 2
+[22:15:45.586] [STRIKELOOP] Arduino input received during game: 2 Value: 4
+[22:15:47.545] [STRIKELOOP] New level - resetting all LEDs
+[22:15:47.547] [STRIKELOOP] Mission initialized: { arcadeMode: 'green-avoid-red', goalScore: 1200, duration: 30 }
+[22:15:47.548] [STRIKELOOP] Starting arcade LEDs for mode: green-avoid-red
+[22:15:47] [ARDUINO] Output 1 → ON (g)
+
+[22:15:47] [ARDUINO] Output 4 → ON (g)
+
+[22:15:47] [ARDUINO] Output 6 → ON (g)
+
+[22:15:47] [ARDUINO] Output 7 → ON (g)
+
+[22:15:47] [ARDUINO] Output 2 → ON (r)
+
+[22:15:47] [ARDUINO] Output 3 → ON (r)
+
+[22:15:47] [ARDUINO] Output 5 → ON (r)
+
+[22:15:47] [ARDUINO] Output 8 → ON (r)
+
+[22:15:47.550] [STRIKELOOP] Arcade LEDs (green-avoid-red): 8 targets, 4 traps | Pattern: 1:G 2:G 3:G 4:G 5:R(trap)* 6:R(trap)* 7:R(trap)* 8:R(trap)*
+[22:15:47.550] [STRIKELOOP] LED refresh skipped for green-avoid-red mode (static LEDs)
+[HAL] ⚡ Input Translation: Hardware 6 → Logical 3
+[22:15:52.607] [STRIKELOOP] Arduino input received during game: 3 Value: 2
+[22:15:52.608] [STRIKELOOP] ✅ GREEN HIT! Circle 3 +450 points
+[22:15:52.609] [STRIKELOOP] Local score updated to: 450
+[22:15:52.610] [STRIKELOOP] Score: -450 → 450 (+450)
+[22:15:52.912] [STRIKELOOP] Arcade LEDs (green-avoid-red): 8 targets, 4 traps | Pattern: 1:G 2:G 3:G 4:G 5:R(trap)* 6:R(trap)* 7:R(trap)* 8:R(trap)*
+[HAL] ⚡ Input Translation: Hardware 6 → Logical 3
+[22:15:54.405] [STRIKELOOP] Arduino input received during game: 3 Value: 2
+[22:15:54.405] [STRIKELOOP] ✅ GREEN HIT! Circle 3 +450 points
+[22:15:54.405] [STRIKELOOP] Local score updated to: 900
+[22:15:54.406] [STRIKELOOP] Score: 0 → 900 (+450)
+[22:15:54.708] [STRIKELOOP] Arcade LEDs (green-avoid-red): 8 targets, 4 traps | Pattern: 1:G 2:G 3:G 4:G 5:R(trap)* 6:R(trap)* 7:R(trap)* 8:R(trap)*
+[22:15:57.553] [STRIKELOOP] Round 1 Level 2 time remaining: 00:20
+[HAL] ⚡ Input Translation: Hardware 4 → Logical 2
+[22:16:04.030] [STRIKELOOP] Arduino input received during game: 2 Value: 4
+[22:16:04.031] [STRIKELOOP] ✅ GREEN HIT! Circle 2 +450 points
+[22:16:04.031] [STRIKELOOP] Local score updated to: 1350
+[22:16:04.031] [STRIKELOOP] 🎉 GOAL ACHIEVED! 1350/1200 - Level can be completed
+[22:16:04.032] [APP] Bonus phase started: 🌟 OBJECTIF ATTEINT! Tous les points gagnés maintenant sont des BONUS! 🌟
+[22:16:04.032] [STRIKELOOP] Score: 450 → 1350 (+450)
+[22:16:04.334] [STRIKELOOP] Arcade LEDs (green-avoid-red): 8 targets, 4 traps | Pattern: 1:G 2:G 3:G 4:G 5:R(trap)* 6:R(trap)* 7:R(trap)* 8:R(trap)*
+[22:16:07.554] [STRIKELOOP] Round 1 Level 2 time remaining: 00:10
+[HAL] ⚡ Input Translation: Hardware 7 → Logical 4
+[22:16:11.759] [STRIKELOOP] Arduino input received during game: 4 Value: 8
+[22:16:11.759] [STRIKELOOP] ✅ GREEN HIT! Circle 4 +450 points
+[22:16:11.759] [STRIKELOOP] Local score updated to: 1800
+[22:16:11.760] [STRIKELOOP] Score: 900 → 1800 (+450)
+[22:16:12.061] [STRIKELOOP] Arcade LEDs (green-avoid-red): 8 targets, 4 traps | Pattern: 1:G 2:G 3:G 4:G 5:R(trap)* 6:R(trap)* 7:R(trap)* 8:R(trap)*
+[22:16:17.560] [STRIKELOOP] Round 1 Level 2 time remaining: 00:00
+[22:16:18.560] [STRIKELOOP] ✅ Level 2 COMPLETED! 1800/1200
+[22:16:18.560] [STRIKELOOP] Cumulative score: 5000 (added 1800 from this level)
+[22:16:18] [ARDUINO] Output 1 → OFF
+
+[22:16:18] [ARDUINO] Output 4 → OFF
+
+[22:16:18] [ARDUINO] Output 6 → OFF
+
+[22:16:18] [ARDUINO] Output 7 → OFF
+
+[22:16:18] [ARDUINO] Output 2 → OFF
+
+[22:16:18] [ARDUINO] Output 3 → OFF
+
+[22:16:18] [ARDUINO] Output 5 → OFF
+
+[22:16:18] [ARDUINO] Output 8 → OFF
+
+[22:16:18.562] [STRIKELOOP] LED refresh stopped, all LEDs cleared
+[22:16:18.562] [STRIKELOOP] Round 1-3 | Goal: 1400pts in 30s
+[22:16:18.562] [STRIKELOOP] 🎯 LEVEL CHANGE DETECTED (R1L3) - Triggering hardware effect O001
+[22:16:18.563] [ARDUINO] Special effect code: 001
+[22:16:18] Special effect code: 001
+
+[22:16:20.563] [STRIKELOOP] New level - resetting all LEDs
+[22:16:20.566] [STRIKELOOP] Mission initialized: { arcadeMode: 'blue-avoid-red', goalScore: 1400, duration: 30 }
+[22:16:20.567] [STRIKELOOP] Starting arcade LEDs for mode: blue-avoid-red
+[22:16:20] [ARDUINO] Output 2 → ON (b)
+
+[22:16:20] [ARDUINO] Output 3 → ON (b)
+
+[22:16:20] [ARDUINO] Output 5 → ON (b)
+
+[22:16:20] [ARDUINO] Output 8 → ON (b)
+
+[22:16:20] [ARDUINO] Output 1 → ON (r)
+
+[22:16:20] [ARDUINO] Output 4 → ON (r)
+
+[22:16:20] [ARDUINO] Output 6 → ON (r)
+
+[22:16:20] [ARDUINO] Output 7 → ON (r)
+
+[22:16:20.573] [STRIKELOOP] Arcade LEDs (blue-avoid-red): 8 targets, 4 traps | Pattern: 5:B 6:B 7:B 8:B 1:R(trap)* 2:R(trap)* 3:R(trap)* 4:R(trap)*
+[22:16:20.573] [STRIKELOOP] LED refresh skipped for blue-avoid-red mode (static LEDs)
+[22:16:30.577] [STRIKELOOP] Round 1 Level 3 time remaining: 00:20
+[HAL] ⚡ Input Translation: Hardware 5 → Logical 7
+[22:16:33.807] [STRIKELOOP] Arduino input received during game: 7 Value: 32
+[22:16:33.808] [STRIKELOOP] ✅ BLUE HIT! Circle 7 +550 points
+[22:16:33.808] [STRIKELOOP] Local score updated to: 550
+[22:16:33.808] [STRIKELOOP] Score: -550 → 550 (+550)
+[22:16:34.110] [STRIKELOOP] Arcade LEDs (blue-avoid-red): 8 targets, 4 traps | Pattern: 5:B 6:B 7:B 8:B 1:R(trap)* 2:R(trap)* 3:R(trap)* 4:R(trap)*
+[22:16:35.826] [STRIKELOOP] Arduino input received during game: 8 Value: 128
+[22:16:35.827] [STRIKELOOP] ✅ BLUE HIT! Circle 8 +550 points
+[22:16:35.827] [STRIKELOOP] Local score updated to: 1100
+[22:16:35.828] [STRIKELOOP] Score: 0 → 1100 (+550)
+[22:16:36.128] [STRIKELOOP] Arcade LEDs (blue-avoid-red): 8 targets, 4 traps | Pattern: 5:B 6:B 7:B 8:B 1:R(trap)* 2:R(trap)* 3:R(trap)* 4:R(trap)*
+[22:16:39.529] [STRIKELOOP] Arduino input received during game: 8 Value: 128
+[22:16:39.529] [STRIKELOOP] ✅ BLUE HIT! Circle 8 +550 points
+[22:16:39.530] [STRIKELOOP] Local score updated to: 1650
+[22:16:39.530] [STRIKELOOP] 🎉 GOAL ACHIEVED! 1650/1400 - Level can be completed
+[22:16:39.531] [APP] Bonus phase started: 🌟 OBJECTIF ATTEINT! Tous les points gagnés maintenant sont des BONUS! 🌟
+[22:16:39.532] [STRIKELOOP] Score: 550 → 1650 (+550)
+[22:16:39.834] [STRIKELOOP] Arcade LEDs (blue-avoid-red): 8 targets, 4 traps | Pattern: 5:B 6:B 7:B 8:B 1:R(trap)* 2:R(trap)* 3:R(trap)* 4:R(trap)*
+[22:16:40.580] [STRIKELOOP] Round 1 Level 3 time remaining: 00:10
+[22:16:50.583] [STRIKELOOP] Round 1 Level 3 time remaining: 00:00
+[22:16:51.582] [STRIKELOOP] ✅ Level 3 COMPLETED! 1650/1400
+[22:16:51.583] [STRIKELOOP] Cumulative score: 6650 (added 1650 from this level)
+[22:16:51] [ARDUINO] Output 1 → OFF
+
+[22:16:51] [ARDUINO] Output 4 → OFF
+
+[22:16:51] [ARDUINO] Output 6 → OFF
+
+[22:16:51] [ARDUINO] Output 7 → OFF
+
+[22:16:51] [ARDUINO] Output 2 → OFF
+
+[22:16:51] [ARDUINO] Output 3 → OFF
+
+[22:16:51] [ARDUINO] Output 5 → OFF
+
+[22:16:51] [ARDUINO] Output 8 → OFF
+
+[22:16:51.588] [STRIKELOOP] LED refresh stopped, all LEDs cleared
+[22:16:51.588] [STRIKELOOP] Round 1-4 | Goal: 1600pts in 30s
+[22:16:51.588] [STRIKELOOP] 🎯 LEVEL CHANGE DETECTED (R1L4) - Triggering hardware effect O001
+[22:16:51.588] [ARDUINO] Special effect code: 001
+[22:16:51] Special effect code: 001
+
+[22:16:53.589] [STRIKELOOP] New level - resetting all LEDs
+[22:16:53.591] [STRIKELOOP] Mission initialized: { arcadeMode: 'rotating-green-blue', goalScore: 1600, duration: 30 }
+[22:16:53.591] [STRIKELOOP] Starting arcade LEDs for mode: rotating-green-blue
+[22:16:53.591] [STRIKELOOP] Rotating green-blue: Initial setup - green 2, blue 8
+[22:16:53] [ARDUINO] Output 4 → ON (g)
+
+[22:16:53] [ARDUINO] Output 8 → ON (b)
+
+[22:16:53] [ARDUINO] Output 1 → ON (r)
+
+[22:16:53] [ARDUINO] Output 6 → ON (r)
+
+[22:16:53] [ARDUINO] Output 7 → ON (r)
+
+[22:16:53] [ARDUINO] Output 2 → ON (r)
+
+[22:16:53] [ARDUINO] Output 3 → ON (r)
+
+[22:16:53] [ARDUINO] Output 5 → ON (r)
+
+[22:16:53.601] [STRIKELOOP] Arcade LEDs (rotating-green-blue): 8 targets, 6 traps | Pattern: 2:G* 8:B* 1:R(trap)* 3:R(trap)* 4:R(trap)* 5:R(trap)* 6:R(trap)* 7:R(trap)*
+[22:16:53.601] [STRIKELOOP] LED refresh skipped for rotating-green-blue mode (static LEDs)
+[22:16:57] [ARDUINO] Output 4 → ON (r)
+
+[22:16:57] [ARDUINO] Output 7 → ON (g)
+
+[22:16:57] [ARDUINO] Output 8 → ON (r)
+
+[22:16:57] [ARDUINO] Output 2 → ON (b)
+
+[22:16:57.603] [STRIKELOOP] Rotating green-blue: green 2→4, blue 8→5 (optimized: 4 writes)
+[22:17:01] [ARDUINO] Output 2 → ON (r)
+
+[22:17:01] [ARDUINO] Output 3 → ON (b)
+
+[22:17:01.602] [STRIKELOOP] Rotating green-blue: blue 5→6 (optimized: 2 writes)
+[HAL] ⚡ Input Translation: Hardware 7 → Logical 4
+[22:17:02.003] [STRIKELOOP] Arduino input received during game: 4 Value: 8
+[22:17:02.004] [STRIKELOOP] ✅ G HIT! Circle 4 +600 points
+[22:17:02.004] [STRIKELOOP] Local score updated to: 600
+[22:17:02.004] [STRIKELOOP] Score: -600 → 600 (+600)
+[22:17:03.612] [STRIKELOOP] Round 1 Level 4 time remaining: 00:20
+[22:17:05] [ARDUINO] Output 7 → ON (r)
+
+[22:17:05] [ARDUINO] Output 6 → ON (g)
+
+[22:17:05.603] [STRIKELOOP] Rotating green-blue: green 4→3 (optimized: 2 writes)
+[HAL] ⚡ Input Translation: Hardware 7 → Logical 4
+[22:17:07.194] [STRIKELOOP] Arduino input received during game: 4 Value: 8
+[22:17:07.194] [STRIKELOOP] ❌ TRAP 4 -100pts
+[22:17:07.195] [STRIKELOOP] Local score updated to: 500
+[22:17:07.196] [STRIKELOOP] Score: 700 → 500 (-100)
+[22:17:09.602] [STRIKELOOP] Rotating green-blue: Same positions, no LED changes needed
+[22:17:13] [ARDUINO] Output 6 → ON (r)
+
+[22:17:13] [ARDUINO] Output 4 → ON (g)
+
+[22:17:13.604] [STRIKELOOP] Rotating green-blue: green 3→2 (optimized: 2 writes)
+[22:17:13.616] [STRIKELOOP] Round 1 Level 4 time remaining: 00:10
+[22:17:17] [ARDUINO] Output 4 → ON (r)
+
+[22:17:17] [ARDUINO] Output 1 → ON (g)
+
+[22:17:17] [ARDUINO] Output 3 → ON (r)
+
+[22:17:17] [ARDUINO] Output 2 → ON (b)
+
+[22:17:17.605] [STRIKELOOP] Rotating green-blue: green 2→1, blue 6→5 (optimized: 4 writes)
+[22:17:21] [ARDUINO] Output 1 → ON (r)
+
+[22:17:21] [ARDUINO] Output 6 → ON (g)
+
+[22:17:21.604] [STRIKELOOP] Rotating green-blue: green 1→3 (optimized: 2 writes)
+[22:17:23.618] [STRIKELOOP] Round 1 Level 4 time remaining: 00:00
+[22:17:24.618] [STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (500/1600). Retrying level...
+[22:17:24.618] [STRIKELOOP] LED refresh stopped, LEDs preserved
+[22:17:24.619] [STRIKELOOP] Round 1-4 (RETRY) | Goal: 1600pts in 30s
+[22:17:24.619] [STRIKELOOP] Retry mode - keeping existing LED pattern and validation state
+[22:17:24.620] [STRIKELOOP] Mission initialized: { arcadeMode: 'rotating-green-blue', goalScore: 1600, duration: 30 }
+[22:17:24.620] [STRIKELOOP] Retry - restarting interval for rotating-green-blue mode
+[22:17:24.620] [STRIKELOOP] Starting arcade LEDs for mode: rotating-green-blue
+[22:17:24.621] [STRIKELOOP] Rotating green-blue: Initial setup - green 2, blue 5
+[22:17:24] [ARDUINO] Output 4 → ON (g)
+
+[22:17:24] [ARDUINO] Output 6 → ON (r)
+
+[22:17:24.624] [STRIKELOOP] Arcade LEDs (rotating-green-blue): 8 targets, 6 traps | Pattern: 2:G* 5:B* 1:R(trap)* 3:R(trap)* 4:R(trap)* 6:R(trap)* 7:R(trap)* 8:R(trap)*
+[22:17:24.624] [STRIKELOOP] LED refresh skipped for rotating-green-blue mode (static LEDs)
+[22:17:28] [ARDUINO] Output 4 → ON (r)
+
+[22:17:28] [ARDUINO] Output 7 → ON (g)
+
+[22:17:28] [ARDUINO] Output 2 → ON (r)
+
+[22:17:28] [ARDUINO] Output 8 → ON (b)
+
+[22:17:28.627] [STRIKELOOP] Rotating green-blue: green 2→4, blue 5→8 (optimized: 4 writes)
+[HAL] ⚡ Input Translation: Hardware 4 → Logical 2
+[22:17:28.669] [STRIKELOOP] Arduino input received during game: 2 Value: 4
+[22:17:28.669] [STRIKELOOP] ❌ TRAP 2 -100pts
+[22:17:28.670] [STRIKELOOP] Local score updated to: 400
+[22:17:28.675] [STRIKELOOP] Score: 600 → 400 (-100)
+[22:17:32] [ARDUINO] Output 7 → ON (r)
+
+[22:17:32] [ARDUINO] Output 4 → ON (g)
+
+[22:17:32.626] [STRIKELOOP] Rotating green-blue: green 4→2 (optimized: 2 writes)
+[22:17:34.630] [STRIKELOOP] Round 1 Level 4 time remaining: 00:20
+[22:17:36] [ARDUINO] Output 4 → ON (r)
+
+[22:17:36] [ARDUINO] Output 7 → ON (g)
+
+[22:17:36] [ARDUINO] Output 8 → ON (r)
+
+[22:17:36] [ARDUINO] Output 3 → ON (b)
+
+[22:17:36.626] [STRIKELOOP] Rotating green-blue: green 2→4, blue 8→6 (optimized: 4 writes)
+[22:17:40] [ARDUINO] Output 7 → ON (r)
+
+[22:17:40] [ARDUINO] Output 1 → ON (g)
+
+[22:17:40] [ARDUINO] Output 3 → ON (r)
+
+[22:17:40] [ARDUINO] Output 2 → ON (b)
+
+[22:17:40.627] [STRIKELOOP] Rotating green-blue: green 4→1, blue 6→5 (optimized: 4 writes)
+[HAL] ⚡ Input Translation: Hardware 7 → Logical 4
+[22:17:41.677] [STRIKELOOP] Arduino input received during game: 4 Value: 8
+[22:17:41.678] [STRIKELOOP] ❌ TRAP 4 -100pts
+[22:17:41.680] [STRIKELOOP] Local score updated to: 300
+[22:17:41.682] [STRIKELOOP] Score: 500 → 300 (-100)
+[22:17:44] [ARDUINO] Output 2 → ON (r)
+
+[22:17:44] [ARDUINO] Output 5 → ON (b)
+
+[22:17:44.625] [STRIKELOOP] Rotating green-blue: blue 5→7 (optimized: 2 writes)
+[22:17:44.631] [STRIKELOOP] Round 1 Level 4 time remaining: 00:10
+[22:17:48] [ARDUINO] Output 1 → ON (r)
+
+[22:17:48] [ARDUINO] Output 6 → ON (g)
+
+[22:17:48] [ARDUINO] Output 5 → ON (r)
+
+[22:17:48] [ARDUINO] Output 8 → ON (b)
+
+[22:17:48.627] [STRIKELOOP] Rotating green-blue: green 1→3, blue 7→8 (optimized: 4 writes)
+[HAL] ⚡ Input Translation: Hardware 6 → Logical 3
+[22:17:50.593] [STRIKELOOP] Arduino input received during game: 3 Value: 2
+[22:17:50.594] [STRIKELOOP] ✅ G HIT! Circle 3 +600 points
+[22:17:50.594] [STRIKELOOP] Local score updated to: 900
+[22:17:50.595] [STRIKELOOP] Score: -300 → 900 (+600)
+[22:17:52] [ARDUINO] Output 8 → ON (r)
+
+[22:17:52] [ARDUINO] Output 5 → ON (b)
+
+[22:17:52.625] [STRIKELOOP] Rotating green-blue: blue 8→7 (optimized: 2 writes)
+[22:17:54.635] [STRIKELOOP] Round 1 Level 4 time remaining: 00:00
+[22:17:55.635] [STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (900/1600). Retrying level...
+[22:17:55.635] [STRIKELOOP] LED refresh stopped, LEDs preserved
+[22:17:55.636] [STRIKELOOP] Round 1-4 (RETRY) | Goal: 1600pts in 30s
+[22:17:55.636] [STRIKELOOP] Retry mode - keeping existing LED pattern and validation state
+[22:17:55.637] [STRIKELOOP] Mission initialized: { arcadeMode: 'rotating-green-blue', goalScore: 1600, duration: 30 }
+[22:17:55.637] [STRIKELOOP] Retry - restarting interval for rotating-green-blue mode
+[22:17:55.637] [STRIKELOOP] Starting arcade LEDs for mode: rotating-green-blue
+[22:17:55.638] [STRIKELOOP] Rotating green-blue: Initial setup - green 2, blue 7
+[22:17:55] [ARDUINO] Output 4 → ON (g)
+
+[22:17:55] [ARDUINO] Output 6 → ON (r)
+
+[22:17:55.642] [STRIKELOOP] Arcade LEDs (rotating-green-blue): 8 targets, 6 traps | Pattern: 2:G* 7:B* 1:R(trap)* 3:R(trap)* 4:R(trap)* 5:R(trap)* 6:R(trap)* 8:R(trap)*
+[22:17:55.643] [STRIKELOOP] LED refresh skipped for rotating-green-blue mode (static LEDs)
+[22:17:59] [ARDUINO] Output 4 → ON (r)
+
+[22:17:59] [ARDUINO] Output 6 → ON (g)
+
+[22:17:59] [ARDUINO] Output 5 → ON (r)
+
+[22:17:59] [ARDUINO] Output 8 → ON (b)
+
+[22:17:59.646] [STRIKELOOP] Rotating green-blue: green 2→3, blue 7→8 (optimized: 4 writes)
+[22:18:03.642] [STRIKELOOP] Rotating green-blue: Same positions, no LED changes needed
+[22:18:05.648] [STRIKELOOP] Round 1 Level 4 time remaining: 00:20
+[22:18:07] [ARDUINO] Output 6 → ON (r)
+
+[22:18:07] [ARDUINO] Output 7 → ON (g)
+
+[22:18:07] [ARDUINO] Output 8 → ON (r)
+
+[22:18:07] [ARDUINO] Output 5 → ON (b)
+
+[22:18:07.645] [STRIKELOOP] Rotating green-blue: green 3→4, blue 8→7 (optimized: 4 writes)
+[22:18:11] [ARDUINO] Output 7 → ON (r)
+
+[22:18:11] [ARDUINO] Output 4 → ON (g)
+
+[22:18:11] [ARDUINO] Output 5 → ON (r)
+
+[22:18:11] [ARDUINO] Output 3 → ON (b)
+
+[22:18:11.646] [STRIKELOOP] Rotating green-blue: green 4→2, blue 7→6 (optimized: 4 writes)
+[22:18:15] [ARDUINO] Output 4 → ON (r)
+
+[22:18:15] [ARDUINO] Output 6 → ON (g)
+
+[22:18:15] [ARDUINO] Output 3 → ON (r)
+
+[22:18:15] [ARDUINO] Output 5 → ON (b)
+
+[22:18:15.646] [STRIKELOOP] Rotating green-blue: green 2→3, blue 6→7 (optimized: 4 writes)
+[22:18:15.650] [STRIKELOOP] Round 1 Level 4 time remaining: 00:10
+[22:18:19] [ARDUINO] Output 6 → ON (r)
+
+[22:18:19] [ARDUINO] Output 4 → ON (g)
+
+[22:18:19] [ARDUINO] Output 5 → ON (r)
+
+[22:18:19] [ARDUINO] Output 3 → ON (b)
+
+[22:18:19.646] [STRIKELOOP] Rotating green-blue: green 3→2, blue 7→6 (optimized: 4 writes)
+[HAL] ⚡ Input Translation: Hardware 6 → Logical 3
+[22:18:21.059] [STRIKELOOP] Arduino input received during game: 3 Value: 2
+[22:18:21.059] [STRIKELOOP] ❌ TRAP 3 -100pts
+[22:18:21.060] [STRIKELOOP] Local score updated to: 800
+[22:18:21.060] [STRIKELOOP] Score: 1000 → 800 (-100)
+[22:18:23] [ARDUINO] Output 4 → ON (r)
+
+[22:18:23] [ARDUINO] Output 7 → ON (g)
+
+[22:18:23.645] [STRIKELOOP] Rotating green-blue: green 2→4 (optimized: 2 writes)
+[22:18:25.653] [STRIKELOOP] Round 1 Level 4 time remaining: 00:00
+[22:18:26.653] [STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (800/1600). Retrying level...
+[22:18:26.654] [STRIKELOOP] LED refresh stopped, LEDs preserved
+[22:18:26.654] [STRIKELOOP] Round 1-4 (RETRY) | Goal: 1600pts in 30s
+[22:18:26.654] [STRIKELOOP] Retry mode - keeping existing LED pattern and validation state
+[22:18:26.655] [STRIKELOOP] Mission initialized: { arcadeMode: 'rotating-green-blue', goalScore: 1600, duration: 30 }
+[22:18:26.655] [STRIKELOOP] Retry - restarting interval for rotating-green-blue mode
+[22:18:26.659] [STRIKELOOP] Starting arcade LEDs for mode: rotating-green-blue
+[22:18:26.659] [STRIKELOOP] Rotating green-blue: Initial setup - green 3, blue 6
+[22:18:26] [ARDUINO] Output 6 → ON (g)
+
+[22:18:26] [ARDUINO] Output 7 → ON (r)
+
+[22:18:26.663] [STRIKELOOP] Arcade LEDs (rotating-green-blue): 8 targets, 6 traps | Pattern: 3:G* 6:B* 1:R(trap)* 2:R(trap)* 4:R(trap)* 5:R(trap)* 7:R(trap)* 8:R(trap)*
+[22:18:26.663] [STRIKELOOP] LED refresh skipped for rotating-green-blue mode (static LEDs)
+[22:18:30] [ARDUINO] Output 6 → ON (r)
+
+[22:18:30] [ARDUINO] Output 1 → ON (g)
+
+[22:18:30] [ARDUINO] Output 3 → ON (r)
+
+[22:18:30] [ARDUINO] Output 8 → ON (b)
+
+[22:18:30.666] [STRIKELOOP] Rotating green-blue: green 3→1, blue 6→8 (optimized: 4 writes)
+[22:18:34] [ARDUINO] Output 1 → ON (r)
+
+[22:18:34] [ARDUINO] Output 7 → ON (g)
+
+[22:18:34] [ARDUINO] Output 8 → ON (r)
+
+[22:18:34] [ARDUINO] Output 2 → ON (b)
+
+[22:18:34.667] [STRIKELOOP] Rotating green-blue: green 1→4, blue 8→5 (optimized: 4 writes)
+[22:18:36.668] [STRIKELOOP] Round 1 Level 4 time remaining: 00:20
+[22:18:38] [ARDUINO] Output 7 → ON (r)
+
+[22:18:38] [ARDUINO] Output 1 → ON (g)
+
+[22:18:38] [ARDUINO] Output 2 → ON (r)
+
+[22:18:38] [ARDUINO] Output 3 → ON (b)
+
+[22:18:38.668] [STRIKELOOP] Rotating green-blue: green 4→1, blue 5→6 (optimized: 4 writes)
+[22:18:42] [ARDUINO] Output 3 → ON (r)
+
+[22:18:42] [ARDUINO] Output 5 → ON (b)
+
+[22:18:42.668] [STRIKELOOP] Rotating green-blue: blue 6→7 (optimized: 2 writes)
+[22:18:46] [ARDUINO] Output 1 → ON (r)
+
+[22:18:46] [ARDUINO] Output 4 → ON (g)
+
+[22:18:46.667] [STRIKELOOP] Rotating green-blue: green 1→2 (optimized: 2 writes)
+[22:18:46.673] [STRIKELOOP] Round 1 Level 4 time remaining: 00:10
+[HAL] ⚡ Input Translation: Hardware 4 → Logical 2
+[22:18:50.254] [STRIKELOOP] Arduino input received during game: 2 Value: 4
+[22:18:50.255] [STRIKELOOP] ✅ G HIT! Circle 2 +600 points
+[22:18:50.255] [STRIKELOOP] Local score updated to: 1400
+[22:18:50.255] [STRIKELOOP] Score: 200 → 1400 (+600)
+[22:18:50] [ARDUINO] Output 4 → ON (r)
+
+[22:18:50] [ARDUINO] Output 7 → ON (g)
+
+[22:18:50] [ARDUINO] Output 5 → ON (r)
+
+[22:18:50] [ARDUINO] Output 2 → ON (b)
+
+[22:18:50.667] [STRIKELOOP] Rotating green-blue: green 2→4, blue 7→5 (optimized: 4 writes)
+[22:18:54] [ARDUINO] Output 7 → ON (r)
+
+[22:18:54] [ARDUINO] Output 1 → ON (g)
+
+[22:18:54] [ARDUINO] Output 2 → ON (r)
+
+[22:18:54] [ARDUINO] Output 5 → ON (b)
+
+[22:18:54.669] [STRIKELOOP] Rotating green-blue: green 4→1, blue 5→7 (optimized: 4 writes)
+[22:18:56.678] [STRIKELOOP] Round 1 Level 4 time remaining: 00:00
+[22:18:57.678] [STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (1400/1600). Retrying level...
+[22:18:57.678] [STRIKELOOP] LED refresh stopped, LEDs preserved
+[22:18:57.679] [STRIKELOOP] Round 1-4 (RETRY) | Goal: 1600pts in 30s
+[22:18:57.679] [STRIKELOOP] Retry mode - keeping existing LED pattern and validation state
+[22:18:57.680] [STRIKELOOP] Mission initialized: { arcadeMode: 'rotating-green-blue', goalScore: 1600, duration: 30 }
+[22:18:57.680] [STRIKELOOP] Retry - restarting interval for rotating-green-blue mode
+[22:18:57.681] [STRIKELOOP] Starting arcade LEDs for mode: rotating-green-blue
+[22:18:57.681] [STRIKELOOP] Rotating green-blue: Initial setup - green 1, blue 6
+[22:18:57] [ARDUINO] Output 3 → ON (b)
+
+[22:18:57] [ARDUINO] Output 5 → ON (r)
+
+[22:18:57.685] [STRIKELOOP] Arcade LEDs (rotating-green-blue): 8 targets, 6 traps | Pattern: 1:G* 6:B* 2:R(trap)* 3:R(trap)* 4:R(trap)* 5:R(trap)* 7:R(trap)* 8:R(trap)*
+[22:18:57.685] [STRIKELOOP] LED refresh skipped for rotating-green-blue mode (static LEDs)
+[HAL] ⚡ Input Translation: Hardware 5 → Logical 7
+[22:18:58.200] [STRIKELOOP] Arduino input received during game: 7 Value: 32
+[22:18:58.201] [STRIKELOOP] ❌ TRAP 7 -100pts
+[22:18:58.201] [STRIKELOOP] Local score updated to: 1300
+[22:18:58.202] [STRIKELOOP] Score: 1500 → 1300 (-100)
+[22:19:01] [ARDUINO] Output 1 → ON (r)
+
+[22:19:01] [ARDUINO] Output 4 → ON (g)
+
+[22:19:01.686] [STRIKELOOP] Rotating green-blue: green 1→2 (optimized: 2 writes)
+[HAL] ⚡ Input Translation: Hardware 3 → Logical 6
+[22:19:03.365] [STRIKELOOP] Arduino input received during game: 6 Value: 64
+[22:19:03.366] [STRIKELOOP] ✅ B HIT! Circle 6 +650 points
+[22:19:03.366] [STRIKELOOP] Local score updated to: 1950
+[22:19:03.367] [STRIKELOOP] 🎉 GOAL ACHIEVED! 1950/1600 - Level can be completed
+[22:19:03.368] [APP] Bonus phase started: 🌟 OBJECTIF ATTEINT! Tous les points gagnés maintenant sont des BONUS! 🌟
+[22:19:03.368] [STRIKELOOP] Score: 650 → 1950 (+650)
+[22:19:05] [ARDUINO] Output 3 → ON (r)
+
+[22:19:05] [ARDUINO] Output 8 → ON (b)
+
+[22:19:05.685] [STRIKELOOP] Rotating green-blue: blue 6→8 (optimized: 2 writes)
+[22:19:07.691] [STRIKELOOP] Round 1 Level 4 time remaining: 00:20
+[HAL] ⚡ Input Translation: Hardware 4 → Logical 2
+[22:19:09.005] [STRIKELOOP] Arduino input received during game: 2 Value: 4
+[22:19:09.006] [STRIKELOOP] ✅ G HIT! Circle 2 +600 points
+[22:19:09.006] [STRIKELOOP] Local score updated to: 2550
+[22:19:09.007] [STRIKELOOP] Score: 1350 → 2550 (+600)
+[22:19:09] [ARDUINO] Output 4 → ON (r)
+
+[22:19:09] [ARDUINO] Output 7 → ON (g)
+
+[22:19:09] [ARDUINO] Output 8 → ON (r)
+
+[22:19:09] [ARDUINO] Output 3 → ON (b)
+
+[22:19:09.687] [STRIKELOOP] Rotating green-blue: green 2→4, blue 8→6 (optimized: 4 writes)
+[22:19:10.587] [STRIKELOOP] ⏰ 33% TIME ELAPSED (300s) - Auto-advancing from Round 1 to Round 2
+[22:19:10.587] [STRIKELOOP] 🚀 FORCE SKIPPING from Round 1 to Round 2
+[22:19:10] [ARDUINO] Output 1 → OFF
+
+[22:19:10] [ARDUINO] Output 4 → OFF
+
+[22:19:10] [ARDUINO] Output 6 → OFF
+
+[22:19:10] [ARDUINO] Output 7 → OFF
+
+[22:19:10] [ARDUINO] Output 2 → OFF
+
+[22:19:10] [ARDUINO] Output 3 → OFF
+
+[22:19:10] [ARDUINO] Output 5 → OFF
+
+[22:19:10] [ARDUINO] Output 8 → OFF
+
+[22:19:10.593] [STRIKELOOP] LED refresh stopped, all LEDs cleared
+[22:19:10.593] [STRIKELOOP] Score carries over: 2550 points
+[22:19:10.593] [STRIKELOOP] Round 2-1 | Goal: 3000pts in 30s
+[22:19:10.593] [STRIKELOOP] 🎭 ROUND CHANGE DETECTED (1 → 2) - Triggering hardware effect O002
+[22:19:10.593] [ARDUINO] Special effect code: 002
+[22:19:10] Special effect code: 002
+
+[HAL] ⚡ Input Translation: Hardware 7 → Logical 4
+[22:19:12.147] [STRIKELOOP] Arduino input received during game: 4 Value: 8
+[22:19:12.594] [STRIKELOOP] New level - resetting all LEDs
+[22:19:12.595] [STRIKELOOP] Mission initialized: { arcadeMode: 'blinking-green-bonus', goalScore: 3000, duration: 30 }
+[22:19:12.596] [STRIKELOOP] Starting arcade LEDs for mode: blinking-green-bonus
+[22:19:12] [ARDUINO] Output 1 → ON (g)
+
+[22:19:12] [ARDUINO] Output 4 → ON (g)
+
+[22:19:12] [ARDUINO] Output 6 → ON (g)
+
+[22:19:12] [ARDUINO] Output 7 → ON (g)
+
+[22:19:12] [ARDUINO] Output 2 → ON (r)
+
+[22:19:12] [ARDUINO] Output 3 → ON (r)
+
+[22:19:12] [ARDUINO] Output 5 → ON (r)
+
+[22:19:12] [ARDUINO] Output 8 → ON (r)
+
+[22:19:12] [ARDUINO] Output 9 → ON (y)
+
+[22:19:12.602] [STRIKELOOP] Bonus section activated
+[22:19:12.602] [STRIKELOOP] Arcade LEDs (blinking-green-bonus): 13 targets, 4 traps | Pattern: 1:G 2:G 3:G 4:G 5:R(trap)* 6:R(trap)* 7:R(trap)* 8:R(trap)* 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:19:12.602] [STRIKELOOP] LED refresh skipped for blinking-green-bonus mode (static LEDs)
+[22:19:16] [ARDUINO] Output 1 → OFF
+
+[22:19:16] [ARDUINO] Output 4 → OFF
+
+[22:19:16] [ARDUINO] Output 6 → OFF
+
+[22:19:16] [ARDUINO] Output 7 → OFF
+
+[22:19:20] [ARDUINO] Output 1 → ON (g)
+
+[22:19:20] [ARDUINO] Output 4 → ON (g)
+
+[22:19:20] [ARDUINO] Output 6 → ON (g)
+
+[22:19:20] [ARDUINO] Output 7 → ON (g)
+
+[22:19:22.606] [STRIKELOOP] Round 2 Level 1 time remaining: 00:20
+[22:19:24] [ARDUINO] Output 1 → OFF
+
+[22:19:24] [ARDUINO] Output 4 → OFF
+
+[22:19:24] [ARDUINO] Output 6 → OFF
+
+[22:19:24] [ARDUINO] Output 7 → OFF
+
+[22:19:28] [ARDUINO] Output 1 → ON (g)
+
+[22:19:28] [ARDUINO] Output 4 → ON (g)
+
+[22:19:28] [ARDUINO] Output 6 → ON (g)
+
+[22:19:28] [ARDUINO] Output 7 → ON (g)
+
+[22:19:32] [ARDUINO] Output 1 → OFF
+
+[22:19:32] [ARDUINO] Output 4 → OFF
+
+[22:19:32] [ARDUINO] Output 6 → OFF
+
+[22:19:32] [ARDUINO] Output 7 → OFF
+
+[22:19:32.609] [STRIKELOOP] Round 2 Level 1 time remaining: 00:10
+[22:19:36] [ARDUINO] Output 1 → ON (g)
+
+[22:19:36] [ARDUINO] Output 4 → ON (g)
+
+[22:19:36] [ARDUINO] Output 6 → ON (g)
+
+[22:19:36] [ARDUINO] Output 7 → ON (g)
+
+[22:19:40] [ARDUINO] Output 1 → OFF
+
+[22:19:40] [ARDUINO] Output 4 → OFF
+
+[22:19:40] [ARDUINO] Output 6 → OFF
+
+[22:19:40] [ARDUINO] Output 7 → OFF
+
+[22:19:42.610] [STRIKELOOP] Round 2 Level 1 time remaining: 00:00
+[22:19:43.610] [STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (0/3000). Retrying level...
+[22:19:43.611] [STRIKELOOP] LED refresh stopped, LEDs preserved
+[22:19:43.611] [STRIKELOOP] Round 2-1 (RETRY) | Goal: 3000pts in 30s
+[22:19:43.611] [STRIKELOOP] Clearing 1 blink intervals from previous level
+[22:19:43.612] [STRIKELOOP] Retry mode - keeping existing LED pattern and validation state
+[22:19:43.612] [STRIKELOOP] Mission initialized: { arcadeMode: 'blinking-green-bonus', goalScore: 3000, duration: 30 }
+[22:19:43.613] [STRIKELOOP] Retry - restarting interval for blinking-green-bonus mode
+[22:19:43.613] [STRIKELOOP] Starting arcade LEDs for mode: blinking-green-bonus
+[22:19:43] [ARDUINO] Output 1 → ON (g)
+
+[22:19:43] [ARDUINO] Output 4 → ON (g)
+
+[22:19:43] [ARDUINO] Output 6 → ON (g)
+
+[22:19:43] [ARDUINO] Output 7 → ON (g)
+
+[22:19:43.620] [STRIKELOOP] Bonus section activated
+[22:19:43.624] [STRIKELOOP] Arcade LEDs (blinking-green-bonus): 13 targets, 4 traps | Pattern: 1:G 2:G 3:G 4:G 5:R(trap)* 6:R(trap)* 7:R(trap)* 8:R(trap)* 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:19:43.626] [STRIKELOOP] LED refresh skipped for blinking-green-bonus mode (static LEDs)
+[22:19:47] [ARDUINO] Output 1 → OFF
+
+[22:19:47] [ARDUINO] Output 4 → OFF
+
+[22:19:47] [ARDUINO] Output 6 → OFF
+
+[22:19:47] [ARDUINO] Output 7 → OFF
+
+[22:19:51] [ARDUINO] Output 1 → ON (g)
+
+[22:19:51] [ARDUINO] Output 4 → ON (g)
+
+[22:19:51] [ARDUINO] Output 6 → ON (g)
+
+[22:19:51] [ARDUINO] Output 7 → ON (g)
+
+[22:19:53.633] [STRIKELOOP] Round 2 Level 1 time remaining: 00:20
+[22:19:55] [ARDUINO] Output 1 → OFF
+
+[22:19:55] [ARDUINO] Output 4 → OFF
+
+[22:19:55] [ARDUINO] Output 6 → OFF
+
+[22:19:55] [ARDUINO] Output 7 → OFF
+
+[22:19:59] [ARDUINO] Output 1 → ON (g)
+
+[22:19:59] [ARDUINO] Output 4 → ON (g)
+
+[22:19:59] [ARDUINO] Output 6 → ON (g)
+
+[22:19:59] [ARDUINO] Output 7 → ON (g)
+
+[22:20:03] [ARDUINO] Output 1 → OFF
+
+[22:20:03] [ARDUINO] Output 4 → OFF
+
+[22:20:03] [ARDUINO] Output 6 → OFF
+
+[22:20:03] [ARDUINO] Output 7 → OFF
+
+[22:20:03.633] [STRIKELOOP] Round 2 Level 1 time remaining: 00:10
+[22:20:07] [ARDUINO] Output 1 → ON (g)
+
+[22:20:07] [ARDUINO] Output 4 → ON (g)
+
+[22:20:07] [ARDUINO] Output 6 → ON (g)
+
+[22:20:07] [ARDUINO] Output 7 → ON (g)
+
+[HAL] ⚡ Input Translation: Hardware 7 → Logical 4
+[22:20:11.583] [STRIKELOOP] Arduino input received during game: 4 Value: 8
+[22:20:11.583] [STRIKELOOP] ✅ GREEN HIT! Circle 4 +800 points
+[22:20:11.583] [STRIKELOOP] Local score updated to: 800
+[22:20:11.584] [STRIKELOOP] Score: -800 → 800 (+800)
+[22:20:11] [ARDUINO] Output 1 → OFF
+
+[22:20:11] [ARDUINO] Output 4 → OFF
+
+[22:20:11] [ARDUINO] Output 6 → OFF
+
+[22:20:11] [ARDUINO] Output 7 → OFF
+
+[22:20:11] [ARDUINO] Output 1 → ON (g)
+
+[22:20:11] [ARDUINO] Output 4 → ON (g)
+
+[22:20:11] [ARDUINO] Output 6 → ON (g)
+
+[22:20:11] [ARDUINO] Output 7 → ON (g)
+
+[22:20:11.894] [STRIKELOOP] Bonus section activated
+[22:20:11.895] [STRIKELOOP] Arcade LEDs (blinking-green-bonus): 13 targets, 4 traps | Pattern: 1:G 2:G 3:G 4:G 5:R(trap)* 6:R(trap)* 7:R(trap)* 8:R(trap)* 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:20:13.635] [STRIKELOOP] Round 2 Level 1 time remaining: 00:00
+[22:20:14.635] [STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (800/3000). Retrying level...
+[22:20:14.635] [STRIKELOOP] LED refresh stopped, LEDs preserved
+[22:20:14.636] [STRIKELOOP] Round 2-1 (RETRY) | Goal: 3000pts in 30s
+[22:20:14.636] [STRIKELOOP] Clearing 1 blink intervals from previous level
+[22:20:14.637] [STRIKELOOP] Retry mode - keeping existing LED pattern and validation state
+[22:20:14.637] [STRIKELOOP] Mission initialized: { arcadeMode: 'blinking-green-bonus', goalScore: 3000, duration: 30 }
+[22:20:14.637] [STRIKELOOP] Retry - restarting interval for blinking-green-bonus mode
+[22:20:14.638] [STRIKELOOP] Starting arcade LEDs for mode: blinking-green-bonus
+[22:20:14.642] [STRIKELOOP] Bonus section activated
+[22:20:14.643] [STRIKELOOP] Arcade LEDs (blinking-green-bonus): 13 targets, 4 traps | Pattern: 1:G 2:G 3:G 4:G 5:R(trap)* 6:R(trap)* 7:R(trap)* 8:R(trap)* 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:20:14.644] [STRIKELOOP] LED refresh skipped for blinking-green-bonus mode (static LEDs)
+[HAL] ⚡ Input Translation: Hardware 4 → Logical 2
+[22:20:15.851] [STRIKELOOP] Arduino input received during game: 2 Value: 4
+[22:20:15.851] [STRIKELOOP] ✅ GREEN HIT! Circle 2 +800 points
+[22:20:15.851] [STRIKELOOP] Local score updated to: 1600
+[22:20:15.852] [STRIKELOOP] Score: 0 → 1600 (+800)
+[22:20:16.158] [STRIKELOOP] Bonus section activated
+[22:20:16.161] [STRIKELOOP] Arcade LEDs (blinking-green-bonus): 13 targets, 4 traps | Pattern: 1:G 2:G 3:G 4:G 5:R(trap)* 6:R(trap)* 7:R(trap)* 8:R(trap)* 9:Y 10:Y 11:Y 12:Y 13:Y
+[HAL] ⚡ Input Translation: Hardware 7 → Logical 4
+[22:20:17.403] [STRIKELOOP] Arduino input received during game: 4 Value: 8
+[22:20:17.403] [STRIKELOOP] ✅ GREEN HIT! Circle 4 +800 points
+[22:20:17.404] [STRIKELOOP] Local score updated to: 2400
+[22:20:17.404] [STRIKELOOP] Score: 800 → 2400 (+800)
+[22:20:17.706] [STRIKELOOP] Bonus section activated
+[22:20:17.707] [STRIKELOOP] Arcade LEDs (blinking-green-bonus): 13 targets, 4 traps | Pattern: 1:G 2:G 3:G 4:G 5:R(trap)* 6:R(trap)* 7:R(trap)* 8:R(trap)* 9:Y 10:Y 11:Y 12:Y 13:Y
+[HAL] ⚡ Input Translation: Hardware 4 → Logical 2
+[22:20:20.614] [STRIKELOOP] Arduino input received during game: 2 Value: 4
+[22:20:20.617] [STRIKELOOP] ✅ GREEN HIT! Circle 2 +800 points
+[22:20:20.617] [STRIKELOOP] Local score updated to: 3200
+[22:20:20.618] [STRIKELOOP] 🎉 GOAL ACHIEVED! 3200/3000 - Level can be completed
+[22:20:20.619] [APP] Bonus phase started: 🌟 OBJECTIF ATTEINT! Tous les points gagnés maintenant sont des BONUS! 🌟
+[22:20:20.619] [STRIKELOOP] Score: 1600 → 3200 (+800)
+[22:20:20.921] [STRIKELOOP] Bonus section activated
+[22:20:20.922] [STRIKELOOP] Arcade LEDs (blinking-green-bonus): 13 targets, 4 traps | Pattern: 1:G 2:G 3:G 4:G 5:R(trap)* 6:R(trap)* 7:R(trap)* 8:R(trap)* 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:20:24.649] [STRIKELOOP] Round 2 Level 1 time remaining: 00:20
+[22:20:24] [ARDUINO] Output 1 → OFF
+
+[22:20:24] [ARDUINO] Output 4 → OFF
+
+[22:20:24] [ARDUINO] Output 6 → OFF
+
+[22:20:24] [ARDUINO] Output 7 → OFF
+
+[22:20:28] [ARDUINO] Output 1 → ON (g)
+
+[22:20:28] [ARDUINO] Output 4 → ON (g)
+
+[22:20:28] [ARDUINO] Output 6 → ON (g)
+
+[22:20:28] [ARDUINO] Output 7 → ON (g)
+
+[HAL] ⚡ Input Translation: Hardware 7 → Logical 4
+[22:20:31.770] [STRIKELOOP] Arduino input received during game: 4 Value: 8
+[22:20:31.770] [STRIKELOOP] ✅ GREEN HIT! Circle 4 +800 points
+[22:20:31.771] [STRIKELOOP] Local score updated to: 4000
+[22:20:31.771] [STRIKELOOP] Score: 2400 → 4000 (+800)
+[22:20:32.072] [STRIKELOOP] Bonus section activated
+[22:20:32.073] [STRIKELOOP] Arcade LEDs (blinking-green-bonus): 13 targets, 4 traps | Pattern: 1:G 2:G 3:G 4:G 5:R(trap)* 6:R(trap)* 7:R(trap)* 8:R(trap)* 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:20:34.651] [STRIKELOOP] Round 2 Level 1 time remaining: 00:10
+[22:20:36] [ARDUINO] Output 1 → OFF
+
+[22:20:36] [ARDUINO] Output 4 → OFF
+
+[22:20:36] [ARDUINO] Output 6 → OFF
+
+[22:20:36] [ARDUINO] Output 7 → OFF
+
+[HAL] ⚡ Input Translation: Hardware 7 → Logical 4
+[22:20:36.629] [STRIKELOOP] Arduino input received during game: 4 Value: 8
+[22:20:36.629] [STRIKELOOP] ⚪ GREEN MISS! Circle 4 was off (no points)
+[22:20:36] [ARDUINO] Output 1 → ON (g)
+
+[22:20:36] [ARDUINO] Output 4 → ON (g)
+
+[22:20:36] [ARDUINO] Output 6 → ON (g)
+
+[22:20:36] [ARDUINO] Output 7 → ON (g)
+
+[22:20:36.934] [STRIKELOOP] Bonus section activated
+[22:20:36.935] [STRIKELOOP] Arcade LEDs (blinking-green-bonus): 13 targets, 4 traps | Pattern: 1:G 2:G 3:G 4:G 5:R(trap)* 6:R(trap)* 7:R(trap)* 8:R(trap)* 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:20:40] [ARDUINO] Output 1 → OFF
+
+[22:20:40] [ARDUINO] Output 4 → OFF
+
+[22:20:40] [ARDUINO] Output 6 → OFF
+
+[22:20:40] [ARDUINO] Output 7 → OFF
+
+[HAL] ⚡ Input Translation: Hardware 6 → Logical 3
+[22:20:42.343] [STRIKELOOP] Arduino input received during game: 3 Value: 2
+[22:20:42.343] [STRIKELOOP] ⚪ GREEN MISS! Circle 3 was off (no points)
+[22:20:42] [ARDUINO] Output 1 → ON (g)
+
+[22:20:42] [ARDUINO] Output 4 → ON (g)
+
+[22:20:42] [ARDUINO] Output 6 → ON (g)
+
+[22:20:42] [ARDUINO] Output 7 → ON (g)
+
+[22:20:42.647] [STRIKELOOP] Bonus section activated
+[22:20:42.647] [STRIKELOOP] Arcade LEDs (blinking-green-bonus): 13 targets, 4 traps | Pattern: 1:G 2:G 3:G 4:G 5:R(trap)* 6:R(trap)* 7:R(trap)* 8:R(trap)* 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:20:44.653] [STRIKELOOP] Round 2 Level 1 time remaining: 00:00
+[22:20:45.653] [STRIKELOOP] ✅ Level 1 COMPLETED! 4000/3000
+[22:20:45.654] [STRIKELOOP] Cumulative score: 10650 (added 4000 from this level)
+[22:20:45] [ARDUINO] Output 1 → OFF
+
+[22:20:45] [ARDUINO] Output 4 → OFF
+
+[22:20:45] [ARDUINO] Output 6 → OFF
+
+[22:20:45] [ARDUINO] Output 7 → OFF
+
+[22:20:45] [ARDUINO] Output 2 → OFF
+
+[22:20:45] [ARDUINO] Output 3 → OFF
+
+[22:20:45] [ARDUINO] Output 5 → OFF
+
+[22:20:45] [ARDUINO] Output 8 → OFF
+
+[22:20:45] [ARDUINO] Output 9 → OFF
+
+[22:20:45.661] [STRIKELOOP] LED refresh stopped, all LEDs cleared
+[22:20:45.661] [STRIKELOOP] Round 2-2 | Goal: 3200pts in 30s
+[22:20:45.661] [STRIKELOOP] 🎯 LEVEL CHANGE DETECTED (R2L2) - Triggering hardware effect O001
+[22:20:45.661] [ARDUINO] Special effect code: 001
+[22:20:45] Special effect code: 001
+
+[22:20:47.662] [STRIKELOOP] Clearing 1 blink intervals from previous level
+[22:20:47.663] [STRIKELOOP] New level - resetting all LEDs
+[22:20:47.664] [STRIKELOOP] Mission initialized: { arcadeMode: 'blinking-blue-bonus', goalScore: 3200, duration: 30 }
+[22:20:47.665] [STRIKELOOP] Starting arcade LEDs for mode: blinking-blue-bonus
+[22:20:47.665] [STRIKELOOP] Activating Blinking Blue Bonus mode
+[22:20:47.665] [STRIKELOOP] Setting red traps (1-4) to SOLID RED
+[22:20:47] [ARDUINO] Output 1 → ON (r)
+
+[22:20:47] [ARDUINO] Output 4 → ON (r)
+
+[22:20:47] [ARDUINO] Output 6 → ON (r)
+
+[22:20:47] [ARDUINO] Output 7 → ON (r)
+
+[22:20:47.666] [STRIKELOOP] Setting blue targets (5-8) to BLINKING BLUE
+[22:20:47] [ARDUINO] Output 2 → ON (b)
+
+[22:20:47] [ARDUINO] Output 3 → ON (b)
+
+[22:20:47] [ARDUINO] Output 5 → ON (b)
+
+[22:20:47] [ARDUINO] Output 8 → ON (b)
+
+[22:20:47.667] [STRIKELOOP] Setting bonus section (9-13) to SOLID YELLOW
+[22:20:47] [ARDUINO] Output 9 → ON (y)
+
+[22:20:47.668] [STRIKELOOP] Bonus section activated
+[22:20:47.669] [STRIKELOOP] Arcade LEDs (blinking-blue-bonus): 13 targets, 4 traps | Pattern: 1:R(trap)* 2:R(trap)* 3:R(trap)* 4:R(trap)* 5:B 6:B 7:B 8:B 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:20:47.669] [STRIKELOOP] LED refresh skipped for blinking-blue-bonus mode (static LEDs)
+[22:20:51] [ARDUINO] Output 2 → OFF
+
+[22:20:51] [ARDUINO] Output 3 → OFF
+
+[22:20:51] [ARDUINO] Output 5 → OFF
+
+[22:20:51] [ARDUINO] Output 8 → OFF
+
+[22:20:55] [ARDUINO] Output 2 → ON (b)
+
+[22:20:55] [ARDUINO] Output 3 → ON (b)
+
+[22:20:55] [ARDUINO] Output 5 → ON (b)
+
+[22:20:55] [ARDUINO] Output 8 → ON (b)
+
+[HAL] ⚡ Input Translation: Hardware 5 → Logical 7
+[22:20:56.712] [STRIKELOOP] Arduino input received during game: 7 Value: 32
+[22:20:56.712] [STRIKELOOP] ✅ BLUE HIT! Circle 7 +850 points
+[22:20:56.712] [STRIKELOOP] Local score updated to: 850
+[22:20:56.713] [STRIKELOOP] Score: -850 → 850 (+850)
+[22:20:57.014] [STRIKELOOP] Activating Blinking Blue Bonus mode
+[22:20:57.014] [STRIKELOOP] Setting red traps (1-4) to SOLID RED
+[22:20:57.015] [STRIKELOOP] Setting blue targets (5-8) to BLINKING BLUE
+[22:20:57.016] [STRIKELOOP] Setting bonus section (9-13) to SOLID YELLOW
+[22:20:57.016] [STRIKELOOP] Bonus section activated
+[22:20:57.017] [STRIKELOOP] Arcade LEDs (blinking-blue-bonus): 13 targets, 4 traps | Pattern: 1:R(trap)* 2:R(trap)* 3:R(trap)* 4:R(trap)* 5:B 6:B 7:B 8:B 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:20:57.674] [STRIKELOOP] Round 2 Level 2 time remaining: 00:20
+[22:21:01] [ARDUINO] Output 2 → OFF
+
+[22:21:01] [ARDUINO] Output 3 → OFF
+
+[22:21:01] [ARDUINO] Output 5 → OFF
+
+[22:21:01] [ARDUINO] Output 8 → OFF
+
+[22:21:05] [ARDUINO] Output 2 → ON (b)
+
+[22:21:05] [ARDUINO] Output 3 → ON (b)
+
+[22:21:05] [ARDUINO] Output 5 → ON (b)
+
+[22:21:05] [ARDUINO] Output 8 → ON (b)
+
+[22:21:07.675] [STRIKELOOP] Round 2 Level 2 time remaining: 00:10
+[22:21:09] [ARDUINO] Output 2 → OFF
+
+[22:21:09] [ARDUINO] Output 3 → OFF
+
+[22:21:09] [ARDUINO] Output 5 → OFF
+
+[22:21:09] [ARDUINO] Output 8 → OFF
+
+[22:21:13] [ARDUINO] Output 2 → ON (b)
+
+[22:21:13] [ARDUINO] Output 3 → ON (b)
+
+[22:21:13] [ARDUINO] Output 5 → ON (b)
+
+[22:21:13] [ARDUINO] Output 8 → ON (b)
+
+[22:21:17] [ARDUINO] Output 2 → OFF
+
+[22:21:17] [ARDUINO] Output 3 → OFF
+
+[22:21:17] [ARDUINO] Output 5 → OFF
+
+[22:21:17] [ARDUINO] Output 8 → OFF
+
+[22:21:17.679] [STRIKELOOP] Round 2 Level 2 time remaining: 00:00
+[22:21:18.678] [STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (850/3200). Retrying level...
+[22:21:18.679] [STRIKELOOP] LED refresh stopped, LEDs preserved
+[22:21:18.679] [STRIKELOOP] Round 2-2 (RETRY) | Goal: 3200pts in 30s
+[22:21:18.679] [STRIKELOOP] Clearing 1 blink intervals from previous level
+[22:21:18.680] [STRIKELOOP] Retry mode - keeping existing LED pattern and validation state
+[22:21:18.680] [STRIKELOOP] Mission initialized: { arcadeMode: 'blinking-blue-bonus', goalScore: 3200, duration: 30 }
+[22:21:18.681] [STRIKELOOP] Retry - restarting interval for blinking-blue-bonus mode
+[22:21:18.681] [STRIKELOOP] Starting arcade LEDs for mode: blinking-blue-bonus
+[22:21:18.681] [STRIKELOOP] Activating Blinking Blue Bonus mode
+[22:21:18.681] [STRIKELOOP] Setting red traps (1-4) to SOLID RED
+[22:21:18.683] [STRIKELOOP] Setting blue targets (5-8) to BLINKING BLUE
+[22:21:18] [ARDUINO] Output 2 → ON (b)
+
+[22:21:18] [ARDUINO] Output 3 → ON (b)
+
+[22:21:18] [ARDUINO] Output 5 → ON (b)
+
+[22:21:18] [ARDUINO] Output 8 → ON (b)
+
+[22:21:18.687] [STRIKELOOP] Setting bonus section (9-13) to SOLID YELLOW
+[22:21:18.688] [STRIKELOOP] Bonus section activated
+[22:21:18.688] [STRIKELOOP] Arcade LEDs (blinking-blue-bonus): 13 targets, 4 traps | Pattern: 1:R(trap)* 2:R(trap)* 3:R(trap)* 4:R(trap)* 5:B 6:B 7:B 8:B 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:21:18.689] [STRIKELOOP] LED refresh skipped for blinking-blue-bonus mode (static LEDs)
+[22:21:22] [ARDUINO] Output 2 → OFF
+
+[22:21:22] [ARDUINO] Output 3 → OFF
+
+[22:21:22] [ARDUINO] Output 5 → OFF
+
+[22:21:22] [ARDUINO] Output 8 → OFF
+
+[22:21:26] [ARDUINO] Output 2 → ON (b)
+
+[22:21:26] [ARDUINO] Output 3 → ON (b)
+
+[22:21:26] [ARDUINO] Output 5 → ON (b)
+
+[22:21:26] [ARDUINO] Output 8 → ON (b)
+
+[22:21:28.694] [STRIKELOOP] Round 2 Level 2 time remaining: 00:20
+[22:21:30] [ARDUINO] Output 2 → OFF
+
+[22:21:30] [ARDUINO] Output 3 → OFF
+
+[22:21:30] [ARDUINO] Output 5 → OFF
+
+[22:21:30] [ARDUINO] Output 8 → OFF
+
+[22:21:34] [ARDUINO] Output 2 → ON (b)
+
+[22:21:34] [ARDUINO] Output 3 → ON (b)
+
+[22:21:34] [ARDUINO] Output 5 → ON (b)
+
+[22:21:34] [ARDUINO] Output 8 → ON (b)
+
+[22:21:38] [ARDUINO] Output 2 → OFF
+
+[22:21:38] [ARDUINO] Output 3 → OFF
+
+[22:21:38] [ARDUINO] Output 5 → OFF
+
+[22:21:38] [ARDUINO] Output 8 → OFF
+
+[22:21:38.697] [STRIKELOOP] Round 2 Level 2 time remaining: 00:10
+[22:21:42] [ARDUINO] Output 2 → ON (b)
+
+[22:21:42] [ARDUINO] Output 3 → ON (b)
+
+[22:21:42] [ARDUINO] Output 5 → ON (b)
+
+[22:21:42] [ARDUINO] Output 8 → ON (b)
+
+[22:21:46] [ARDUINO] Output 2 → OFF
+
+[22:21:46] [ARDUINO] Output 3 → OFF
+
+[22:21:46] [ARDUINO] Output 5 → OFF
+
+[22:21:46] [ARDUINO] Output 8 → OFF
+
+[22:21:48.700] [STRIKELOOP] Round 2 Level 2 time remaining: 00:00
+[22:21:49.699] [STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (850/3200). Retrying level...
+[22:21:49.700] [STRIKELOOP] LED refresh stopped, LEDs preserved
+[22:21:49.700] [STRIKELOOP] Round 2-2 (RETRY) | Goal: 3200pts in 30s
+[22:21:49.700] [STRIKELOOP] Clearing 1 blink intervals from previous level
+[22:21:49.701] [STRIKELOOP] Retry mode - keeping existing LED pattern and validation state
+[22:21:49.701] [STRIKELOOP] Mission initialized: { arcadeMode: 'blinking-blue-bonus', goalScore: 3200, duration: 30 }
+[22:21:49.701] [STRIKELOOP] Retry - restarting interval for blinking-blue-bonus mode
+[22:21:49.702] [STRIKELOOP] Starting arcade LEDs for mode: blinking-blue-bonus
+[22:21:49.702] [STRIKELOOP] Activating Blinking Blue Bonus mode
+[22:21:49.702] [STRIKELOOP] Setting red traps (1-4) to SOLID RED
+[22:21:49.704] [STRIKELOOP] Setting blue targets (5-8) to BLINKING BLUE
+[22:21:49] [ARDUINO] Output 2 → ON (b)
+
+[22:21:49] [ARDUINO] Output 3 → ON (b)
+
+[22:21:49] [ARDUINO] Output 5 → ON (b)
+
+[22:21:49] [ARDUINO] Output 8 → ON (b)
+
+[22:21:49.709] [STRIKELOOP] Setting bonus section (9-13) to SOLID YELLOW
+[22:21:49.710] [STRIKELOOP] Bonus section activated
+[22:21:49.712] [STRIKELOOP] Arcade LEDs (blinking-blue-bonus): 13 targets, 4 traps | Pattern: 1:R(trap)* 2:R(trap)* 3:R(trap)* 4:R(trap)* 5:B 6:B 7:B 8:B 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:21:49.712] [STRIKELOOP] LED refresh skipped for blinking-blue-bonus mode (static LEDs)
+[22:21:53] [ARDUINO] Output 2 → OFF
+
+[22:21:53] [ARDUINO] Output 3 → OFF
+
+[22:21:53] [ARDUINO] Output 5 → OFF
+
+[22:21:53] [ARDUINO] Output 8 → OFF
+
+[HAL] ⚡ Input Translation: Hardware 2 → Logical 5
+[22:21:54.787] [STRIKELOOP] Arduino input received during game: 5 Value: 16
+[22:21:54.788] [STRIKELOOP] ⚪ BLUE MISS! Circle 5 was off (no points)
+[22:21:55.088] [STRIKELOOP] Activating Blinking Blue Bonus mode
+[22:21:55.088] [STRIKELOOP] Setting red traps (1-4) to SOLID RED
+[22:21:55.089] [STRIKELOOP] Setting blue targets (5-8) to BLINKING BLUE
+[22:21:55] [ARDUINO] Output 2 → ON (b)
+
+[22:21:55] [ARDUINO] Output 3 → ON (b)
+
+[22:21:55] [ARDUINO] Output 5 → ON (b)
+
+[22:21:55] [ARDUINO] Output 8 → ON (b)
+
+[22:21:55.092] [STRIKELOOP] Setting bonus section (9-13) to SOLID YELLOW
+[22:21:55.092] [STRIKELOOP] Bonus section activated
+[22:21:55.093] [STRIKELOOP] Arcade LEDs (blinking-blue-bonus): 13 targets, 4 traps | Pattern: 1:R(trap)* 2:R(trap)* 3:R(trap)* 4:R(trap)* 5:B 6:B 7:B 8:B 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:21:59] [ARDUINO] Output 2 → OFF
+
+[22:21:59] [ARDUINO] Output 3 → OFF
+
+[22:21:59] [ARDUINO] Output 5 → OFF
+
+[22:21:59] [ARDUINO] Output 8 → OFF
+
+[22:21:59.719] [STRIKELOOP] Round 2 Level 2 time remaining: 00:20
+[22:22:03] [ARDUINO] Output 2 → ON (b)
+
+[22:22:03] [ARDUINO] Output 3 → ON (b)
+
+[22:22:03] [ARDUINO] Output 5 → ON (b)
+
+[22:22:03] [ARDUINO] Output 8 → ON (b)
+
+[22:22:07] [ARDUINO] Output 2 → OFF
+
+[22:22:07] [ARDUINO] Output 3 → OFF
+
+[22:22:07] [ARDUINO] Output 5 → OFF
+
+[22:22:07] [ARDUINO] Output 8 → OFF
+
+[22:22:09.719] [STRIKELOOP] Round 2 Level 2 time remaining: 00:10
+[22:22:11] [ARDUINO] Output 2 → ON (b)
+
+[22:22:11] [ARDUINO] Output 3 → ON (b)
+
+[22:22:11] [ARDUINO] Output 5 → ON (b)
+
+[22:22:11] [ARDUINO] Output 8 → ON (b)
+
+[22:22:15] [ARDUINO] Output 2 → OFF
+
+[22:22:15] [ARDUINO] Output 3 → OFF
+
+[22:22:15] [ARDUINO] Output 5 → OFF
+
+[22:22:15] [ARDUINO] Output 8 → OFF
+
+[22:22:16.524] [STRIKELOOP] Arduino input received during game: 8 Value: 128
+[22:22:16.524] [STRIKELOOP] ⚪ BLUE MISS! Circle 8 was off (no points)
+[22:22:16.824] [STRIKELOOP] Activating Blinking Blue Bonus mode
+[22:22:16.825] [STRIKELOOP] Setting red traps (1-4) to SOLID RED
+[22:22:16.826] [STRIKELOOP] Setting blue targets (5-8) to BLINKING BLUE
+[22:22:16] [ARDUINO] Output 2 → ON (b)
+
+[22:22:16] [ARDUINO] Output 3 → ON (b)
+
+[22:22:16] [ARDUINO] Output 5 → ON (b)
+
+[22:22:16] [ARDUINO] Output 8 → ON (b)
+
+[22:22:16.834] [STRIKELOOP] Setting bonus section (9-13) to SOLID YELLOW
+[22:22:16.835] [STRIKELOOP] Bonus section activated
+[22:22:16.836] [STRIKELOOP] Arcade LEDs (blinking-blue-bonus): 13 targets, 4 traps | Pattern: 1:R(trap)* 2:R(trap)* 3:R(trap)* 4:R(trap)* 5:B 6:B 7:B 8:B 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:22:19.721] [STRIKELOOP] Round 2 Level 2 time remaining: 00:00
+[22:22:20.721] [STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (850/3200). Retrying level...
+[22:22:20.721] [STRIKELOOP] LED refresh stopped, LEDs preserved
+[22:22:20.721] [STRIKELOOP] Round 2-2 (RETRY) | Goal: 3200pts in 30s
+[22:22:20.722] [STRIKELOOP] Clearing 1 blink intervals from previous level
+[22:22:20.722] [STRIKELOOP] Retry mode - keeping existing LED pattern and validation state
+[22:22:20.722] [STRIKELOOP] Mission initialized: { arcadeMode: 'blinking-blue-bonus', goalScore: 3200, duration: 30 }
+[22:22:20.723] [STRIKELOOP] Retry - restarting interval for blinking-blue-bonus mode
+[22:22:20.723] [STRIKELOOP] Starting arcade LEDs for mode: blinking-blue-bonus
+[22:22:20.723] [STRIKELOOP] Activating Blinking Blue Bonus mode
+[22:22:20.724] [STRIKELOOP] Setting red traps (1-4) to SOLID RED
+[22:22:20.725] [STRIKELOOP] Setting blue targets (5-8) to BLINKING BLUE
+[22:22:20.727] [STRIKELOOP] Setting bonus section (9-13) to SOLID YELLOW
+[22:22:20.728] [STRIKELOOP] Bonus section activated
+[22:22:20.729] [STRIKELOOP] Arcade LEDs (blinking-blue-bonus): 13 targets, 4 traps | Pattern: 1:R(trap)* 2:R(trap)* 3:R(trap)* 4:R(trap)* 5:B 6:B 7:B 8:B 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:22:20.729] [STRIKELOOP] LED refresh skipped for blinking-blue-bonus mode (static LEDs)
+[22:22:24] [ARDUINO] Output 2 → OFF
+
+[22:22:24] [ARDUINO] Output 3 → OFF
+
+[22:22:24] [ARDUINO] Output 5 → OFF
+
+[22:22:24] [ARDUINO] Output 8 → OFF
+
+[22:22:28] [ARDUINO] Output 2 → ON (b)
+
+[22:22:28] [ARDUINO] Output 3 → ON (b)
+
+[22:22:28] [ARDUINO] Output 5 → ON (b)
+
+[22:22:28] [ARDUINO] Output 8 → ON (b)
+
+[22:22:30.732] [STRIKELOOP] Round 2 Level 2 time remaining: 00:20
+[22:22:32] [ARDUINO] Output 2 → OFF
+
+[22:22:32] [ARDUINO] Output 3 → OFF
+
+[22:22:32] [ARDUINO] Output 5 → OFF
+
+[22:22:32] [ARDUINO] Output 8 → OFF
+
+[HAL] ⚡ Input Translation: Hardware 4 → Logical 2
+[22:22:32.753] [STRIKELOOP] Arduino input received during game: 2 Value: 4
+[22:22:32.753] [STRIKELOOP] ❌ TRAP 2 -100pts
+[22:22:32.754] [STRIKELOOP] Local score updated to: 750
+[22:22:32.754] [STRIKELOOP] Score: 950 → 750 (-100)
+[22:22:33.055] [STRIKELOOP] Activating Blinking Blue Bonus mode
+[22:22:33.056] [STRIKELOOP] Setting red traps (1-4) to SOLID RED
+[22:22:33.058] [STRIKELOOP] Setting blue targets (5-8) to BLINKING BLUE
+[22:22:33] [ARDUINO] Output 2 → ON (b)
+
+[22:22:33] [ARDUINO] Output 3 → ON (b)
+
+[22:22:33] [ARDUINO] Output 5 → ON (b)
+
+[22:22:33] [ARDUINO] Output 8 → ON (b)
+
+[22:22:33.064] [STRIKELOOP] Setting bonus section (9-13) to SOLID YELLOW
+[22:22:33.065] [STRIKELOOP] Bonus section activated
+[22:22:33.066] [STRIKELOOP] Arcade LEDs (blinking-blue-bonus): 13 targets, 4 traps | Pattern: 1:R(trap)* 2:R(trap)* 3:R(trap)* 4:R(trap)* 5:B 6:B 7:B 8:B 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:22:37] [ARDUINO] Output 2 → OFF
+
+[22:22:37] [ARDUINO] Output 3 → OFF
+
+[22:22:37] [ARDUINO] Output 5 → OFF
+
+[22:22:37] [ARDUINO] Output 8 → OFF
+
+[22:22:40.734] [STRIKELOOP] Round 2 Level 2 time remaining: 00:10
+[22:22:41] [ARDUINO] Output 2 → ON (b)
+
+[22:22:41] [ARDUINO] Output 3 → ON (b)
+
+[22:22:41] [ARDUINO] Output 5 → ON (b)
+
+[22:22:41] [ARDUINO] Output 8 → ON (b)
+
+[HAL] ⚡ Input Translation: Hardware 4 → Logical 2
+[22:22:43.516] [STRIKELOOP] Arduino input received during game: 2 Value: 4
+[22:22:43.517] [STRIKELOOP] ❌ TRAP 2 -100pts
+[22:22:43.517] [STRIKELOOP] Local score updated to: 650
+[22:22:43.518] [STRIKELOOP] Score: 850 → 650 (-100)
+[22:22:43.819] [STRIKELOOP] Activating Blinking Blue Bonus mode
+[22:22:43.819] [STRIKELOOP] Setting red traps (1-4) to SOLID RED
+[22:22:43.821] [STRIKELOOP] Setting blue targets (5-8) to BLINKING BLUE
+[22:22:43.822] [STRIKELOOP] Setting bonus section (9-13) to SOLID YELLOW
+[22:22:43.823] [STRIKELOOP] Bonus section activated
+[22:22:43.823] [STRIKELOOP] Arcade LEDs (blinking-blue-bonus): 13 targets, 4 traps | Pattern: 1:R(trap)* 2:R(trap)* 3:R(trap)* 4:R(trap)* 5:B 6:B 7:B 8:B 9:Y 10:Y 11:Y 12:Y 13:Y
+[HAL] ⚡ Input Translation: Hardware 5 → Logical 7
+[22:22:47.510] [STRIKELOOP] Arduino input received during game: 7 Value: 32
+[22:22:47.510] [STRIKELOOP] ✅ BLUE HIT! Circle 7 +850 points
+[22:22:47.510] [STRIKELOOP] Local score updated to: 1500
+[22:22:47.511] [STRIKELOOP] Score: -200 → 1500 (+850)
+[22:22:47.811] [STRIKELOOP] Activating Blinking Blue Bonus mode
+[22:22:47.812] [STRIKELOOP] Setting red traps (1-4) to SOLID RED
+[22:22:47.812] [STRIKELOOP] Setting blue targets (5-8) to BLINKING BLUE
+[22:22:47.813] [STRIKELOOP] Setting bonus section (9-13) to SOLID YELLOW
+[22:22:47.813] [STRIKELOOP] Bonus section activated
+[22:22:47.814] [STRIKELOOP] Arcade LEDs (blinking-blue-bonus): 13 targets, 4 traps | Pattern: 1:R(trap)* 2:R(trap)* 3:R(trap)* 4:R(trap)* 5:B 6:B 7:B 8:B 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:22:50.735] [STRIKELOOP] Round 2 Level 2 time remaining: 00:00
+[22:22:51.735] [STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (1500/3200). Retrying level...
+[22:22:51.735] [STRIKELOOP] LED refresh stopped, LEDs preserved
+[22:22:51.735] [STRIKELOOP] Round 2-2 (RETRY) | Goal: 3200pts in 30s
+[22:22:51.735] [STRIKELOOP] Clearing 1 blink intervals from previous level
+[22:22:51.736] [STRIKELOOP] Retry mode - keeping existing LED pattern and validation state
+[22:22:51.736] [STRIKELOOP] Mission initialized: { arcadeMode: 'blinking-blue-bonus', goalScore: 3200, duration: 30 }
+[22:22:51.737] [STRIKELOOP] Retry - restarting interval for blinking-blue-bonus mode
+[22:22:51.737] [STRIKELOOP] Starting arcade LEDs for mode: blinking-blue-bonus
+[22:22:51.738] [STRIKELOOP] Activating Blinking Blue Bonus mode
+[22:22:51.738] [STRIKELOOP] Setting red traps (1-4) to SOLID RED
+[22:22:51.739] [STRIKELOOP] Setting blue targets (5-8) to BLINKING BLUE
+[22:22:51.741] [STRIKELOOP] Setting bonus section (9-13) to SOLID YELLOW
+[22:22:51.742] [STRIKELOOP] Bonus section activated
+[22:22:51.742] [STRIKELOOP] Arcade LEDs (blinking-blue-bonus): 13 targets, 4 traps | Pattern: 1:R(trap)* 2:R(trap)* 3:R(trap)* 4:R(trap)* 5:B 6:B 7:B 8:B 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:22:51.743] [STRIKELOOP] LED refresh skipped for blinking-blue-bonus mode (static LEDs)
+[22:22:55] [ARDUINO] Output 2 → OFF
+
+[22:22:55] [ARDUINO] Output 3 → OFF
+
+[22:22:55] [ARDUINO] Output 5 → OFF
+
+[22:22:55] [ARDUINO] Output 8 → OFF
+
+[22:22:59] [ARDUINO] Output 2 → ON (b)
+
+[22:22:59] [ARDUINO] Output 3 → ON (b)
+
+[22:22:59] [ARDUINO] Output 5 → ON (b)
+
+[22:22:59] [ARDUINO] Output 8 → ON (b)
+
+[22:23:01.747] [STRIKELOOP] Round 2 Level 2 time remaining: 00:20
+[22:23:03] [ARDUINO] Output 2 → OFF
+
+[22:23:03] [ARDUINO] Output 3 → OFF
+
+[22:23:03] [ARDUINO] Output 5 → OFF
+
+[22:23:03] [ARDUINO] Output 8 → OFF
+
+[22:23:07] [ARDUINO] Output 2 → ON (b)
+
+[22:23:07] [ARDUINO] Output 3 → ON (b)
+
+[22:23:07] [ARDUINO] Output 5 → ON (b)
+
+[22:23:07] [ARDUINO] Output 8 → ON (b)
+
+[HAL] ⚡ Input Translation: Hardware 2 → Logical 5
+[22:23:10.484] [STRIKELOOP] Arduino input received during game: 5 Value: 16
+[22:23:10.484] [STRIKELOOP] ✅ BLUE HIT! Circle 5 +850 points
+[22:23:10.484] [STRIKELOOP] Local score updated to: 2350
+[22:23:10.485] [STRIKELOOP] Score: 650 → 2350 (+850)
+[22:23:10.787] [STRIKELOOP] Activating Blinking Blue Bonus mode
+[22:23:10.787] [STRIKELOOP] Setting red traps (1-4) to SOLID RED
+[22:23:10.789] [STRIKELOOP] Setting blue targets (5-8) to BLINKING BLUE
+[22:23:10.793] [STRIKELOOP] Setting bonus section (9-13) to SOLID YELLOW
+[22:23:10.794] [STRIKELOOP] Bonus section activated
+[22:23:10.795] [STRIKELOOP] Arcade LEDs (blinking-blue-bonus): 13 targets, 4 traps | Pattern: 1:R(trap)* 2:R(trap)* 3:R(trap)* 4:R(trap)* 5:B 6:B 7:B 8:B 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:23:11.750] [STRIKELOOP] Round 2 Level 2 time remaining: 00:10
+[HAL] ⚡ Input Translation: Hardware 5 → Logical 7
+[22:23:12.151] [STRIKELOOP] Arduino input received during game: 7 Value: 32
+[22:23:12.151] [STRIKELOOP] ✅ BLUE HIT! Circle 7 +850 points
+[22:23:12.152] [STRIKELOOP] Local score updated to: 3200
+[22:23:12.152] [STRIKELOOP] 🎉 GOAL ACHIEVED! 3200/3200 - Level can be completed
+[22:23:12.153] [APP] Bonus phase started: 🌟 OBJECTIF ATTEINT! Tous les points gagnés maintenant sont des BONUS! 🌟
+[22:23:12.153] [STRIKELOOP] Score: 1500 → 3200 (+850)
+[22:23:12.454] [STRIKELOOP] Activating Blinking Blue Bonus mode
+[22:23:12.454] [STRIKELOOP] Setting red traps (1-4) to SOLID RED
+[22:23:12.455] [STRIKELOOP] Setting blue targets (5-8) to BLINKING BLUE
+[22:23:12.457] [STRIKELOOP] Setting bonus section (9-13) to SOLID YELLOW
+[22:23:12.457] [STRIKELOOP] Bonus section activated
+[22:23:12.458] [STRIKELOOP] Arcade LEDs (blinking-blue-bonus): 13 targets, 4 traps | Pattern: 1:R(trap)* 2:R(trap)* 3:R(trap)* 4:R(trap)* 5:B 6:B 7:B 8:B 9:Y 10:Y 11:Y 12:Y 13:Y
+[HAL] ⚡ Input Translation: Hardware 7 → Logical 4
+[22:23:13.626] [STRIKELOOP] Arduino input received during game: 4 Value: 8
+[22:23:13.626] [STRIKELOOP] ❌ TRAP 4 -100pts
+[22:23:13.626] [STRIKELOOP] Local score updated to: 3100
+[22:23:13.627] [STRIKELOOP] Score: 3300 → 3100 (-100)
+[22:23:13.928] [STRIKELOOP] Activating Blinking Blue Bonus mode
+[22:23:13.930] [STRIKELOOP] Setting red traps (1-4) to SOLID RED
+[22:23:13.930] [STRIKELOOP] Setting blue targets (5-8) to BLINKING BLUE
+[22:23:13.931] [STRIKELOOP] Setting bonus section (9-13) to SOLID YELLOW
+[22:23:13.932] [STRIKELOOP] Bonus section activated
+[22:23:13.932] [STRIKELOOP] Arcade LEDs (blinking-blue-bonus): 13 targets, 4 traps | Pattern: 1:R(trap)* 2:R(trap)* 3:R(trap)* 4:R(trap)* 5:B 6:B 7:B 8:B 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:23:17] [ARDUINO] Output 2 → OFF
+
+[22:23:17] [ARDUINO] Output 3 → OFF
+
+[22:23:17] [ARDUINO] Output 5 → OFF
+
+[22:23:17] [ARDUINO] Output 8 → OFF
+
+[22:23:21.750] [STRIKELOOP] Round 2 Level 2 time remaining: 00:00
+[22:23:21] [ARDUINO] Output 2 → ON (b)
+
+[22:23:21] [ARDUINO] Output 3 → ON (b)
+
+[22:23:21] [ARDUINO] Output 5 → ON (b)
+
+[22:23:21] [ARDUINO] Output 8 → ON (b)
+
+[22:23:22.750] [STRIKELOOP] ✅ Level 2 COMPLETED! 3100/3200
+[22:23:22.751] [STRIKELOOP] Cumulative score: 13750 (added 3100 from this level)
+[22:23:22] [ARDUINO] Output 1 → OFF
+
+[22:23:22] [ARDUINO] Output 4 → OFF
+
+[22:23:22] [ARDUINO] Output 6 → OFF
+
+[22:23:22] [ARDUINO] Output 7 → OFF
+
+[22:23:22] [ARDUINO] Output 2 → OFF
+
+[22:23:22] [ARDUINO] Output 3 → OFF
+
+[22:23:22] [ARDUINO] Output 5 → OFF
+
+[22:23:22] [ARDUINO] Output 8 → OFF
+
+[22:23:22] [ARDUINO] Output 9 → OFF
+
+[22:23:22.756] [STRIKELOOP] LED refresh stopped, all LEDs cleared
+[22:23:22.756] [STRIKELOOP] Round 2-3 | Goal: 3400pts in 30s
+[22:23:22.756] [STRIKELOOP] 🎯 LEVEL CHANGE DETECTED (R2L3) - Triggering hardware effect O001
+[22:23:22.757] [ARDUINO] Special effect code: 001
+[22:23:22] Special effect code: 001
+
+[22:23:24.758] [STRIKELOOP] Clearing 1 blink intervals from previous level
+[22:23:24.759] [STRIKELOOP] New level - resetting all LEDs
+[22:23:24.766] [STRIKELOOP] Mission initialized: { arcadeMode: 'snake-green-3', goalScore: 3400, duration: 30 }
+[22:23:24.767] [STRIKELOOP] Starting arcade LEDs for mode: snake-green-3
+[22:23:24] [ARDUINO] Output 1 → ON (g)
+
+[22:23:24] [ARDUINO] Output 4 → ON (g)
+
+[22:23:24] [ARDUINO] Output 7 → ON (g)
+
+[22:23:24] [ARDUINO] Output 6 → ON (r)
+
+[22:23:24] [ARDUINO] Output 2 → ON (r)
+
+[22:23:24] [ARDUINO] Output 3 → ON (r)
+
+[22:23:24] [ARDUINO] Output 5 → ON (r)
+
+[22:23:24] [ARDUINO] Output 8 → ON (r)
+
+[22:23:24] [ARDUINO] Output 9 → ON (y)
+
+[22:23:24.771] [STRIKELOOP] Bonus section activated
+[22:23:24.772] [STRIKELOOP] Snake green-3: pattern 0: 1,2,4
+[22:23:24.772] [STRIKELOOP] Arcade LEDs (snake-green-3): 13 targets, 5 traps | Pattern: 1:G* 2:G* 4:G* 3:R(trap)* 5:R(trap)* 6:R(trap)* 7:R(trap)* 8:R(trap)* 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:23:24.772] [STRIKELOOP] LED refresh skipped for snake-green-3 mode (static LEDs)
+[22:23:28] [ARDUINO] Output 6 → ON (g)
+
+[22:23:28] [ARDUINO] Output 1 → ON (r)
+
+[22:23:28.775] [STRIKELOOP] Bonus section activated
+[22:23:28.775] [STRIKELOOP] Snake green-3: pattern 1: 2,4,3
+[22:23:32] [ARDUINO] Output 1 → ON (g)
+
+[22:23:32] [ARDUINO] Output 4 → ON (r)
+
+[22:23:32.775] [STRIKELOOP] Bonus section activated
+[22:23:32.776] [STRIKELOOP] Snake green-3: pattern 2: 4,3,1
+[HAL] ⚡ Input Translation: Hardware 4 → Logical 2
+[22:23:34.289] [STRIKELOOP] Arduino input received during game: 2 Value: 4
+[22:23:34.290] [STRIKELOOP] ❌ TRAP 2 -100pts
+[22:23:34.290] [STRIKELOOP] Local score updated to: 0
+[22:23:34.291] [STRIKELOOP] Score: 100 → 0 (-100)
+[22:23:34.783] [STRIKELOOP] Round 2 Level 3 time remaining: 00:20
+[22:23:36] [ARDUINO] Output 4 → ON (g)
+
+[22:23:36] [ARDUINO] Output 7 → ON (r)
+
+[22:23:36.775] [STRIKELOOP] Bonus section activated
+[22:23:36.776] [STRIKELOOP] Snake green-3: pattern 3: 3,1,2
+[22:23:40] [ARDUINO] Output 7 → ON (g)
+
+[22:23:40] [ARDUINO] Output 6 → ON (r)
+
+[22:23:40.779] [STRIKELOOP] Bonus section activated
+[22:23:40.782] [STRIKELOOP] Snake green-3: pattern 0: 1,2,4
+[22:23:44] [ARDUINO] Output 6 → ON (g)
+
+[22:23:44] [ARDUINO] Output 1 → ON (r)
+
+[22:23:44.776] [STRIKELOOP] Bonus section activated
+[22:23:44.777] [STRIKELOOP] Snake green-3: pattern 1: 2,4,3
+[22:23:44.783] [STRIKELOOP] Round 2 Level 3 time remaining: 00:10
+[HAL] ⚡ Input Translation: Hardware 7 → Logical 4
+[22:23:45.930] [STRIKELOOP] Arduino input received during game: 4 Value: 8
+[22:23:45.930] [STRIKELOOP] ✅ SNAKE GREEN HIT! Circle 4 +900 points
+[22:23:45.930] [STRIKELOOP] Local score updated to: 900
+[22:23:45.931] [STRIKELOOP] Score: -900 → 900 (+900)
+[22:23:48] [ARDUINO] Output 1 → ON (g)
+
+[22:23:48] [ARDUINO] Output 4 → ON (r)
+
+[22:23:48.777] [STRIKELOOP] Bonus section activated
+[22:23:48.778] [STRIKELOOP] Snake green-3: pattern 2: 4,3,1
+[HAL] ⚡ Input Translation: Hardware 6 → Logical 3
+[22:23:50.845] [STRIKELOOP] Arduino input received during game: 3 Value: 2
+[22:23:50.845] [STRIKELOOP] ✅ SNAKE GREEN HIT! Circle 3 +900 points
+[22:23:50.845] [STRIKELOOP] Local score updated to: 1800
+[22:23:50.846] [STRIKELOOP] Score: 0 → 1800 (+900)
+[22:23:52] [ARDUINO] Output 4 → ON (g)
+
+[22:23:52] [ARDUINO] Output 7 → ON (r)
+
+[22:23:52.777] [STRIKELOOP] Bonus section activated
+[22:23:52.777] [STRIKELOOP] Snake green-3: pattern 3: 3,1,2
+[22:23:53.535] [STRIKELOOP] Arduino input received during game: 1 Value: 1
+[22:23:53.536] [STRIKELOOP] ✅ SNAKE GREEN HIT! Circle 1 +900 points
+[22:23:53.536] [STRIKELOOP] Local score updated to: 2700
+[22:23:53.537] [STRIKELOOP] Score: 900 → 2700 (+900)
+[22:23:54.784] [STRIKELOOP] Round 2 Level 3 time remaining: 00:00
+[22:23:55.784] [STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (2700/3400). Retrying level...
+[22:23:55.784] [STRIKELOOP] LED refresh stopped, LEDs preserved
+[22:23:55.785] [STRIKELOOP] Round 2-3 (RETRY) | Goal: 3400pts in 30s
+[22:23:55.785] [STRIKELOOP] Retry mode - keeping existing LED pattern and validation state
+[22:23:55.786] [STRIKELOOP] Mission initialized: { arcadeMode: 'snake-green-3', goalScore: 3400, duration: 30 }
+[22:23:55.786] [STRIKELOOP] Retry - restarting interval for snake-green-3 mode
+[22:23:55.788] [STRIKELOOP] Starting arcade LEDs for mode: snake-green-3
+[22:23:55] [ARDUINO] Output 7 → ON (g)
+
+[22:23:55] [ARDUINO] Output 6 → ON (r)
+
+[22:23:55.795] [STRIKELOOP] Bonus section activated
+[22:23:55.796] [STRIKELOOP] Snake green-3: pattern 0: 1,2,4
+[22:23:55.797] [STRIKELOOP] Arcade LEDs (snake-green-3): 13 targets, 5 traps | Pattern: 1:G* 2:G* 4:G* 3:R(trap)* 5:R(trap)* 6:R(trap)* 7:R(trap)* 8:R(trap)* 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:23:55.798] [STRIKELOOP] LED refresh skipped for snake-green-3 mode (static LEDs)
+[22:23:59] [ARDUINO] Output 6 → ON (g)
+
+[22:23:59] [ARDUINO] Output 1 → ON (r)
+
+[22:23:59.801] [STRIKELOOP] Bonus section activated
+[22:23:59.802] [STRIKELOOP] Snake green-3: pattern 1: 2,4,3
+[22:24:03] [ARDUINO] Output 1 → ON (g)
+
+[22:24:03] [ARDUINO] Output 4 → ON (r)
+
+[22:24:03.802] [STRIKELOOP] Bonus section activated
+[22:24:03.803] [STRIKELOOP] Snake green-3: pattern 2: 4,3,1
+[22:24:05.804] [STRIKELOOP] Round 2 Level 3 time remaining: 00:20
+[22:24:07] [ARDUINO] Output 4 → ON (g)
+
+[22:24:07] [ARDUINO] Output 7 → ON (r)
+
+[22:24:07.802] [STRIKELOOP] Bonus section activated
+[22:24:07.803] [STRIKELOOP] Snake green-3: pattern 3: 3,1,2
+[HAL] ⚡ Input Translation: Hardware 6 → Logical 3
+[22:24:10.522] [STRIKELOOP] Arduino input received during game: 3 Value: 2
+[22:24:10.522] [STRIKELOOP] ✅ SNAKE GREEN HIT! Circle 3 +900 points
+[22:24:10.522] [STRIKELOOP] Local score updated to: 3600
+[22:24:10.523] [STRIKELOOP] 🎉 GOAL ACHIEVED! 3600/3400 - Level can be completed
+[22:24:10.523] [APP] Bonus phase started: 🌟 OBJECTIF ATTEINT! Tous les points gagnés maintenant sont des BONUS! 🌟
+[22:24:10.524] [STRIKELOOP] Score: 1800 → 3600 (+900)
+[22:24:10.690] [STRIKELOOP] ⏰ 66% TIME ELAPSED (600s) - Auto-advancing to Round 3
+[22:24:10.690] [STRIKELOOP] 🚀 FORCE SKIPPING from Round 2 to Round 3
+[22:24:10] [ARDUINO] Output 1 → OFF
+
+[22:24:10] [ARDUINO] Output 4 → OFF
+
+[22:24:10] [ARDUINO] Output 6 → OFF
+
+[22:24:10] [ARDUINO] Output 7 → OFF
+
+[22:24:10] [ARDUINO] Output 2 → OFF
+
+[22:24:10] [ARDUINO] Output 3 → OFF
+
+[22:24:10] [ARDUINO] Output 5 → OFF
+
+[22:24:10] [ARDUINO] Output 8 → OFF
+
+[22:24:10] [ARDUINO] Output 9 → OFF
+
+[22:24:10.693] [STRIKELOOP] LED refresh stopped, all LEDs cleared
+[22:24:10.694] [STRIKELOOP] Score carries over: 3600 points
+[22:24:10.694] [STRIKELOOP] Round 3-1 | Goal: 5000pts in 30s
+[22:24:10.694] [STRIKELOOP] 🎭 ROUND CHANGE DETECTED (2 → 3) - Triggering hardware effect O002
+[22:24:10.694] [ARDUINO] Special effect code: 002
+[22:24:10] Special effect code: 002
+
+[22:24:12.695] [STRIKELOOP] New level - resetting all LEDs
+[22:24:12.697] [STRIKELOOP] Mission initialized: {
+  arcadeMode: 'two-step-all-buttons-green',
+  goalScore: 5000,
+  duration: 30
+}
+[22:24:12.697] [STRIKELOOP] Starting arcade LEDs for mode: two-step-all-buttons-green
+[22:24:12.698] [STRIKELOOP] Activating Level 1: Fixed Green + All 4 Green Buttons
+[22:24:12] [ARDUINO] Output 1 → ON (g)
+
+[22:24:12] [ARDUINO] Output 4 → ON (g)
+
+[22:24:12] [ARDUINO] Output 6 → ON (g)
+
+[22:24:12] [ARDUINO] Output 7 → ON (g)
+
+[22:24:12] [ARDUINO] Output 2 → ON (r)
+
+[22:24:12] [ARDUINO] Output 3 → ON (r)
+
+[22:24:12] [ARDUINO] Output 5 → ON (r)
+
+[22:24:12] [ARDUINO] Output 8 → ON (r)
+
+[22:24:12] [ARDUINO] Output 9 → ON (y)
+
+[22:24:12.703] [STRIKELOOP] Bonus section activated
+[22:24:12.703] [STRIKELOOP] Arcade LEDs (two-step-all-buttons-green): 9 targets, 4 traps | Pattern: 1:G 2:G 3:G 4:G 5:R(trap) 6:R(trap) 7:R(trap) 8:R(trap) 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:24:12.704] [STRIKELOOP] LED refresh skipped for two-step-all-buttons-green mode (static LEDs)
+[22:24:22.709] [STRIKELOOP] Round 3 Level 1 time remaining: 00:20
+[22:24:32.711] [STRIKELOOP] Round 3 Level 1 time remaining: 00:10
+[22:24:42.712] [STRIKELOOP] Round 3 Level 1 time remaining: 00:00
+[22:24:43.713] [STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (0/5000). Retrying level...
+[22:24:43.713] [STRIKELOOP] LED refresh stopped, LEDs preserved
+[22:24:43.713] [STRIKELOOP] Round 3-1 (RETRY) | Goal: 5000pts in 30s
+[22:24:43.714] [STRIKELOOP] Retry mode - keeping existing LED pattern and validation state
+[22:24:43.714] [STRIKELOOP] Mission initialized: {
+  arcadeMode: 'two-step-all-buttons-green',
+  goalScore: 5000,
+  duration: 30
+}
+[22:24:43.714] [STRIKELOOP] Retry - skipping startArcadeLEDs() to preserve state and reduce serial writes
+[22:24:43.715] [STRIKELOOP] LED refresh skipped for two-step-all-buttons-green mode (static LEDs)
+[22:24:53.719] [STRIKELOOP] Round 3 Level 1 time remaining: 00:20
+[HAL] ⚡ Input Translation: Hardware 7 → Logical 4
+[22:25:00.971] [STRIKELOOP] Arduino input received during game: 4 Value: 8
+[22:25:00.971] [STRIKELOOP] Target 4 (G) hit - awaiting button validation
+[22:25:00.972] [STRIKELOOP] Starting validation - Mode: all-green, Hit Color: g
+[22:25:00] [ARDUINO] Output 1 → ON (r)
+
+[22:25:00] [ARDUINO] Output 4 → ON (r)
+
+[22:25:00] [ARDUINO] Output 6 → ON (r)
+
+[22:25:00] [ARDUINO] Output 7 → ON (r)
+
+[22:25:00] [ARDUINO] Output 9 → ON (r)
+
+[22:25:00.977] [STRIKELOOP] All 9 holes (including bonus zone) turned RED - hardware in button input mode
+[22:25:00] [ARDUINO] Output 15 → ON (g)
+
+[22:25:00] [ARDUINO] Output 21 → ON (g)
+
+[22:25:00] [ARDUINO] Output 22 → ON (g)
+
+[22:25:00] [ARDUINO] Output 26 → ON (g)
+
+[22:25:00.982] [STRIKELOOP] Turned on all green buttons: [ 15, 21, 22, 26 ]
+[22:25:00.982] [STRIKELOOP] Lit all 4 green buttons: [ 15, 21, 22, 26 ]
+[22:25:03.412] [STRIKELOOP] Arduino input received during game: 26 Value: 4096
+[22:25:03.412] [STRIKELOOP] Hardware button 26 pressed (index 12)
+[22:25:03.412] [STRIKELOOP] Button press: Index 12, ID 26
+[22:25:03] [ARDUINO] Output 26 → OFF
+
+[22:25:03.413] [STRIKELOOP] ✅ Button 26 validated! Progress: 1/4
+[22:25:03.625] [STRIKELOOP] Arduino input received during game: 21 Value: 128
+[22:25:03.625] [STRIKELOOP] Hardware button 21 pressed (index 7)
+[22:25:03.625] [STRIKELOOP] Button press: Index 7, ID 21
+[22:25:03] [ARDUINO] Output 21 → OFF
+
+[22:25:03.626] [STRIKELOOP] ✅ Button 21 validated! Progress: 2/4
+[22:25:03.719] [STRIKELOOP] Round 3 Level 1 time remaining: 00:10
+[22:25:03.830] [STRIKELOOP] Arduino input received during game: 15 Value: 130
+[22:25:03.830] [STRIKELOOP] Hardware button 15 pressed (index 1)
+[22:25:03.830] [STRIKELOOP] Button press: Index 1, ID 15
+[22:25:03] [ARDUINO] Output 15 → OFF
+
+[22:25:03.831] [STRIKELOOP] ✅ Button 15 validated! Progress: 3/4
+[22:25:05.046] [STRIKELOOP] Arduino input received during game: 22 Value: 256
+[22:25:05.046] [STRIKELOOP] Hardware button 22 pressed (index 8)
+[22:25:05.047] [STRIKELOOP] Button press: Index 8, ID 22
+[22:25:05] [ARDUINO] Output 22 → OFF
+
+[22:25:05.047] [STRIKELOOP] ✅ Button 22 validated! Progress: 4/4
+[22:25:05.048] [STRIKELOOP] Local score updated to: 1400
+[22:25:05.048] [STRIKELOOP] 🎉 ALL BUTTONS VALIDATED! +1400 points
+[22:25:05.051] [STRIKELOOP] Restoring hole colors for mode: two-step-all-buttons-green
+[22:25:05] [ARDUINO] Output 1 → ON (g)
+
+[22:25:05] [ARDUINO] Output 4 → ON (g)
+
+[22:25:05] [ARDUINO] Output 6 → ON (g)
+
+[22:25:05] [ARDUINO] Output 7 → ON (g)
+
+[22:25:05] [ARDUINO] Output 9 → ON (y)
+
+[HAL] ⚡ Input Translation: Hardware 7 → Logical 4
+[22:25:13.607] [STRIKELOOP] Arduino input received during game: 4 Value: 8
+[22:25:13.607] [STRIKELOOP] Target 4 (G) hit - awaiting button validation
+[22:25:13.608] [STRIKELOOP] Starting validation - Mode: all-green, Hit Color: g
+[22:25:13] [ARDUINO] Output 1 → ON (r)
+
+[22:25:13] [ARDUINO] Output 4 → ON (r)
+
+[22:25:13] [ARDUINO] Output 6 → ON (r)
+
+[22:25:13] [ARDUINO] Output 7 → ON (r)
+
+[22:25:13] [ARDUINO] Output 9 → ON (r)
+
+[22:25:13.612] [STRIKELOOP] All 9 holes (including bonus zone) turned RED - hardware in button input mode
+[22:25:13] [ARDUINO] Output 15 → ON (g)
+
+[22:25:13] [ARDUINO] Output 21 → ON (g)
+
+[22:25:13] [ARDUINO] Output 22 → ON (g)
+
+[22:25:13] [ARDUINO] Output 26 → ON (g)
+
+[22:25:13.615] [STRIKELOOP] Turned on all green buttons: [ 15, 21, 22, 26 ]
+[22:25:13.619] [STRIKELOOP] Lit all 4 green buttons: [ 15, 21, 22, 26 ]
+[22:25:13.721] [STRIKELOOP] Round 3 Level 1 time remaining: 00:00
+[22:25:14.720] [STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (1400/5000). Retrying level...
+[22:25:14.721] [STRIKELOOP] LED refresh stopped, LEDs preserved
+[22:25:14.721] [STRIKELOOP] Round 3-1 (RETRY) | Goal: 5000pts in 30s
+[22:25:14.721] [STRIKELOOP] Retry mode - keeping existing LED pattern and validation state
+[22:25:14.721] [STRIKELOOP] Mission initialized: {
+  arcadeMode: 'two-step-all-buttons-green',
+  goalScore: 5000,
+  duration: 30
+}
+[22:25:14.722] [STRIKELOOP] Retry - skipping startArcadeLEDs() to preserve state and reduce serial writes
+[22:25:14.722] [STRIKELOOP] LED refresh skipped for two-step-all-buttons-green mode (static LEDs)
+[22:25:14.733] [STRIKELOOP] Arduino input received during game: 21 Value: 128
+[22:25:14.734] [STRIKELOOP] Hardware button 21 pressed (index 7)
+[22:25:14.734] [STRIKELOOP] Button press: Index 7, ID 21
+[22:25:14] [ARDUINO] Output 21 → OFF
+
+[22:25:14.735] [STRIKELOOP] ✅ Button 21 validated! Progress: 1/4
+[22:25:14.938] [STRIKELOOP] Arduino input received during game: 15 Value: 2
+[22:25:14.938] [STRIKELOOP] Hardware button 15 pressed (index 1)
+[22:25:14.939] [STRIKELOOP] Button press: Index 1, ID 15
+[22:25:14] [ARDUINO] Output 15 → OFF
+
+[22:25:14.940] [STRIKELOOP] ✅ Button 15 validated! Progress: 2/4
+[22:25:15.347] [STRIKELOOP] Arduino input received during game: 22 Value: 256
+[22:25:15.348] [STRIKELOOP] Hardware button 22 pressed (index 8)
+[22:25:15.348] [STRIKELOOP] Button press: Index 8, ID 22
+[22:25:15] [ARDUINO] Output 22 → OFF
+
+[22:25:15.349] [STRIKELOOP] ✅ Button 22 validated! Progress: 3/4
+[22:25:16.076] [STRIKELOOP] Arduino input received during game: 26 Value: 4096
+[22:25:16.077] [STRIKELOOP] Hardware button 26 pressed (index 12)
+[22:25:16.077] [STRIKELOOP] Button press: Index 12, ID 26
+[22:25:16] [ARDUINO] Output 26 → OFF
+
+[22:25:16.078] [STRIKELOOP] ✅ Button 26 validated! Progress: 4/4
+[22:25:16.078] [STRIKELOOP] Local score updated to: 2800
+[22:25:16.079] [STRIKELOOP] 🎉 ALL BUTTONS VALIDATED! +1400 points
+[22:25:16.081] [STRIKELOOP] Restoring hole colors for mode: two-step-all-buttons-green
+[22:25:16] [ARDUINO] Output 1 → ON (g)
+
+[22:25:16] [ARDUINO] Output 4 → ON (g)
+
+[22:25:16] [ARDUINO] Output 6 → ON (g)
+
+[22:25:16] [ARDUINO] Output 7 → ON (g)
+
+[22:25:16] [ARDUINO] Output 9 → ON (y)
+
+[22:25:24.731] [STRIKELOOP] Round 3 Level 1 time remaining: 00:20
+[HAL] ⚡ Input Translation: Hardware 7 → Logical 4
+[22:25:26.025] [STRIKELOOP] Arduino input received during game: 4 Value: 8
+[22:25:26.026] [STRIKELOOP] Target 4 (G) hit - awaiting button validation
+[22:25:26.027] [STRIKELOOP] Starting validation - Mode: all-green, Hit Color: g
+[22:25:26] [ARDUINO] Output 1 → ON (r)
+
+[22:25:26] [ARDUINO] Output 4 → ON (r)
+
+[22:25:26] [ARDUINO] Output 6 → ON (r)
+
+[22:25:26] [ARDUINO] Output 7 → ON (r)
+
+[22:25:26] [ARDUINO] Output 9 → ON (r)
+
+[22:25:26.033] [STRIKELOOP] All 9 holes (including bonus zone) turned RED - hardware in button input mode
+[22:25:26] [ARDUINO] Output 15 → ON (g)
+
+[22:25:26] [ARDUINO] Output 21 → ON (g)
+
+[22:25:26] [ARDUINO] Output 22 → ON (g)
+
+[22:25:26] [ARDUINO] Output 26 → ON (g)
+
+[22:25:26.036] [STRIKELOOP] Turned on all green buttons: [ 15, 21, 22, 26 ]
+[22:25:26.036] [STRIKELOOP] Lit all 4 green buttons: [ 15, 21, 22, 26 ]
+[22:25:27.111] [STRIKELOOP] Arduino input received during game: 21 Value: 128
+[22:25:27.111] [STRIKELOOP] Hardware button 21 pressed (index 7)
+[22:25:27.111] [STRIKELOOP] Button press: Index 7, ID 21
+[22:25:27] [ARDUINO] Output 21 → OFF
+
+[22:25:27.112] [STRIKELOOP] ✅ Button 21 validated! Progress: 1/4
+[22:25:27.320] [STRIKELOOP] Arduino input received during game: 15 Value: 2
+[22:25:27.320] [STRIKELOOP] Hardware button 15 pressed (index 1)
+[22:25:27.320] [STRIKELOOP] Button press: Index 1, ID 15
+[22:25:27] [ARDUINO] Output 15 → OFF
+
+[22:25:27.321] [STRIKELOOP] ✅ Button 15 validated! Progress: 2/4
+[22:25:27.606] [STRIKELOOP] Arduino input received during game: 26 Value: 4096
+[22:25:27.607] [STRIKELOOP] Hardware button 26 pressed (index 12)
+[22:25:27.607] [STRIKELOOP] Button press: Index 12, ID 26
+[22:25:27] [ARDUINO] Output 26 → OFF
+
+[22:25:27.608] [STRIKELOOP] ✅ Button 26 validated! Progress: 3/4
+[22:25:28.077] [STRIKELOOP] Arduino input received during game: 22 Value: 256
+[22:25:28.078] [STRIKELOOP] Hardware button 22 pressed (index 8)
+[22:25:28.078] [STRIKELOOP] Button press: Index 8, ID 22
+[22:25:28] [ARDUINO] Output 22 → OFF
+
+[22:25:28.079] [STRIKELOOP] ✅ Button 22 validated! Progress: 4/4
+[22:25:28.080] [STRIKELOOP] Local score updated to: 4200
+[22:25:28.081] [STRIKELOOP] 🎉 ALL BUTTONS VALIDATED! +1400 points
+[22:25:28.084] [STRIKELOOP] Restoring hole colors for mode: two-step-all-buttons-green
+[22:25:28] [ARDUINO] Output 1 → ON (g)
+
+[22:25:28] [ARDUINO] Output 4 → ON (g)
+
+[22:25:28] [ARDUINO] Output 6 → ON (g)
+
+[22:25:28] [ARDUINO] Output 7 → ON (g)
+
+[22:25:28] [ARDUINO] Output 9 → ON (y)
+
+[HAL] ⚡ Input Translation: Hardware 4 → Logical 2
+[22:25:33.337] [STRIKELOOP] Arduino input received during game: 2 Value: 4
+[22:25:33.338] [STRIKELOOP] Target 2 (G) hit - awaiting button validation
+[22:25:33.338] [STRIKELOOP] Starting validation - Mode: all-green, Hit Color: g
+[22:25:33] [ARDUINO] Output 1 → ON (r)
+
+[22:25:33] [ARDUINO] Output 4 → ON (r)
+
+[22:25:33] [ARDUINO] Output 6 → ON (r)
+
+[22:25:33] [ARDUINO] Output 7 → ON (r)
+
+[22:25:33] [ARDUINO] Output 9 → ON (r)
+
+[22:25:33.343] [STRIKELOOP] All 9 holes (including bonus zone) turned RED - hardware in button input mode
+[22:25:33] [ARDUINO] Output 15 → ON (g)
+
+[22:25:33] [ARDUINO] Output 21 → ON (g)
+
+[22:25:33] [ARDUINO] Output 22 → ON (g)
+
+[22:25:33] [ARDUINO] Output 26 → ON (g)
+
+[22:25:33.346] [STRIKELOOP] Turned on all green buttons: [ 15, 21, 22, 26 ]
+[22:25:33.346] [STRIKELOOP] Lit all 4 green buttons: [ 15, 21, 22, 26 ]
+[22:25:34.627] [STRIKELOOP] Arduino input received during game: 22 Value: 256
+[22:25:34.627] [STRIKELOOP] Hardware button 22 pressed (index 8)
+[22:25:34.627] [STRIKELOOP] Button press: Index 8, ID 22
+[22:25:34] [ARDUINO] Output 22 → OFF
+
+[22:25:34.629] [STRIKELOOP] ✅ Button 22 validated! Progress: 1/4
+[22:25:34.733] [STRIKELOOP] Round 3 Level 1 time remaining: 00:10
+[22:25:35.036] [STRIKELOOP] Arduino input received during game: 21 Value: 128
+[22:25:35.037] [STRIKELOOP] Hardware button 21 pressed (index 7)
+[22:25:35.037] [STRIKELOOP] Button press: Index 7, ID 21
+[22:25:35] [ARDUINO] Output 21 → OFF
+
+[22:25:35.038] [STRIKELOOP] ✅ Button 21 validated! Progress: 2/4
+[22:25:35.134] [STRIKELOOP] Arduino input received during game: 15 Value: 130
+[22:25:35.135] [STRIKELOOP] Hardware button 15 pressed (index 1)
+[22:25:35.135] [STRIKELOOP] Button press: Index 1, ID 15
+[22:25:35] [ARDUINO] Output 15 → OFF
+
+[22:25:35.136] [STRIKELOOP] ✅ Button 15 validated! Progress: 3/4
+[22:25:35.561] [STRIKELOOP] Arduino input received during game: 26 Value: 4096
+[22:25:35.561] [STRIKELOOP] Hardware button 26 pressed (index 12)
+[22:25:35.561] [STRIKELOOP] Button press: Index 12, ID 26
+[22:25:35] [ARDUINO] Output 26 → OFF
+
+[22:25:35.562] [STRIKELOOP] ✅ Button 26 validated! Progress: 4/4
+[22:25:35.562] [STRIKELOOP] Local score updated to: 5600
+[22:25:35.563] [STRIKELOOP] 🎉 GOAL ACHIEVED! 5600/5000 - Level can be completed
+[22:25:35.563] [APP] Bonus phase started: 🌟 OBJECTIF ATTEINT! Tous les points gagnés maintenant sont des BONUS! 🌟
+[22:25:35.564] [STRIKELOOP] 🎉 ALL BUTTONS VALIDATED! +1400 points
+[22:25:35.568] [STRIKELOOP] Restoring hole colors for mode: two-step-all-buttons-green
+[22:25:35] [ARDUINO] Output 1 → ON (g)
+
+[22:25:35] [ARDUINO] Output 4 → ON (g)
+
+[22:25:35] [ARDUINO] Output 6 → ON (g)
+
+[22:25:35] [ARDUINO] Output 7 → ON (g)
+
+[22:25:35] [ARDUINO] Output 9 → ON (y)
+
+[HAL] ⚡ Input Translation: Hardware 7 → Logical 4
+[22:25:41.434] [STRIKELOOP] Arduino input received during game: 4 Value: 8
+[22:25:41.435] [STRIKELOOP] Target 4 (G) hit - awaiting button validation
+[22:25:41.435] [STRIKELOOP] Starting validation - Mode: all-green, Hit Color: g
+[22:25:41] [ARDUINO] Output 1 → ON (r)
+
+[22:25:41] [ARDUINO] Output 4 → ON (r)
+
+[22:25:41] [ARDUINO] Output 6 → ON (r)
+
+[22:25:41] [ARDUINO] Output 7 → ON (r)
+
+[22:25:41] [ARDUINO] Output 9 → ON (r)
+
+[22:25:41.437] [STRIKELOOP] All 9 holes (including bonus zone) turned RED - hardware in button input mode
+[22:25:41] [ARDUINO] Output 15 → ON (g)
+
+[22:25:41] [ARDUINO] Output 21 → ON (g)
+
+[22:25:41] [ARDUINO] Output 22 → ON (g)
+
+[22:25:41] [ARDUINO] Output 26 → ON (g)
+
+[22:25:41.438] [STRIKELOOP] Turned on all green buttons: [ 15, 21, 22, 26 ]
+[22:25:41.438] [STRIKELOOP] Lit all 4 green buttons: [ 15, 21, 22, 26 ]
+[22:25:42.544] [STRIKELOOP] Arduino input received during game: 21 Value: 128
+[22:25:42.544] [STRIKELOOP] Hardware button 21 pressed (index 7)
+[22:25:42.544] [STRIKELOOP] Button press: Index 7, ID 21
+[22:25:42] [ARDUINO] Output 21 → OFF
+
+[22:25:42.545] [STRIKELOOP] ✅ Button 21 validated! Progress: 1/4
+[22:25:42.712] [STRIKELOOP] Arduino input received during game: 26 Value: 4096
+[22:25:42.712] [STRIKELOOP] Hardware button 26 pressed (index 12)
+[22:25:42.712] [STRIKELOOP] Button press: Index 12, ID 26
+[22:25:42] [ARDUINO] Output 26 → OFF
+
+[22:25:42.713] [STRIKELOOP] ✅ Button 26 validated! Progress: 2/4
+[22:25:42.986] [STRIKELOOP] Arduino input received during game: 22 Value: 256
+[22:25:42.987] [STRIKELOOP] Hardware button 22 pressed (index 8)
+[22:25:42.987] [STRIKELOOP] Button press: Index 8, ID 22
+[22:25:42] [ARDUINO] Output 22 → OFF
+
+[22:25:42.987] [STRIKELOOP] ✅ Button 22 validated! Progress: 3/4
+[22:25:43.126] [STRIKELOOP] Arduino input received during game: 15 Value: 258
+[22:25:43.127] [STRIKELOOP] Hardware button 15 pressed (index 1)
+[22:25:43.127] [STRIKELOOP] Button press: Index 1, ID 15
+[22:25:43] [ARDUINO] Output 15 → OFF
+
+[22:25:43.128] [STRIKELOOP] ✅ Button 15 validated! Progress: 4/4
+[22:25:43.128] [STRIKELOOP] Local score updated to: 7000
+[22:25:43.129] [STRIKELOOP] 🎉 ALL BUTTONS VALIDATED! +1400 points
+[22:25:43.130] [STRIKELOOP] Restoring hole colors for mode: two-step-all-buttons-green
+[22:25:43] [ARDUINO] Output 1 → ON (g)
+
+[22:25:43] [ARDUINO] Output 4 → ON (g)
+
+[22:25:43] [ARDUINO] Output 6 → ON (g)
+
+[22:25:43] [ARDUINO] Output 7 → ON (g)
+
+[22:25:43] [ARDUINO] Output 9 → ON (y)
+
+[22:25:44.734] [STRIKELOOP] Round 3 Level 1 time remaining: 00:00
+[22:25:45.734] [STRIKELOOP] ✅ Level 1 COMPLETED! 7000/5000
+[22:25:45.734] [STRIKELOOP] Cumulative score: 20750 (added 7000 from this level)
+[22:25:45] [ARDUINO] Output 1 → OFF
+
+[22:25:45] [ARDUINO] Output 4 → OFF
+
+[22:25:45] [ARDUINO] Output 6 → OFF
+
+[22:25:45] [ARDUINO] Output 7 → OFF
+
+[22:25:45] [ARDUINO] Output 2 → OFF
+
+[22:25:45] [ARDUINO] Output 3 → OFF
+
+[22:25:45] [ARDUINO] Output 5 → OFF
+
+[22:25:45] [ARDUINO] Output 8 → OFF
+
+[22:25:45] [ARDUINO] Output 9 → OFF
+
+[22:25:45.741] [STRIKELOOP] LED refresh stopped, all LEDs cleared
+[22:25:45.741] [STRIKELOOP] Round 3-2 | Goal: 5200pts in 30s
+[22:25:45.741] [STRIKELOOP] 🎯 LEVEL CHANGE DETECTED (R3L2) - Triggering hardware effect O001
+[22:25:45.741] [ARDUINO] Special effect code: 001
+[22:25:45] Special effect code: 001
+
+[22:25:47.742] [STRIKELOOP] New level - resetting all LEDs
+[22:25:47.744] [STRIKELOOP] Mission initialized: {
+  arcadeMode: 'two-step-all-buttons-blue',
+  goalScore: 5200,
+  duration: 30
+}
+[22:25:47.744] [STRIKELOOP] Starting arcade LEDs for mode: two-step-all-buttons-blue
+[22:25:47.744] [STRIKELOOP] Activating Level 2: Fixed Blue + All 4 Blue Buttons
+[22:25:47] [ARDUINO] Output 2 → ON (b)
+
+[22:25:47] [ARDUINO] Output 3 → ON (b)
+
+[22:25:47] [ARDUINO] Output 5 → ON (b)
+
+[22:25:47] [ARDUINO] Output 8 → ON (b)
+
+[22:25:47] [ARDUINO] Output 1 → ON (r)
+
+[22:25:47] [ARDUINO] Output 4 → ON (r)
+
+[22:25:47] [ARDUINO] Output 6 → ON (r)
+
+[22:25:47] [ARDUINO] Output 7 → ON (r)
+
+[22:25:47] [ARDUINO] Output 9 → ON (y)
+
+[22:25:47.748] [STRIKELOOP] Bonus section activated
+[22:25:47.748] [STRIKELOOP] Arcade LEDs (two-step-all-buttons-blue): 9 targets, 4 traps | Pattern: 5:B 6:B 7:B 8:B 1:R(trap) 2:R(trap) 3:R(trap) 4:R(trap) 9:Y 10:Y 11:Y 12:Y 13:Y
+[22:25:47.748] [STRIKELOOP] LED refresh skipped for two-step-all-buttons-blue mode (static LEDs)
+[HAL] ⚡ Input Translation: Hardware 5 → Logical 7
+[22:25:56.921] [STRIKELOOP] Arduino input received during game: 7 Value: 32
+[22:25:56.921] [STRIKELOOP] Target 7 (B) hit - awaiting button validation
+[22:25:56.922] [STRIKELOOP] Starting validation - Mode: all-blue, Hit Color: b
+[22:25:56] [ARDUINO] Output 2 → ON (r)
+
+[22:25:56] [ARDUINO] Output 3 → ON (r)
+
+[22:25:56] [ARDUINO] Output 5 → ON (r)
+
+[22:25:56] [ARDUINO] Output 8 → ON (r)
+
+[22:25:56] [ARDUINO] Output 9 → ON (r)
+
+[22:25:56.927] [STRIKELOOP] All 9 holes (including bonus zone) turned RED - hardware in button input mode
+[22:25:56] [ARDUINO] Output 16 → ON (b)
+
+[22:25:56] [ARDUINO] Output 17 → ON (b)
+
+[22:25:56] [ARDUINO] Output 24 → ON (b)
+
+[22:25:56] [ARDUINO] Output 27 → ON (b)
+
+[22:25:56.931] [STRIKELOOP] Turned on all blue buttons: [ 16, 17, 24, 27 ]
+[22:25:56.931] [STRIKELOOP] Lit all 4 blue buttons: [ 16, 17, 24, 27 ]
+[22:25:57.754] [STRIKELOOP] Round 3 Level 2 time remaining: 00:20
+[22:25:58.289] [STRIKELOOP] Arduino input received during game: 16 Value: 4
+[22:25:58.289] [STRIKELOOP] Hardware button 16 pressed (index 2)
+[22:25:58.290] [STRIKELOOP] Button press: Index 2, ID 16
+[22:25:58] [ARDUINO] Output 16 → OFF
+
+[22:25:58.291] [STRIKELOOP] ✅ Button 16 validated! Progress: 1/4
+[22:25:58.616] [STRIKELOOP] Arduino input received during game: 27 Value: 16384
+[22:25:58.617] [STRIKELOOP] Hardware button 27 pressed (index 13)
+[22:25:58.617] [STRIKELOOP] Button press: Index 13, ID 27
+[22:25:58] [ARDUINO] Output 27 → OFF
+
+[22:25:58.618] [STRIKELOOP] ✅ Button 27 validated! Progress: 2/4
+[22:25:59.805] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:25:59.806] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:25:59.806] [STRIKELOOP] Button press: Index 3, ID 17
+[22:25:59] [ARDUINO] Output 17 → OFF
+
+[22:25:59.808] [STRIKELOOP] ✅ Button 17 validated! Progress: 3/4
+[22:26:07.755] [STRIKELOOP] Round 3 Level 2 time remaining: 00:10
+[22:26:08.979] [STRIKELOOP] Arduino input received during game: 27 Value: 16384
+[22:26:08.980] [STRIKELOOP] Hardware button 27 pressed (index 13)
+[22:26:08.980] [STRIKELOOP] Button press: Index 13, ID 27
+[22:26:08.980] [STRIKELOOP] Button 27 already validated
+[22:26:09.553] [STRIKELOOP] Arduino input received during game: 16 Value: 16388
+[22:26:09.553] [STRIKELOOP] Hardware button 16 pressed (index 2)
+[22:26:09.553] [STRIKELOOP] Button press: Index 2, ID 16
+[22:26:09.553] [STRIKELOOP] Button 16 already validated
+[22:26:09.598] [STRIKELOOP] Arduino input received during game: 17 Value: 16392
+[22:26:09.598] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:26:09.598] [STRIKELOOP] Button press: Index 3, ID 17
+[22:26:09.598] [STRIKELOOP] Button 17 already validated
+[22:26:09.675] [STRIKELOOP] Arduino input received during game: 16 Value: 16396
+[22:26:09.676] [STRIKELOOP] Hardware button 16 pressed (index 2)
+[22:26:09.676] [STRIKELOOP] Button press: Index 2, ID 16
+[22:26:09.676] [STRIKELOOP] Button 16 already validated
+[22:26:10.687] [STRIKELOOP] Arduino input received during game: 16 Value: 4
+[22:26:10.687] [STRIKELOOP] Hardware button 16 pressed (index 2)
+[22:26:10.688] [STRIKELOOP] Button press: Index 2, ID 16
+[22:26:10.688] [STRIKELOOP] Button 16 already validated
+[22:26:11.482] [STRIKELOOP] Arduino input received during game: 27 Value: 16384
+[22:26:11.482] [STRIKELOOP] Hardware button 27 pressed (index 13)
+[22:26:11.482] [STRIKELOOP] Button press: Index 13, ID 27
+[22:26:11.482] [STRIKELOOP] Button 27 already validated
+[22:26:13.399] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:26:13.399] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:26:13.399] [STRIKELOOP] Button press: Index 3, ID 17
+[22:26:13.399] [STRIKELOOP] Button 17 already validated
+[22:26:17.757] [STRIKELOOP] Round 3 Level 2 time remaining: 00:00
+[22:26:17.868] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:26:17.868] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:26:17.868] [STRIKELOOP] Button press: Index 3, ID 17
+[22:26:17.869] [STRIKELOOP] Button 17 already validated
+[22:26:18.748] [STRIKELOOP] Arduino input received during game: 27 Value: 16392
+[22:26:18.748] [STRIKELOOP] Hardware button 27 pressed (index 13)
+[22:26:18.748] [STRIKELOOP] Button press: Index 13, ID 27
+[22:26:18.749] [STRIKELOOP] Button 27 already validated
+[22:26:18.758] [STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (0/5200). Retrying level...
+[22:26:18.758] [STRIKELOOP] LED refresh stopped, LEDs preserved
+[22:26:18.758] [STRIKELOOP] Round 3-2 (RETRY) | Goal: 5200pts in 30s
+[22:26:18.759] [STRIKELOOP] Retry mode - keeping existing LED pattern and validation state
+[22:26:18.760] [STRIKELOOP] Mission initialized: {
+  arcadeMode: 'two-step-all-buttons-blue',
+  goalScore: 5200,
+  duration: 30
+}
+[22:26:18.760] [STRIKELOOP] Retry - skipping startArcadeLEDs() to preserve state and reduce serial writes
+[22:26:18.761] [STRIKELOOP] LED refresh skipped for two-step-all-buttons-blue mode (static LEDs)
+[22:26:19.223] [STRIKELOOP] Arduino input received during game: 16 Value: 12
+[22:26:19.223] [STRIKELOOP] Hardware button 16 pressed (index 2)
+[22:26:19.223] [STRIKELOOP] Button press: Index 2, ID 16
+[22:26:19.224] [STRIKELOOP] Button 16 already validated
+[22:26:20.882] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:26:20.882] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:26:20.882] [STRIKELOOP] Button press: Index 3, ID 17
+[22:26:20.882] [STRIKELOOP] Button 17 already validated
+[22:26:23.253] [STRIKELOOP] Arduino input received during game: 27 Value: 16384
+[22:26:23.254] [STRIKELOOP] Hardware button 27 pressed (index 13)
+[22:26:23.254] [STRIKELOOP] Button press: Index 13, ID 27
+[22:26:23.254] [STRIKELOOP] Button 27 already validated
+[22:26:23.552] [STRIKELOOP] Arduino input received during game: 27 Value: 16384
+[22:26:23.553] [STRIKELOOP] Hardware button 27 pressed (index 13)
+[22:26:23.553] [STRIKELOOP] Button press: Index 13, ID 27
+[22:26:23.553] [STRIKELOOP] Button 27 already validated
+[22:26:24.200] [STRIKELOOP] Arduino input received during game: 16 Value: 16388
+[22:26:24.200] [STRIKELOOP] Hardware button 16 pressed (index 2)
+[22:26:24.200] [STRIKELOOP] Button press: Index 2, ID 16
+[22:26:24.200] [STRIKELOOP] Button 16 already validated
+[22:26:28.764] [STRIKELOOP] Round 3 Level 2 time remaining: 00:20
+[22:26:38.767] [STRIKELOOP] Round 3 Level 2 time remaining: 00:10
+[22:26:39.371] [STRIKELOOP] Arduino input received during game: 16 Value: 4
+[22:26:39.371] [STRIKELOOP] Hardware button 16 pressed (index 2)
+[22:26:39.371] [STRIKELOOP] Button press: Index 2, ID 16
+[22:26:39.372] [STRIKELOOP] Button 16 already validated
+[22:26:39.899] [STRIKELOOP] Arduino input received during game: 27 Value: 16384
+[22:26:39.900] [STRIKELOOP] Hardware button 27 pressed (index 13)
+[22:26:39.900] [STRIKELOOP] Button press: Index 13, ID 27
+[22:26:39.900] [STRIKELOOP] Button 27 already validated
+[22:26:39.977] [STRIKELOOP] Arduino input received during game: 27 Value: 16384
+[22:26:39.977] [STRIKELOOP] Hardware button 27 pressed (index 13)
+[22:26:39.977] [STRIKELOOP] Button press: Index 13, ID 27
+[22:26:39.978] [STRIKELOOP] Button 27 already validated
+[22:26:41.059] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:26:41.059] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:26:41.059] [STRIKELOOP] Button press: Index 3, ID 17
+[22:26:41.060] [STRIKELOOP] Button 17 already validated
+[22:26:43.422] [STRIKELOOP] Arduino input received during game: 27 Value: 16384
+[22:26:43.422] [STRIKELOOP] Hardware button 27 pressed (index 13)
+[22:26:43.422] [STRIKELOOP] Button press: Index 13, ID 27
+[22:26:43.422] [STRIKELOOP] Button 27 already validated
+[22:26:43.581] [STRIKELOOP] Arduino input received during game: 27 Value: 16384
+[22:26:43.582] [STRIKELOOP] Hardware button 27 pressed (index 13)
+[22:26:43.582] [STRIKELOOP] Button press: Index 13, ID 27
+[22:26:43.582] [STRIKELOOP] Button 27 already validated
+[22:26:44.126] [STRIKELOOP] Arduino input received during game: 16 Value: 4
+[22:26:44.126] [STRIKELOOP] Hardware button 16 pressed (index 2)
+[22:26:44.127] [STRIKELOOP] Button press: Index 2, ID 16
+[22:26:44.127] [STRIKELOOP] Button 16 already validated
+[22:26:44.265] [STRIKELOOP] Arduino input received during game: 16 Value: 4
+[22:26:44.266] [STRIKELOOP] Hardware button 16 pressed (index 2)
+[22:26:44.266] [STRIKELOOP] Button press: Index 2, ID 16
+[22:26:44.266] [STRIKELOOP] Button 16 already validated
+[22:26:45.695] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:26:45.695] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:26:45.695] [STRIKELOOP] Button press: Index 3, ID 17
+[22:26:45.696] [STRIKELOOP] Button 17 already validated
+[22:26:45.842] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:26:45.842] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:26:45.843] [STRIKELOOP] Button press: Index 3, ID 17
+[22:26:45.843] [STRIKELOOP] Button 17 already validated
+[22:26:48.768] [STRIKELOOP] Round 3 Level 2 time remaining: 00:00
+[22:26:49.769] [STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (0/5200). Retrying level...
+[22:26:49.769] [STRIKELOOP] LED refresh stopped, LEDs preserved
+[22:26:49.769] [STRIKELOOP] Round 3-2 (RETRY) | Goal: 5200pts in 30s
+[22:26:49.770] [STRIKELOOP] Retry mode - keeping existing LED pattern and validation state
+[22:26:49.770] [STRIKELOOP] Mission initialized: {
+  arcadeMode: 'two-step-all-buttons-blue',
+  goalScore: 5200,
+  duration: 30
+}
+[22:26:49.771] [STRIKELOOP] Retry - skipping startArcadeLEDs() to preserve state and reduce serial writes
+[22:26:49.771] [STRIKELOOP] LED refresh skipped for two-step-all-buttons-blue mode (static LEDs)
+[22:26:59.027] [STRIKELOOP] Arduino input received during game: 27 Value: 16384
+[22:26:59.027] [STRIKELOOP] Hardware button 27 pressed (index 13)
+[22:26:59.028] [STRIKELOOP] Button press: Index 13, ID 27
+[22:26:59.028] [STRIKELOOP] Button 27 already validated
+[22:26:59.781] [STRIKELOOP] Round 3 Level 2 time remaining: 00:20
+[22:26:59.945] [STRIKELOOP] Arduino input received during game: 16 Value: 4
+[22:26:59.945] [STRIKELOOP] Hardware button 16 pressed (index 2)
+[22:26:59.945] [STRIKELOOP] Button press: Index 2, ID 16
+[22:26:59.945] [STRIKELOOP] Button 16 already validated
+[22:27:01.530] [STRIKELOOP] Arduino input received during game: 27 Value: 16384
+[22:27:01.530] [STRIKELOOP] Hardware button 27 pressed (index 13)
+[22:27:01.530] [STRIKELOOP] Button press: Index 13, ID 27
+[22:27:01.530] [STRIKELOOP] Button 27 already validated
+[22:27:02.308] [STRIKELOOP] Arduino input received during game: 16 Value: 4
+[22:27:02.308] [STRIKELOOP] Hardware button 16 pressed (index 2)
+[22:27:02.308] [STRIKELOOP] Button press: Index 2, ID 16
+[22:27:02.309] [STRIKELOOP] Button 16 already validated
+[22:27:03.094] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:27:03.095] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:27:03.095] [STRIKELOOP] Button press: Index 3, ID 17
+[22:27:03.095] [STRIKELOOP] Button 17 already validated
+[22:27:03.389] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:27:03.390] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:27:03.390] [STRIKELOOP] Button press: Index 3, ID 17
+[22:27:03.390] [STRIKELOOP] Button 17 already validated
+[22:27:09.782] [STRIKELOOP] Round 3 Level 2 time remaining: 00:10
+[22:27:19.785] [STRIKELOOP] Round 3 Level 2 time remaining: 00:00
+[22:27:20.785] [STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (0/5200). Retrying level...
+[22:27:20.785] [STRIKELOOP] LED refresh stopped, LEDs preserved
+[22:27:20.786] [STRIKELOOP] Round 3-2 (RETRY) | Goal: 5200pts in 30s
+[22:27:20.786] [STRIKELOOP] Retry mode - keeping existing LED pattern and validation state
+[22:27:20.787] [STRIKELOOP] Mission initialized: {
+  arcadeMode: 'two-step-all-buttons-blue',
+  goalScore: 5200,
+  duration: 30
+}
+[22:27:20.787] [STRIKELOOP] Retry - skipping startArcadeLEDs() to preserve state and reduce serial writes
+[22:27:20.788] [STRIKELOOP] LED refresh skipped for two-step-all-buttons-blue mode (static LEDs)
+[22:27:30.791] [STRIKELOOP] Round 3 Level 2 time remaining: 00:20
+[22:27:40.795] [STRIKELOOP] Round 3 Level 2 time remaining: 00:10
+[22:27:50.795] [STRIKELOOP] Round 3 Level 2 time remaining: 00:00
+[22:27:51.796] [STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (0/5200). Retrying level...
+[22:27:51.796] [STRIKELOOP] LED refresh stopped, LEDs preserved
+[22:27:51.797] [STRIKELOOP] Round 3-2 (RETRY) | Goal: 5200pts in 30s
+[22:27:51.797] [STRIKELOOP] Retry mode - keeping existing LED pattern and validation state
+[22:27:51.798] [STRIKELOOP] Mission initialized: {
+  arcadeMode: 'two-step-all-buttons-blue',
+  goalScore: 5200,
+  duration: 30
+}
+[22:27:51.798] [STRIKELOOP] Retry - skipping startArcadeLEDs() to preserve state and reduce serial writes
+[22:27:51.799] [STRIKELOOP] LED refresh skipped for two-step-all-buttons-blue mode (static LEDs)
+[22:28:01.802] [STRIKELOOP] Round 3 Level 2 time remaining: 00:20
+[22:28:08.822] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:28:08.822] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:28:08.822] [STRIKELOOP] Button press: Index 3, ID 17
+[22:28:08.822] [STRIKELOOP] Button 17 already validated
+[22:28:10.190] [STRIKELOOP] Arduino input received during game: 27 Value: 16384
+[22:28:10.190] [STRIKELOOP] Hardware button 27 pressed (index 13)
+[22:28:10.190] [STRIKELOOP] Button press: Index 13, ID 27
+[22:28:10.190] [STRIKELOOP] Button 27 already validated
+[22:28:10.349] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:28:10.350] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:28:10.350] [STRIKELOOP] Button press: Index 3, ID 17
+[22:28:10.350] [STRIKELOOP] Button 17 already validated
+[22:28:10.419] [STRIKELOOP] Arduino input received during game: 21 Value: 136
+[22:28:10.419] [STRIKELOOP] Hardware button 21 pressed (index 7)
+[22:28:10.419] [STRIKELOOP] Button press: Index 7, ID 21
+[22:28:10.420] [STRIKELOOP] ❌ Button 21 not in validation list
+[22:28:10.722] [STRIKELOOP] Arduino input received during game: 18 Value: 16
+[22:28:10.722] [STRIKELOOP] Hardware button 18 pressed (index 4)
+[22:28:10.723] [STRIKELOOP] Button press: Index 4, ID 18
+[22:28:10.723] [STRIKELOOP] ❌ Button 18 not in validation list
+[22:28:10.910] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:28:10.910] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:28:10.911] [STRIKELOOP] Button press: Index 3, ID 17
+[22:28:10.911] [STRIKELOOP] Button 17 already validated
+[22:28:10.936] [STRIKELOOP] Arduino input received during game: 16 Value: 12
+[22:28:10.937] [STRIKELOOP] Hardware button 16 pressed (index 2)
+[22:28:10.937] [STRIKELOOP] Button press: Index 2, ID 16
+[22:28:10.937] [STRIKELOOP] Button 16 already validated
+[22:28:11.324] [STRIKELOOP] Arduino input received during game: 26 Value: 4096
+[22:28:11.324] [STRIKELOOP] Hardware button 26 pressed (index 12)
+[22:28:11.325] [STRIKELOOP] Button press: Index 12, ID 26
+[22:28:11.325] [STRIKELOOP] ❌ Button 26 not in validation list
+[22:28:11.381] [STRIKELOOP] Arduino input received during game: 17 Value: 4104
+[22:28:11.382] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:28:11.382] [STRIKELOOP] Button press: Index 3, ID 17
+[22:28:11.382] [STRIKELOOP] Button 17 already validated
+[22:28:11.652] [STRIKELOOP] Arduino input received during game: 28 Value: 8200
+[22:28:11.652] [STRIKELOOP] Hardware button 28 pressed (index 14)
+[22:28:11.652] [STRIKELOOP] Button press: Index 14, ID 28
+[22:28:11.652] [STRIKELOOP] ❌ Button 28 not in validation list
+[22:28:11.804] [STRIKELOOP] Round 3 Level 2 time remaining: 00:10
+[22:28:11.865] [STRIKELOOP] Arduino input received during game: 28 Value: 8192
+[22:28:11.866] [STRIKELOOP] Hardware button 28 pressed (index 14)
+[22:28:11.866] [STRIKELOOP] Button press: Index 14, ID 28
+[22:28:11.866] [STRIKELOOP] ❌ Button 28 not in validation list
+[22:28:12.020] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:28:12.021] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:28:12.021] [STRIKELOOP] Button press: Index 3, ID 17
+[22:28:12.021] [STRIKELOOP] Button 17 already validated
+[22:28:12.077] [STRIKELOOP] Arduino input received during game: 26 Value: 4104
+[22:28:12.078] [STRIKELOOP] Hardware button 26 pressed (index 12)
+[22:28:12.078] [STRIKELOOP] Button press: Index 12, ID 26
+[22:28:12.078] [STRIKELOOP] ❌ Button 26 not in validation list
+[22:28:12.323] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:28:12.324] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:28:12.324] [STRIKELOOP] Button press: Index 3, ID 17
+[22:28:12.324] [STRIKELOOP] Button 17 already validated
+[22:28:12.389] [STRIKELOOP] Arduino input received during game: 27 Value: 16392
+[22:28:12.389] [STRIKELOOP] Hardware button 27 pressed (index 13)
+[22:28:12.390] [STRIKELOOP] Button press: Index 13, ID 27
+[22:28:12.390] [STRIKELOOP] Button 27 already validated
+[22:28:12.626] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:28:12.627] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:28:12.627] [STRIKELOOP] Button press: Index 3, ID 17
+[22:28:12.627] [STRIKELOOP] Button 17 already validated
+[22:28:12.655] [STRIKELOOP] Arduino input received during game: 20 Value: 72
+[22:28:12.656] [STRIKELOOP] Hardware button 20 pressed (index 6)
+[22:28:12.656] [STRIKELOOP] Button press: Index 6, ID 20
+[22:28:12.657] [STRIKELOOP] ❌ Button 20 not in validation list
+[22:28:12.933] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:28:12.934] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:28:12.934] [STRIKELOOP] Button press: Index 3, ID 17
+[22:28:12.934] [STRIKELOOP] Button 17 already validated
+[22:28:12.995] [STRIKELOOP] Arduino input received during game: 18 Value: 24
+[22:28:12.995] [STRIKELOOP] Hardware button 18 pressed (index 4)
+[22:28:12.996] [STRIKELOOP] Button press: Index 4, ID 18
+[22:28:12.996] [STRIKELOOP] ❌ Button 18 not in validation list
+[22:28:13.418] [STRIKELOOP] Arduino input received during game: 15 Value: 2
+[22:28:13.418] [STRIKELOOP] Hardware button 15 pressed (index 1)
+[22:28:13.418] [STRIKELOOP] Button press: Index 1, ID 15
+[22:28:13.419] [STRIKELOOP] ❌ Button 15 not in validation list
+[22:28:13.560] [STRIKELOOP] Arduino input received during game: 15 Value: 2
+[22:28:13.561] [STRIKELOOP] Hardware button 15 pressed (index 1)
+[22:28:13.561] [STRIKELOOP] Button press: Index 1, ID 15
+[22:28:13.561] [STRIKELOOP] ❌ Button 15 not in validation list
+[22:28:13.683] [STRIKELOOP] Arduino input received during game: 15 Value: 2
+[22:28:13.684] [STRIKELOOP] Hardware button 15 pressed (index 1)
+[22:28:13.684] [STRIKELOOP] Button press: Index 1, ID 15
+[22:28:13.684] [STRIKELOOP] ❌ Button 15 not in validation list
+[22:28:15.248] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:28:15.248] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:28:15.248] [STRIKELOOP] Button press: Index 3, ID 17
+[22:28:15.249] [STRIKELOOP] Button 17 already validated
+[22:28:16.051] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:28:16.051] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:28:16.051] [STRIKELOOP] Button press: Index 3, ID 17
+[22:28:16.052] [STRIKELOOP] Button 17 already validated
+[22:28:17.685] [STRIKELOOP] Arduino input received during game: 27 Value: 16384
+[22:28:17.685] [STRIKELOOP] Hardware button 27 pressed (index 13)
+[22:28:17.685] [STRIKELOOP] Button press: Index 13, ID 27
+[22:28:17.686] [STRIKELOOP] Button 27 already validated
+[22:28:18.697] [STRIKELOOP] Arduino input received during game: 16 Value: 4
+[22:28:18.698] [STRIKELOOP] Hardware button 16 pressed (index 2)
+[22:28:18.698] [STRIKELOOP] Button press: Index 2, ID 16
+[22:28:18.698] [STRIKELOOP] Button 16 already validated
+[22:28:19.123] [STRIKELOOP] Arduino input received during game: 16 Value: 4
+[22:28:19.123] [STRIKELOOP] Hardware button 16 pressed (index 2)
+[22:28:19.123] [STRIKELOOP] Button press: Index 2, ID 16
+[22:28:19.123] [STRIKELOOP] Button 16 already validated
+[22:28:19.856] [STRIKELOOP] Arduino input received during game: 27 Value: 16384
+[22:28:19.856] [STRIKELOOP] Hardware button 27 pressed (index 13)
+[22:28:19.856] [STRIKELOOP] Button press: Index 13, ID 27
+[22:28:19.857] [STRIKELOOP] Button 27 already validated
+[22:28:21.035] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:28:21.036] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:28:21.037] [STRIKELOOP] Button press: Index 3, ID 17
+[22:28:21.037] [STRIKELOOP] Button 17 already validated
+[22:28:21.805] [STRIKELOOP] Round 3 Level 2 time remaining: 00:00
+[22:28:22.805] [STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (0/5200). Retrying level...
+[22:28:22.805] [STRIKELOOP] LED refresh stopped, LEDs preserved
+[22:28:22.805] [STRIKELOOP] Round 3-2 (RETRY) | Goal: 5200pts in 30s
+[22:28:22.806] [STRIKELOOP] Retry mode - keeping existing LED pattern and validation state
+[22:28:22.806] [STRIKELOOP] Mission initialized: {
+  arcadeMode: 'two-step-all-buttons-blue',
+  goalScore: 5200,
+  duration: 30
+}
+[22:28:22.807] [STRIKELOOP] Retry - skipping startArcadeLEDs() to preserve state and reduce serial writes
+[22:28:22.807] [STRIKELOOP] LED refresh skipped for two-step-all-buttons-blue mode (static LEDs)
+[22:28:32.816] [STRIKELOOP] Round 3 Level 2 time remaining: 00:20
+[22:28:42.818] [STRIKELOOP] Round 3 Level 2 time remaining: 00:10
+[22:28:52.820] [STRIKELOOP] Round 3 Level 2 time remaining: 00:00
+[22:28:53.820] [STRIKELOOP] ⏱️ Time expired! Goal NOT achieved (0/5200). Retrying level...
+[22:28:53.820] [STRIKELOOP] LED refresh stopped, LEDs preserved
+[22:28:53.821] [STRIKELOOP] Round 3-2 (RETRY) | Goal: 5200pts in 30s
+[22:28:53.821] [STRIKELOOP] Retry mode - keeping existing LED pattern and validation state
+[22:28:53.822] [STRIKELOOP] Mission initialized: {
+  arcadeMode: 'two-step-all-buttons-blue',
+  goalScore: 5200,
+  duration: 30
+}
+[22:28:53.822] [STRIKELOOP] Retry - skipping startArcadeLEDs() to preserve state and reduce serial writes
+[22:28:53.822] [STRIKELOOP] LED refresh skipped for two-step-all-buttons-blue mode (static LEDs)
+[22:28:54.315] [STRIKELOOP] Arduino input received during game: 27 Value: 16384
+[22:28:54.315] [STRIKELOOP] Hardware button 27 pressed (index 13)
+[22:28:54.315] [STRIKELOOP] Button press: Index 13, ID 27
+[22:28:54.315] [STRIKELOOP] Button 27 already validated
+[22:28:55.023] [STRIKELOOP] Arduino input received during game: 16 Value: 4
+[22:28:55.023] [STRIKELOOP] Hardware button 16 pressed (index 2)
+[22:28:55.024] [STRIKELOOP] Button press: Index 2, ID 16
+[22:28:55.024] [STRIKELOOP] Button 16 already validated
+[22:28:55.281] [STRIKELOOP] Arduino input received during game: 16 Value: 4
+[22:28:55.282] [STRIKELOOP] Hardware button 16 pressed (index 2)
+[22:28:55.282] [STRIKELOOP] Button press: Index 2, ID 16
+[22:28:55.282] [STRIKELOOP] Button 16 already validated
+[22:28:55.912] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:28:55.912] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:28:55.913] [STRIKELOOP] Button press: Index 3, ID 17
+[22:28:55.913] [STRIKELOOP] Button 17 already validated
+[22:28:56.395] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:28:56.396] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:28:56.396] [STRIKELOOP] Button press: Index 3, ID 17
+[22:28:56.396] [STRIKELOOP] Button 17 already validated
+[22:28:56.809] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:28:56.809] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:28:56.810] [STRIKELOOP] Button press: Index 3, ID 17
+[22:28:56.810] [STRIKELOOP] Button 17 already validated
+[22:28:59.697] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:28:59.697] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:28:59.697] [STRIKELOOP] Button press: Index 3, ID 17
+[22:28:59.697] [STRIKELOOP] Button 17 already validated
+[22:29:00.446] [STRIKELOOP] Arduino input received during game: 17 Value: 8
+[22:29:00.446] [STRIKELOOP] Hardware button 17 pressed (index 3)
+[22:29:00.447] [STRIKELOOP] Button press: Index 3, ID 17
+[22:29:00.447] [STRIKELOOP] Button 17 already validated
+[22:29:01.102] [STRIKELOOP] Arduino input received during game: 27 Value: 16384
+[22:29:01.102] [STRIKELOOP] Hardware button 27 pressed (index 13)
+[22:29:01.102] [STRIKELOOP] Button press: Index 13, ID 27
+[22:29:01.102] [STRIKELOOP] Button 27 already validated
+[22:29:01.765] [STRIKELOOP] Arduino input received during game: 16 Value: 4
+[22:29:01.765] [STRIKELOOP] Hardware button 16 pressed (index 2)
+[22:29:01.766] [STRIKELOOP] Button press: Index 2, ID 16
+[22:29:01.766] [STRIKELOOP] Button 16 already validated
+[22:29:01.974] [STRIKELOOP] Arduino input received during game: 16 Value: 4
+[22:29:01.974] [STRIKELOOP] Hardware button 16 pressed (index 2)
+[22:29:01.974] [STRIKELOOP] Button press: Index 2, ID 16
+[22:29:01.975] [STRIKELOOP] Button 16 already validated
+[22:29:03.825] [STRIKELOOP] Round 3 Level 2 time remaining: 00:20
+[22:29:10.782] [STRIKELOOP] ⏰ 15 minutes elapsed - resetting game with congratulations
+[22:29:10.782] [STRIKELOOP] Resetting game to initial state... (showCongratulations: true)
+[22:29:10.782] [STRIKELOOP] Final score before reset: 20750 (cumulative: 20750 + current: 0)
+[22:29:10.783] [STRIKELOOP] Keyboard controls disabled - Game ended
+[22:29:10] [ARDUINO] Output 1 → OFF
+
+[22:29:10] [ARDUINO] Output 4 → OFF
+
+[22:29:10] [ARDUINO] Output 6 → OFF
+
+[22:29:10] [ARDUINO] Output 7 → OFF
+
+[22:29:10] [ARDUINO] Output 2 → OFF
+
+[22:29:10] [ARDUINO] Output 3 → OFF
+
+[22:29:10] [ARDUINO] Output 5 → OFF
+
+[22:29:10] [ARDUINO] Output 8 → OFF
+
+[22:29:10] [ARDUINO] Output 9 → OFF
+
+[22:29:10.788] [STRIKELOOP] LED refresh stopped, all LEDs cleared
+[22:29:10.788] [ARDUINO] Raw output 99 → OFF
+[22:29:10.789] [STRIKELOOP] Setting all holes to white for staff visibility
+[22:29:10] [ARDUINO] Output 1 → ON (d)
+
+[22:29:10] [ARDUINO] Output 4 → ON (d)
+
+[22:29:10] [ARDUINO] Output 6 → ON (d)
+
+[22:29:10] [ARDUINO] Output 7 → ON (d)
+
+[22:29:10] [ARDUINO] Output 2 → ON (d)
+
+[22:29:10] [ARDUINO] Output 3 → ON (d)
+
+[22:29:10] [ARDUINO] Output 5 → ON (d)
+
+[22:29:10] [ARDUINO] Output 8 → ON (d)
+
+[22:29:10] [ARDUINO] Output 24 → OFF
+
+[22:29:10.795] [STRIKELOOP] Cleaning up game event listeners...
+[22:29:10.795] [STRIKELOOP] Game state initialized: {
+  round: 1,
+  level: 1,
+  score: 0,
+  missionNumber: 1,
+  multiplier: 'x1',
+  missionDescription: 'Game starting... Prepare for first round!',
+  totalGameTimeMinutes: 15
+}
+[22:29:10.796] [STRIKELOOP] Total rounds configured: 30
+[22:29:10.796] [STRIKELOOP] Total game duration: 900 seconds
+[22:29:10.797] [STRIKELOOP] Game reset complete - ready to start new game
+[22:45:26.236] [STAFF-WS] Client connected: staff-5 (Total: 1)

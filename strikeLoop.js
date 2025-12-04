@@ -1004,6 +1004,21 @@ function initializeMission(levelConfig, isRetry = false) {
     }
     // Turn off central circle (9)
     controlLED(9, 'o');
+
+    // Turn off all control buttons (14-28) to clear any pending validation from previous level
+    for (let i = 14; i <= 28; i++) {
+      controlLED(i, 'o');
+    }
+
+    // Clear validation state flags to prevent stuck validations from previous level
+    validationPending = false;
+    validationHitColor = null;
+    buttonsToValidate = [];
+    buttonsValidated = [];
+    if (validationTimeout) {
+      clearTimeout(validationTimeout);
+      validationTimeout = null;
+    }
   } else {
     logger.info('STRIKELOOP', 'Retry mode - keeping existing LED pattern and validation state');
     // SKIP calling startArcadeLEDs() on retry to prevent clearing sequence state and redundant serial writes
