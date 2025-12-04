@@ -6,7 +6,7 @@ const emitter = new events.EventEmitter();
 
 // ⚠️ TESTING FLAG: Set to true to play Round 3 first (for testing)
 // Set to false for normal game flow (Round 1 → Round 2 → Round 3)
-const TESTING_MODE_SWAP_ROUNDS = true
+const TESTING_MODE_SWAP_ROUNDS = false;
 
 const OUTER_CIRCLES_RANGE = { min: 1, max: 8 };
 const INNER_CIRCLES_RANGE = { min: 9, max: 13 };
@@ -1358,7 +1358,7 @@ function initializeGameState() {
     missionNumber: 1,
     multiplier: 'x1',
     missionDescription: 'Game starting... Prepare for first round!',
-    totalGameTimeMinutes: 2  // TESTING: Changed from 15 to 2 minutes
+    totalGameTimeMinutes: 15  
   };
 
   logger.info('STRIKELOOP', 'Game state initialized:', gameState);
