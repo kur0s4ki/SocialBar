@@ -521,12 +521,18 @@ const COLORS = {
 
 
 
-// Buttons grouped by color for easy access
+// ========== HARDWARE BUTTON DISABLE CONFIG ==========
+// Add button IDs (14-28) here to disable broken hardware buttons.
+// Example: [22, 17] would disable green button 22 and blue button 17
+// These buttons won't be used in sequences or validation.
+const DISABLED_BUTTONS = [24];
+
+// Buttons grouped by color for easy access (auto-filtered by DISABLED_BUTTONS)
 const BUTTONS_BY_COLOR = {
-  green: [15, 21, 22, 26],      // 4 green buttons
-  blue: [16, 17, 24, 27],       // 4 blue buttons (note: 5 total but we use 4)
-  yellow: [14, 20, 23, 28],     // 4 yellow buttons
-  white: [18, 19, 25]           // 3 white buttons
+  green: [15, 21, 22, 26].filter(b => !DISABLED_BUTTONS.includes(b)),
+  blue: [16, 17, 24, 27].filter(b => !DISABLED_BUTTONS.includes(b)),
+  yellow: [14, 20, 23, 28].filter(b => !DISABLED_BUTTONS.includes(b)),
+  white: [18, 19, 25].filter(b => !DISABLED_BUTTONS.includes(b))
 };
 
 // All button IDs array (14-28) for easy iteration
@@ -1358,7 +1364,7 @@ function initializeGameState() {
     missionNumber: 1,
     multiplier: 'x1',
     missionDescription: 'Game starting... Prepare for first round!',
-    totalGameTimeMinutes: 15  
+    totalGameTimeMinutes: 15
   };
 
   logger.info('STRIKELOOP', 'Game state initialized:', gameState);
@@ -2616,9 +2622,10 @@ function startSequenceValidation(colorName) {
 
   const buttons = BUTTONS_BY_COLOR[colorName];
 
-  // Select 3 random buttons from the 4 available
+  // Select up to 3 random buttons (handles disabled buttons gracefully)
+  const sequenceCount = Math.min(3, buttons.length);
   const shuffled = [...buttons].sort(() => Math.random() - 0.5);
-  sequenceToMatch = shuffled.slice(0, 3);
+  sequenceToMatch = shuffled.slice(0, sequenceCount);
   sequencePlayerInput = [];
   sequenceDisplaying = true;
 
