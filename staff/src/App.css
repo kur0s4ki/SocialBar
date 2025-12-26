@@ -172,6 +172,23 @@ body {
   margin-bottom: 4px;
 }
 
+.logo-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  width: 48px;
+  height: 48px;
+}
+
+.logo-icon-sm {
+  width: 32px;
+  height: 32px;
+}
+
 .reg-tagline {
   color: var(--text-muted);
   font-size: 0.9375rem;

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Social Bar Favicon - S and B lettermark with background -->
+  <rect width="64" height="64" rx="14" fill="#0B1120"/>
+  <!-- Stylized S integrated with B -->
+  <path d="M14 16 C14 16, 28 10, 28 19 C28 28, 14 25, 14 34 C14 43, 28 40, 28 48" 
+        stroke="#3B82F6" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+  <path d="M30 16 L30 48 M30 16 C30 16, 44 16, 44 23 C44 30, 30 32, 30 32 M30 32 C30 32, 48 32, 48 41 C48 50, 30 48, 30 48" 
+        stroke="#10B981" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

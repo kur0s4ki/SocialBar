@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
+import logo from './logo.svg';
 
 function App() {
   const [teamName, setTeamName] = useState('');
@@ -202,7 +203,10 @@ function App() {
         <div className="registration-page">
           <div className="reg-card">
             <div className="reg-logo">
-              <h1>Social Bar</h1>
+              <div className="logo-row">
+                <img src={logo} alt="Social Bar" className="logo-icon" />
+                <h1>Social Bar</h1>
+              </div>
               <p className="reg-tagline">Console Staff</p>
             </div>
 
@@ -229,13 +233,6 @@ function App() {
               >
                 Démarrer la Session
               </button>
-
-              <button
-                className="btn btn-ghost"
-                onClick={handleHardReset}
-              >
-                Réinitialisation Système
-              </button>
             </div>
           </div>
         </div>
@@ -253,6 +250,7 @@ function App() {
           {/* Top Navigation Bar */}
           <header className="dash-header">
             <div className="dash-header-left">
+              <img src={logo} alt="Social Bar" className="logo-icon-sm" />
               <span className="dash-title">Social Bar</span>
             </div>
             <div className="dash-header-center">
