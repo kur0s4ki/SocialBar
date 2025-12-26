@@ -58,6 +58,10 @@ function App() {
           handleLEDControl(data);
         } else if (data.type === 'timeUpdate') {
           //console.log('[FRONTEND] Time update received:', data);
+          // timeData contains: timeLeft, timeString, totalTimeLeft, totalTimeString
+        } else if (data.type === 'scoreUpdate') {
+          //console.log('[FRONTEND] Score update received:', data);
+          // scoreData contains: score, goalScore
         }
       };
 

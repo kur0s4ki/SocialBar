@@ -322,11 +322,16 @@ addTrackedListener(strikeLoop.emitter, 'scoreUpdate', (scoreData) => {
   const goalScore = typeof scoreData === 'object' ? scoreData.goalScore : undefined;
 
   logger.trace('APP', `Score: ${score}${goalScore ? ` / ${goalScore}` : ''}`);
-  broadcastToDisplay({
+
+  const scoreMessage = {
     type: 'scoreUpdate',
     score: score,
     goalScore: goalScore
-  });
+  };
+
+  // Broadcast to both display and staff clients
+  broadcastToDisplay(scoreMessage);
+  broadcastToStaff(scoreMessage);
 });
 
 // Sound effect events
@@ -339,7 +344,6 @@ addTrackedListener(strikeLoop.emitter, 'soundEffect', (soundData) => {
 });
 
 addTrackedListener(strikeLoop.emitter, 'timeUpdate', (timeData) => {
-  // Send time updates only to display clients (not to staff) - no logging
   const message = {
     type: 'timeUpdate',
     timeLeft: timeData.timeLeft,
@@ -348,7 +352,9 @@ addTrackedListener(strikeLoop.emitter, 'timeUpdate', (timeData) => {
     totalTimeString: timeData.totalTimeString
   };
 
+  // Broadcast to both display and staff clients
   broadcastToDisplay(message);
+  broadcastToStaff(message);
 });
 
 addTrackedListener(strikeLoop.emitter, 'bonusActive', (isActive) => {
