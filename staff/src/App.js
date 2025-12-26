@@ -21,9 +21,9 @@ function App() {
 
   useEffect(() => {
     if (currentView === 'registration') {
-      document.title = 'Social Bar - Staff Console';
+      document.title = 'Social Bar - Console Staff';
     } else if (currentView === 'dashboard') {
-      document.title = `Social Bar - ${teamName} Dashboard`;
+      document.title = `Social Bar - ${teamName} Tableau de Bord`;
     } else {
       document.title = `Social Bar - ${teamName} Simulation`;
     }
@@ -202,24 +202,23 @@ function App() {
         <div className="registration-page">
           <div className="reg-card">
             <div className="reg-logo">
-              <div className="reg-logo-icon">⚡</div>
               <h1>Social Bar</h1>
-              <p className="reg-tagline">Staff Console</p>
+              <p className="reg-tagline">Console Staff</p>
             </div>
 
             <div className="reg-status">
               <span className={`status-indicator ${isConnected ? 'online' : 'offline'}`}></span>
-              <span className="status-text">{isConnected ? 'System Online' : 'Connecting...'}</span>
+              <span className="status-text">{isConnected ? 'Système En Ligne' : 'Connexion...'}</span>
             </div>
 
             <div className="reg-form">
-              <label htmlFor="teamName">Team Name</label>
+              <label htmlFor="teamName">Nom de l'Équipe</label>
               <input
                 type="text"
                 id="teamName"
                 value={teamName}
                 onChange={(e) => setTeamName(e.target.value)}
-                placeholder="Enter team name..."
+                placeholder="Entrez le nom de l'équipe..."
                 onKeyPress={(e) => e.key === 'Enter' && handleStart()}
               />
 
@@ -228,14 +227,14 @@ function App() {
                 onClick={handleStart}
                 disabled={!teamName.trim() || !isConnected}
               >
-                Start Session
+                Démarrer la Session
               </button>
 
               <button
                 className="btn btn-ghost"
                 onClick={handleHardReset}
               >
-                System Reset
+                Réinitialisation Système
               </button>
             </div>
           </div>
@@ -254,18 +253,17 @@ function App() {
           {/* Top Navigation Bar */}
           <header className="dash-header">
             <div className="dash-header-left">
-              <span className="dash-logo">⚡</span>
               <span className="dash-title">Social Bar</span>
             </div>
             <div className="dash-header-center">
               <span className={`conn-badge ${isConnected ? 'online' : 'offline'}`}>
                 <span className="conn-dot"></span>
-                {isConnected ? 'Live' : 'Offline'}
+                {isConnected ? 'En Direct' : 'Hors Ligne'}
               </span>
             </div>
             <div className="dash-header-right">
               <button className="btn btn-danger-outline btn-sm" onClick={handleHardReset}>
-                Reset Game
+                Réinitialiser le Jeu
               </button>
             </div>
           </header>
@@ -275,7 +273,7 @@ function App() {
             {/* Team Banner */}
             <section className="team-banner">
               <div className="team-banner-content">
-                <span className="team-label">Active Team</span>
+                <span className="team-label">Équipe Active</span>
                 <h2 className="team-name">{teamName}</h2>
               </div>
             </section>
@@ -286,7 +284,7 @@ function App() {
               <div className="stat-card stat-card-score">
                 <div className="stat-icon">🎯</div>
                 <div className="stat-content">
-                  <span className="stat-label">Current Score</span>
+                  <span className="stat-label">Score Actuel</span>
                   <span className="stat-value">{currentScore}</span>
                   {goalScore > 0 && (
                     <div className="stat-progress-container">
@@ -296,7 +294,7 @@ function App() {
                           style={{ width: `${scoreProgress}%` }}
                         ></div>
                       </div>
-                      <span className="stat-goal">Goal: {goalScore}</span>
+                      <span className="stat-goal">Objectif: {goalScore}</span>
                     </div>
                   )}
                 </div>
@@ -306,9 +304,9 @@ function App() {
               <div className="stat-card stat-card-time">
                 <div className="stat-icon">⏱️</div>
                 <div className="stat-content">
-                  <span className="stat-label">Level Time</span>
+                  <span className="stat-label">Temps du Niveau</span>
                   <span className="stat-value stat-value-time">{levelTimeRemaining}</span>
-                  <span className="stat-sublabel">remaining</span>
+                  <span className="stat-sublabel">restant</span>
                 </div>
               </div>
 
@@ -316,9 +314,9 @@ function App() {
               <div className="stat-card stat-card-total">
                 <div className="stat-icon">🕐</div>
                 <div className="stat-content">
-                  <span className="stat-label">Total Time</span>
+                  <span className="stat-label">Temps Total</span>
                   <span className="stat-value stat-value-total">{totalTimeRemaining}</span>
-                  <span className="stat-sublabel">remaining</span>
+                  <span className="stat-sublabel">restant</span>
                 </div>
               </div>
             </section>
@@ -329,8 +327,7 @@ function App() {
                 className="btn btn-primary btn-xl"
                 onClick={() => setCurrentView('simulation')}
               >
-                <span className="btn-icon">🎮</span>
-                Open Simulation Panel
+                Ouvrir le Panneau de Simulation
               </button>
             </section>
           </main>
@@ -352,12 +349,12 @@ function App() {
               className="btn btn-ghost btn-sm"
               onClick={() => setCurrentView('dashboard')}
             >
-              ← Back to Dashboard
+              Tableau de Bord
             </button>
           </div>
           <div className="sim-header-center">
-            <span className="sim-title">Simulation Panel</span>
-            <span className="sim-team">Team: {teamName}</span>
+            <span className="sim-title">Panneau de Simulation</span>
+            <span className="sim-team">Équipe: {teamName}</span>
           </div>
           <div className="sim-header-right">
             <div className="sim-live-stats">
@@ -366,7 +363,7 @@ function App() {
                 <span className="sim-stat-value">{currentScore}</span>
               </span>
               <span className="sim-stat">
-                <span className="sim-stat-label">Time:</span>
+                <span className="sim-stat-label">Temps:</span>
                 <span className="sim-stat-value">{levelTimeRemaining}</span>
               </span>
             </div>
@@ -378,7 +375,7 @@ function App() {
           <div className="sim-panels">
             {/* Control Buttons Panel */}
             <div className="sim-left-panel">
-              <h3 className="panel-title">Control Buttons</h3>
+              <h3 className="panel-title">Boutons de Contrôle</h3>
               <div className="control-buttons">
                 {[14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].map((buttonId) => (
                   <div
@@ -396,7 +393,7 @@ function App() {
 
             {/* Game Board Panel */}
             <div className="sim-right-panel">
-              <h3 className="panel-title">Game Board</h3>
+              <h3 className="panel-title">Plateau de Jeu</h3>
               <div className="game-board">
                 {/* Large circles */}
                 <div
