@@ -292,10 +292,15 @@ addTrackedListener(strikeLoop.emitter, 'reset', (resetData) => {
 // Individual event listeners for separation of concerns
 addTrackedListener(strikeLoop.emitter, 'roundUpdate', (roundData) => {
   logger.debug('APP', `Round ${roundData.round} Level ${roundData.level}`);
-  broadcastToDisplay({
+
+  const message = {
     type: 'roundUpdate',
     ...roundData
-  });
+  };
+
+  // Broadcast to both display and staff clients
+  broadcastToDisplay(message);
+  broadcastToStaff(message);
 });
 
 addTrackedListener(strikeLoop.emitter, 'missionUpdate', (missionData) => {

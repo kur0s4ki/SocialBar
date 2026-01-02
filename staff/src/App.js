@@ -3,6 +3,14 @@ import './App.css';
 import logo from './logo.svg';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState(null); // 'admin' or 'user'
+  const [loginUsername, setLoginUsername] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [showRebootModal, setShowRebootModal] = useState(false);
+  const [showShutdownModal, setShowShutdownModal] = useState(false);
+
   const [teamName, setTeamName] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
@@ -17,18 +25,24 @@ function App() {
   const [levelTimeSeconds, setLevelTimeSeconds] = useState(0);
   const [totalTimeSeconds, setTotalTimeSeconds] = useState(0);
 
+  // Round and level tracking
+  const [currentRound, setCurrentRound] = useState(0);
+  const [currentLevel, setCurrentLevel] = useState(0);
+
   const ws = useRef(null);
   const isConnecting = useRef(false);
 
   useEffect(() => {
-    if (currentView === 'registration') {
+    if (!isAuthenticated) {
+      document.title = 'Social Bar - Login';
+    } else if (currentView === 'registration') {
       document.title = 'Social Bar - Console Staff';
     } else if (currentView === 'dashboard') {
       document.title = `Social Bar - ${teamName} Tableau de Bord`;
     } else {
       document.title = `Social Bar - ${teamName} Simulation`;
     }
-  }, [currentView, teamName]);
+  }, [currentView, teamName, isAuthenticated]);
 
   useEffect(() => {
     const connect = () => {
@@ -66,6 +80,10 @@ function App() {
         } else if (data.type === 'scoreUpdate') {
           setCurrentScore(data.score || 0);
           setGoalScore(data.goalScore || 0);
+        } else if (data.type === 'roundUpdate') {
+          setCurrentRound(data.round || 0);
+          setCurrentLevel(data.level || 0);
+          if (data.goalScore) setGoalScore(data.goalScore);
         }
       };
 
@@ -90,6 +108,44 @@ function App() {
     };
   }, []);
 
+  const handleLogin = (e) => {
+    if (e) e.preventDefault();
+    setLoginError('');
+
+    // Simple client-side authentication
+    if (loginUsername === 'admin' && loginPassword === 'admin') {
+      setIsAuthenticated(true);
+      setUserRole('admin');
+      setLoginUsername('');
+      setLoginPassword('');
+    } else if (loginUsername === 'user' && loginPassword === 'user') {
+      setIsAuthenticated(true);
+      setUserRole('user');
+      setLoginUsername('');
+      setLoginPassword('');
+    } else {
+      setLoginError('Invalid username or password');
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUserRole(null);
+    resetGame();
+  };
+
+  const handleRebootConfirm = () => {
+    setShowRebootModal(false);
+    // Dummy action - just show it was triggered
+    console.log('System reboot confirmed');
+  };
+
+  const handleShutdownConfirm = () => {
+    setShowShutdownModal(false);
+    // Dummy action - just show it was triggered
+    console.log('System shutdown confirmed');
+  };
+
   const resetGame = () => {
     setIsStarted(false);
     setCurrentView('registration');
@@ -100,6 +156,8 @@ function App() {
     setTotalTimeRemaining('--:--');
     setLevelTimeSeconds(0);
     setTotalTimeSeconds(0);
+    setCurrentRound(0);
+    setCurrentLevel(0);
     setTeamName('');
   };
 
@@ -195,6 +253,72 @@ function App() {
   const scoreProgress = goalScore > 0 ? Math.min((currentScore / goalScore) * 100, 100) : 0;
 
   // ========================================
+  // LOGIN VIEW
+  // ========================================
+  if (!isAuthenticated) {
+    return (
+      <div className="app">
+        <div className="login-page">
+          <div className="login-card">
+            <div className="login-logo">
+              <div className="logo-row">
+                <img src={logo} alt="Social Bar" className="logo-icon" />
+                <h1>Social Bar</h1>
+              </div>
+              <p className="login-tagline">Console Staff - Login</p>
+            </div>
+
+            <form className="login-form" onSubmit={handleLogin}>
+              <div className="form-group">
+                <label htmlFor="username">Username</label>
+                <input
+                  type="text"
+                  id="username"
+                  value={loginUsername}
+                  onChange={(e) => setLoginUsername(e.target.value)}
+                  placeholder="Enter username..."
+                  autoFocus
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="password">Password</label>
+                <input
+                  type="password"
+                  id="password"
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  placeholder="Enter password..."
+                />
+              </div>
+
+              {loginError && (
+                <div className="login-error">
+                  {loginError}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="btn btn-primary btn-lg"
+                disabled={!loginUsername.trim() || !loginPassword.trim()}
+              >
+                Login
+              </button>
+            </form>
+
+            <div className="login-hints">
+              <p className="hint-text">Demo Credentials:</p>
+              <p className="hint-item">Admin: admin / admin</p>
+              <p className="hint-item">User: user / user</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ========================================
   // REGISTRATION VIEW
   // ========================================
   if (currentView === 'registration') {
@@ -260,8 +384,12 @@ function App() {
               </span>
             </div>
             <div className="dash-header-right">
+              <span className="user-role-badge">{userRole === 'admin' ? 'Admin' : 'User'}</span>
               <button className="btn btn-danger-outline btn-sm" onClick={handleHardReset}>
                 Réinitialiser le Jeu
+              </button>
+              <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
+                Logout
               </button>
             </div>
           </header>
@@ -298,6 +426,26 @@ function App() {
                 </div>
               </div>
 
+              {/* Round Card */}
+              <div className="stat-card stat-card-round">
+                <div className="stat-icon">🔄</div>
+                <div className="stat-content">
+                  <span className="stat-label">Manche</span>
+                  <span className="stat-value stat-value-round">{currentRound || '-'}</span>
+                  <span className="stat-sublabel">sur 3</span>
+                </div>
+              </div>
+
+              {/* Level Card */}
+              <div className="stat-card stat-card-level">
+                <div className="stat-icon">📊</div>
+                <div className="stat-content">
+                  <span className="stat-label">Niveau</span>
+                  <span className="stat-value stat-value-level">{currentLevel || '-'}</span>
+                  <span className="stat-sublabel">sur 10</span>
+                </div>
+              </div>
+
               {/* Level Time Card */}
               <div className="stat-card stat-card-time">
                 <div className="stat-icon">⏱️</div>
@@ -321,14 +469,74 @@ function App() {
 
             {/* Action Buttons */}
             <section className="action-section">
-              <button
-                className="btn btn-primary btn-xl"
-                onClick={() => setCurrentView('simulation')}
-              >
-                Ouvrir le Panneau de Simulation
+              {userRole === 'admin' && (
+                <button
+                  className="btn btn-primary btn-xl"
+                  onClick={() => setCurrentView('simulation')}
+                >
+                  Ouvrir le Panneau de Simulation
+                </button>
+              )}
+            </section>
+
+            {/* System Controls */}
+            <section className="system-controls">
+              <button className="btn btn-system btn-reboot" onClick={() => setShowRebootModal(true)}>
+                Redémarrer le Système
+              </button>
+              <button className="btn btn-system btn-shutdown" onClick={() => setShowShutdownModal(true)}>
+                Arrêter le Système
               </button>
             </section>
           </main>
+
+          {/* Reboot Confirmation Modal */}
+          {showRebootModal && (
+            <div className="modal-overlay" onClick={() => setShowRebootModal(false)}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                  <div className="modal-icon modal-icon-warning">⚠️</div>
+                  <h2 className="modal-title">Redémarrer le Système</h2>
+                </div>
+                <div className="modal-body">
+                  <p>Êtes-vous sûr de vouloir redémarrer le système ?</p>
+                  <p className="modal-subtitle">Cette action va interrompre la session en cours.</p>
+                </div>
+                <div className="modal-actions">
+                  <button className="btn btn-ghost btn-md" onClick={() => setShowRebootModal(false)}>
+                    Annuler
+                  </button>
+                  <button className="btn btn-warning btn-md" onClick={handleRebootConfirm}>
+                    Redémarrer
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Shutdown Confirmation Modal */}
+          {showShutdownModal && (
+            <div className="modal-overlay" onClick={() => setShowShutdownModal(false)}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                  <div className="modal-icon modal-icon-danger">🔴</div>
+                  <h2 className="modal-title">Arrêter le Système</h2>
+                </div>
+                <div className="modal-body">
+                  <p>Êtes-vous sûr de vouloir arrêter le système ?</p>
+                  <p className="modal-subtitle">Cette action va éteindre complètement le système.</p>
+                </div>
+                <div className="modal-actions">
+                  <button className="btn btn-ghost btn-md" onClick={() => setShowShutdownModal(false)}>
+                    Annuler
+                  </button>
+                  <button className="btn btn-danger btn-md" onClick={handleShutdownConfirm}>
+                    Arrêter
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
