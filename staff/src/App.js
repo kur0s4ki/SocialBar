@@ -3,13 +3,16 @@ import './App.css';
 import logo from './logo.svg';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState(null); // 'admin' or 'user'
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showRebootModal, setShowRebootModal] = useState(false);
+  const [showShutdownModal, setShowShutdownModal] = useState(false);
   const [loginUsername, setLoginUsername] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
-  const [showRebootModal, setShowRebootModal] = useState(false);
-  const [showShutdownModal, setShowShutdownModal] = useState(false);
+  const [isDarkTheme, setIsDarkTheme] = useState(() => {
+    const saved = localStorage.getItem('theme');
+    return saved ? saved === 'dark' : true;
+  });
 
   const [teamName, setTeamName] = useState('');
   const [isConnected, setIsConnected] = useState(false);
@@ -33,16 +36,23 @@ function App() {
   const isConnecting = useRef(false);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      document.title = 'Social Bar - Login';
-    } else if (currentView === 'registration') {
+    if (currentView === 'registration') {
       document.title = 'Social Bar - Console Staff';
     } else if (currentView === 'dashboard') {
       document.title = `Social Bar - ${teamName} Tableau de Bord`;
     } else {
       document.title = `Social Bar - ${teamName} Simulation`;
     }
-  }, [currentView, teamName, isAuthenticated]);
+  }, [currentView, teamName]);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
+    localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
+  }, [isDarkTheme]);
+
+  const toggleTheme = () => {
+    setIsDarkTheme(!isDarkTheme);
+  };
 
   useEffect(() => {
     const connect = () => {
@@ -112,26 +122,23 @@ function App() {
     if (e) e.preventDefault();
     setLoginError('');
 
-    // Simple client-side authentication
+    // Simple client-side authentication - admin only
     if (loginUsername === 'admin' && loginPassword === 'admin') {
-      setIsAuthenticated(true);
-      setUserRole('admin');
+      setShowLoginModal(false);
       setLoginUsername('');
       setLoginPassword('');
-    } else if (loginUsername === 'user' && loginPassword === 'user') {
-      setIsAuthenticated(true);
-      setUserRole('user');
-      setLoginUsername('');
-      setLoginPassword('');
+      setCurrentView('simulation');
     } else {
-      setLoginError('Invalid username or password');
+      setLoginError('Invalid credentials. Admin access only.');
     }
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    setUserRole(null);
-    resetGame();
+  const handleSimulationAccess = () => {
+    setShowLoginModal(true);
+  };
+
+  const handleBackToDashboard = () => {
+    setCurrentView('dashboard');
   };
 
   const handleRebootConfirm = () => {
@@ -253,72 +260,6 @@ function App() {
   const scoreProgress = goalScore > 0 ? Math.min((currentScore / goalScore) * 100, 100) : 0;
 
   // ========================================
-  // LOGIN VIEW
-  // ========================================
-  if (!isAuthenticated) {
-    return (
-      <div className="app">
-        <div className="login-page">
-          <div className="login-card">
-            <div className="login-logo">
-              <div className="logo-row">
-                <img src={logo} alt="Social Bar" className="logo-icon" />
-                <h1>Social Bar</h1>
-              </div>
-              <p className="login-tagline">Console Staff - Login</p>
-            </div>
-
-            <form className="login-form" onSubmit={handleLogin}>
-              <div className="form-group">
-                <label htmlFor="username">Username</label>
-                <input
-                  type="text"
-                  id="username"
-                  value={loginUsername}
-                  onChange={(e) => setLoginUsername(e.target.value)}
-                  placeholder="Enter username..."
-                  autoFocus
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="password">Password</label>
-                <input
-                  type="password"
-                  id="password"
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                  placeholder="Enter password..."
-                />
-              </div>
-
-              {loginError && (
-                <div className="login-error">
-                  {loginError}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                className="btn btn-primary btn-lg"
-                disabled={!loginUsername.trim() || !loginPassword.trim()}
-              >
-                Login
-              </button>
-            </form>
-
-            <div className="login-hints">
-              <p className="hint-text">Demo Credentials:</p>
-              <p className="hint-item">Admin: admin / admin</p>
-              <p className="hint-item">User: user / user</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ========================================
   // REGISTRATION VIEW
   // ========================================
   if (currentView === 'registration') {
@@ -351,7 +292,7 @@ function App() {
               />
 
               <button
-                className="btn btn-primary btn-lg"
+                className="btn btn-primary btn-md"
                 onClick={handleStart}
                 disabled={!teamName.trim() || !isConnected}
               >
@@ -384,110 +325,78 @@ function App() {
               </span>
             </div>
             <div className="dash-header-right">
-              <span className="user-role-badge">{userRole === 'admin' ? 'Admin' : 'User'}</span>
-              <button className="btn btn-danger-outline btn-sm" onClick={handleHardReset}>
-                Réinitialiser le Jeu
+              <button className="btn btn-theme btn-sm" onClick={toggleTheme}>
+                {isDarkTheme ? '☀️' : '🌙'}
               </button>
-              <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
-                Logout
+              <button className="btn btn-primary btn-sm" onClick={handleSimulationAccess}>
+                Simulation
+              </button>
+              <button className="btn btn-reset btn-sm" onClick={handleHardReset}>
+                Réinitialiser
               </button>
             </div>
           </header>
 
           {/* Main Dashboard Content */}
           <main className="dash-main">
-            {/* Team Banner */}
-            <section className="team-banner">
-              <div className="team-banner-content">
-                <span className="team-label">Équipe Active</span>
-                <h2 className="team-name">{teamName}</h2>
+            {/* Main Stats Card */}
+            <div className="main-stats-card">
+              <div className="stats-header">
+                <h2 className="team-display-name">{teamName}</h2>
               </div>
-            </section>
 
-            {/* Stats Grid */}
-            <section className="stats-grid">
-              {/* Score Card */}
-              <div className="stat-card stat-card-score">
-                <div className="stat-icon">🎯</div>
-                <div className="stat-content">
-                  <span className="stat-label">Score Actuel</span>
+              <div className="stats-content">
+                <div className="stat-row">
+                  <span className="stat-label">Score</span>
                   <span className="stat-value">{currentScore}</span>
-                  {goalScore > 0 && (
-                    <div className="stat-progress-container">
-                      <div className="stat-progress-bar">
-                        <div
-                          className="stat-progress-fill"
-                          style={{ width: `${scoreProgress}%` }}
-                        ></div>
-                      </div>
-                      <span className="stat-goal">Objectif: {goalScore}</span>
+                </div>
+
+                {goalScore > 0 && (
+                  <>
+                    <div className="stat-row">
+                      <span className="stat-label">Objectif</span>
+                      <span className="stat-value">{goalScore}</span>
                     </div>
-                  )}
+                    <div className="progress-bar-container">
+                      <div className="progress-bar">
+                        <div className="progress-fill" style={{ width: `${scoreProgress}%` }}></div>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                <div className="stat-row-group">
+                  <div className="stat-row">
+                    <span className="stat-label">Manche</span>
+                    <span className="stat-value">{currentRound || '-'} / 3</span>
+                  </div>
+                  <div className="stat-row">
+                    <span className="stat-label">Niveau</span>
+                    <span className="stat-value">{currentLevel || '-'} / 10</span>
+                  </div>
+                </div>
+
+                <div className="stat-row-group">
+                  <div className="stat-row">
+                    <span className="stat-label">Temps Niveau</span>
+                    <span className="stat-value stat-time">{levelTimeRemaining}</span>
+                  </div>
+                  <div className="stat-row">
+                    <span className="stat-label">Temps Total</span>
+                    <span className="stat-value stat-time">{totalTimeRemaining}</span>
+                  </div>
                 </div>
               </div>
 
-              {/* Round Card */}
-              <div className="stat-card stat-card-round">
-                <div className="stat-icon">🔄</div>
-                <div className="stat-content">
-                  <span className="stat-label">Manche</span>
-                  <span className="stat-value stat-value-round">{currentRound || '-'}</span>
-                  <span className="stat-sublabel">sur 3</span>
-                </div>
-              </div>
-
-              {/* Level Card */}
-              <div className="stat-card stat-card-level">
-                <div className="stat-icon">📊</div>
-                <div className="stat-content">
-                  <span className="stat-label">Niveau</span>
-                  <span className="stat-value stat-value-level">{currentLevel || '-'}</span>
-                  <span className="stat-sublabel">sur 10</span>
-                </div>
-              </div>
-
-              {/* Level Time Card */}
-              <div className="stat-card stat-card-time">
-                <div className="stat-icon">⏱️</div>
-                <div className="stat-content">
-                  <span className="stat-label">Temps du Niveau</span>
-                  <span className="stat-value stat-value-time">{levelTimeRemaining}</span>
-                  <span className="stat-sublabel">restant</span>
-                </div>
-              </div>
-
-              {/* Total Time Card */}
-              <div className="stat-card stat-card-total">
-                <div className="stat-icon">🕐</div>
-                <div className="stat-content">
-                  <span className="stat-label">Temps Total</span>
-                  <span className="stat-value stat-value-total">{totalTimeRemaining}</span>
-                  <span className="stat-sublabel">restant</span>
-                </div>
-              </div>
-            </section>
-
-            {/* Action Buttons */}
-            <section className="action-section">
-              {userRole === 'admin' && (
-                <button
-                  className="btn btn-primary btn-xl"
-                  onClick={() => setCurrentView('simulation')}
-                >
-                  Ouvrir le Panneau de Simulation
+              <div className="stats-footer">
+                <button className="btn btn-reboot btn-md" onClick={() => setShowRebootModal(true)}>
+                  Redémarrer
                 </button>
-              )}
-            </section>
-
-            {/* System Controls */}
-            <section className="system-controls">
-              <button className="btn btn-system btn-reboot" onClick={() => setShowRebootModal(true)}>
-                Redémarrer le Système
-              </button>
-              <button className="btn btn-system btn-shutdown" onClick={() => setShowShutdownModal(true)}>
-                Arrêter le Système
-              </button>
-            </section>
+                <button className="btn btn-shutdown btn-md" onClick={() => setShowShutdownModal(true)}>
+                  Arrêter
+                </button>
+              </div>
+            </div>
           </main>
 
           {/* Reboot Confirmation Modal */}
@@ -537,6 +446,76 @@ function App() {
               </div>
             </div>
           )}
+
+          {/* Admin Login Modal for Simulation Access */}
+          {showLoginModal && (
+            <div className="modal-overlay" onClick={() => {
+              setShowLoginModal(false);
+              setLoginUsername('');
+              setLoginPassword('');
+              setLoginError('');
+            }}>
+              <div className="modal-content modal-login" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                  <div className="modal-icon">🔐</div>
+                  <h2 className="modal-title">Accès Simulation</h2>
+                  <p className="modal-subtitle" style={{ marginTop: '8px' }}>Authentification administrateur requise</p>
+                </div>
+                <form className="modal-body" onSubmit={handleLogin}>
+                  <div className="form-group">
+                    <label htmlFor="modal-username">Username</label>
+                    <input
+                      type="text"
+                      id="modal-username"
+                      value={loginUsername}
+                      onChange={(e) => setLoginUsername(e.target.value)}
+                      placeholder="Enter admin username..."
+                      autoFocus
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="modal-password">Password</label>
+                    <input
+                      type="password"
+                      id="modal-password"
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      placeholder="Enter admin password..."
+                    />
+                  </div>
+
+                  {loginError && (
+                    <div className="login-error">
+                      {loginError}
+                    </div>
+                  )}
+
+                  <div className="modal-actions">
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-md"
+                      onClick={() => {
+                        setShowLoginModal(false);
+                        setLoginUsername('');
+                        setLoginPassword('');
+                        setLoginError('');
+                      }}
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn btn-primary btn-md"
+                      disabled={!loginUsername.trim() || !loginPassword.trim()}
+                    >
+                      Se Connecter
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -553,7 +532,7 @@ function App() {
           <div className="sim-header-left">
             <button
               className="btn btn-ghost btn-sm"
-              onClick={() => setCurrentView('dashboard')}
+              onClick={handleBackToDashboard}
             >
               Tableau de Bord
             </button>
